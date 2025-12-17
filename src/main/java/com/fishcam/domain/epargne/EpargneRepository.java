@@ -17,7 +17,7 @@ public interface EpargneRepository extends JpaRepository<Epargne, Long> {
     //L'épargne d'un client (0 ou 1 maximum)
     Optional<Epargne> findByClient(Client client);
 
-    //Toutes les épargnes d'une poissonnerie
+
     List<Epargne> findByPoissonnerie(Poissonnerie poissonnerie);
 
     //Épargnes avec solde supérieur à X

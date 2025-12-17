@@ -32,8 +32,12 @@ public class Notification {
     @Column(nullable = false)
     private Boolean read;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TypeNotification type;
+
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
 }

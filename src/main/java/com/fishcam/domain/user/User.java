@@ -2,10 +2,9 @@ package com.fishcam.domain.user;
 
 import java.time.LocalDateTime;
 
-import com.fishcam.domain.poissonnerie.Poissonnerie;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
+import com.fishcam.domain.poissonnerie.Poissonnerie;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,6 +26,10 @@ public class User {
     @Column(nullable = false, length = 50)
     private String lastName;
 
+
+    @Column(nullable = false)
+    private String password;
+
     @Column(nullable = false, unique = true, length = 20)
     private String phone;
 
@@ -47,7 +50,7 @@ public class User {
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
     @UpdateTimestamp

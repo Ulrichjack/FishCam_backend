@@ -9,13 +9,12 @@ import java.util.Optional;
 @Repository
 public interface PoissonnerieRepository extends JpaRepository<Poissonnerie, Long> {
 
-    //retourne tout les poissonneries actives
+
     List<Poissonnerie> findByActiveTrue();
 
-    //cher par nom
-    Optional<Poissonnerie> findByNameIgnoreCase(Long aLong);
 
-    //verifie si une poissonnerie existe deja avec ce nom
+    Optional<Poissonnerie> findByNameIgnoreCase(String name);
+
     boolean existsByNameIgnoreCase(String name);
 
 }

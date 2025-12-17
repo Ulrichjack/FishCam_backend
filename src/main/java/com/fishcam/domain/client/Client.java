@@ -3,6 +3,7 @@ package com.fishcam.domain.client;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.fishcam.domain.comptecourant.CompteCourant;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.user.User;
 import org.hibernate.annotations.CreationTimestamp;
@@ -52,17 +53,20 @@ public class Client {
 
     @ManyToOne
     @JoinColumn(name = "create_by_id")
-    private User createBy;
+    private User createdBy;
 
     private Boolean active;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @OneToOne(mappedBy = "client")
+    private CompteCourant compteCourant;
 
 
 }

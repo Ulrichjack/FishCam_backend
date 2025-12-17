@@ -22,4 +22,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByScope(UserScope scope);
 
     boolean existsByPhone(String phone);
+
 }

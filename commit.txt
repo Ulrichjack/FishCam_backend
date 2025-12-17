@@ -1,0 +1,200 @@
+jack@jack-HP:~/CODE/demo$ git status
+On branch main
+Your branch is behind 'origin/main' by 1 commit, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   EVALUATION_ET_SUGGESTIONS.md
+	new file:   GUIDE_IMPLEMENTATION_PRATIQUE.md
+	new file:   README.MD
+	new file:   question.txt
+	new file:   src/main/java/com/fishcam/adapter/web/controller/AuthController.java
+	new file:   src/main/java/com/fishcam/adapter/web/controller/ClientController.java
+	new file:   src/main/java/com/fishcam/adapter/web/controller/CompteCourantController.java
+	new file:   src/main/java/com/fishcam/adapter/web/controller/DetteController.java
+	new file:   src/main/java/com/fishcam/adapter/web/controller/EpargneController.java
+	new file:   src/main/java/com/fishcam/adapter/web/controller/NotificationController.java
+	new file:   src/main/java/com/fishcam/adapter/web/controller/PayerDetteAvecEpargneController.java
+	new file:   src/main/java/com/fishcam/adapter/web/controller/PoissonnerieController.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/request/CreatePoissonnerieRequest.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/request/CreateUserRequest.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/request/EmpruntRequest.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/request/LoginRequest.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/request/ModifierLimiteCreditRequest.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/request/RemboursementCCRequest.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/request/TransfertEpargneVersCCRequest.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/request/UpdateClientRequest.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/request/UpdatePoissonnerieRequest.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/request/UpdateUserRequest.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/response/ApiResponse.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/response/AuthResponse.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/response/CompteCourantDetailResponse.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/response/CompteCourantResponse.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/response/EpargneDetailResponse.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/response/PayerDetteAvecEpargneResponse.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/response/StatistiquesEpargneResponse.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/response/StatistiquesPoissonnerieResponse.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/response/TopDebiteurResponse.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/response/TransactionCCResponse.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/response/TransfertEpargneVersCCResponse.java
+	new file:   src/main/java/com/fishcam/adapter/web/dto/response/UserResponse.java
+	new file:   src/main/java/com/fishcam/adapter/web/mapper/ClientMapper.java
+	new file:   src/main/java/com/fishcam/adapter/web/mapper/CompteCourantMapper.java
+	new file:   src/main/java/com/fishcam/adapter/web/mapper/DetteMapper.java
+	new file:   src/main/java/com/fishcam/adapter/web/mapper/EpargneMapper.java
+	new file:   src/main/java/com/fishcam/adapter/web/mapper/NotificationMapper.java
+	new file:   src/main/java/com/fishcam/adapter/web/mapper/PoissonnerieMapper.java
+	new file:   src/main/java/com/fishcam/adapter/web/mapper/TransactionCCMapper.java
+	new file:   src/main/java/com/fishcam/adapter/web/mapper/TransactionDetteMapper.java
+	new file:   src/main/java/com/fishcam/adapter/web/mapper/TransactionEpargneMapper.java
+	new file:   src/main/java/com/fishcam/adapter/web/mapper/UserMapper.java
+	new file:   src/main/java/com/fishcam/application/auth/AuthService.java
+	new file:   src/main/java/com/fishcam/application/comptecourant/CompteCourantService.java
+	new file:   src/main/java/com/fishcam/application/comptecourant/TransfertEpargneVersCCUseCase.java
+	modified:   src/main/java/com/fishcam/application/notification/NotificationService.java
+	new file:   src/main/java/com/fishcam/application/poissonnerie/PoissonnerieService.java
+	new file:   src/main/java/com/fishcam/application/user/UserService.java
+	new file:   src/main/java/com/fishcam/domain/Fournisseur.java
+	new file:   src/main/java/com/fishcam/domain/FournisseurRepository.java
+	new file:   src/main/java/com/fishcam/domain/comptecourant/CompteCourant.java
+	new file:   src/main/java/com/fishcam/domain/comptecourant/CompteCourantRepository.java
+	new file:   src/main/java/com/fishcam/domain/comptecourant/StatutCompteCourant.java
+	new file:   src/main/java/com/fishcam/domain/comptecourant/TransactionCompteCourant.java
+	new file:   src/main/java/com/fishcam/domain/comptecourant/TransactionCompteCourantRepository.java
+	new file:   src/main/java/com/fishcam/domain/comptecourant/TypeTransactionCC.java
+	new file:   src/main/java/com/fishcam/infrastructure/config/DataInitializer.java
+	new file:   src/main/java/com/fishcam/infrastructure/config/WebConfig.java
+	new file:   src/main/java/com/fishcam/infrastructure/exception/BusinessException.java
+	new file:   src/main/java/com/fishcam/infrastructure/exception/GlobalExceptionHandler.java
+	new file:   src/main/java/com/fishcam/infrastructure/exception/ResourceNotFoundException.java
+	new file:   src/main/java/com/fishcam/infrastructure/scheduler/NotificationScheduler.java
+	new file:   src/main/java/com/fishcam/infrastructure/security/CustomUserDetailsService.java
+	new file:   src/main/java/com/fishcam/infrastructure/security/JwtAuthenticationFilter.java
+	new file:   src/main/java/com/fishcam/infrastructure/security/JwtService.java
+	new file:   src/main/java/com/fishcam/infrastructure/security/SecurityConfig.java
+	new file:   supprimer.sh
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   README.MD
+	modified:   pom.xml
+	modified:   question.txt
+	modified:   src/main/java/com/fishcam/FishcamApplication.java
+	modified:   src/main/java/com/fishcam/adapter/web/controller/AuthController.java
+	modified:   src/main/java/com/fishcam/adapter/web/controller/ClientController.java
+	modified:   src/main/java/com/fishcam/adapter/web/controller/CompteCourantController.java
+	deleted:    src/main/java/com/fishcam/adapter/web/controller/DetteController.java
+	modified:   src/main/java/com/fishcam/adapter/web/controller/EpargneController.java
+	modified:   src/main/java/com/fishcam/adapter/web/controller/NotificationController.java
+	deleted:    src/main/java/com/fishcam/adapter/web/controller/PayerDetteAvecEpargneController.java
+	modified:   src/main/java/com/fishcam/adapter/web/controller/PoissonnerieController.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/request/CreateClientRequest.java
+	deleted:    src/main/java/com/fishcam/adapter/web/dto/request/CreateDetteRequest.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/request/CreateEpargneRequest.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/request/CreatePoissonnerieRequest.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/request/CreateUserRequest.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/request/DepotEpargneRequest.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/request/EmpruntRequest.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/request/LoginRequest.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/request/ModifierLimiteCreditRequest.java
+	deleted:    src/main/java/com/fishcam/adapter/web/dto/request/PayerDetteAvecEpargneRequest.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/request/RemboursementCCRequest.java
+	deleted:    src/main/java/com/fishcam/adapter/web/dto/request/RemboursementRequest.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/request/RetraitEpargneRequest.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/request/TransfertEpargneVersCCRequest.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/request/UpdateClientRequest.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/request/UpdatePoissonnerieRequest.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/request/UpdateUserRequest.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/response/ApiResponse.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/response/AuthResponse.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/response/ClientDetailResponse.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/response/ClientResponse.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/response/CompteCourantDetailResponse.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/response/CompteCourantResponse.java
+	deleted:    src/main/java/com/fishcam/adapter/web/dto/response/DetteDetailResponse.java
+	deleted:    src/main/java/com/fishcam/adapter/web/dto/response/DetteResponse.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/response/EpargneDetailResponse.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/response/EpargneResponse.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/response/NotificationResponse.java
+	deleted:    src/main/java/com/fishcam/adapter/web/dto/response/PayerDetteAvecEpargneResponse.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/response/PoissonnerieResponse.java
+	deleted:    src/main/java/com/fishcam/adapter/web/dto/response/StatistiquesDetteResponse.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/response/StatistiquesEpargneResponse.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/response/StatistiquesPoissonnerieResponse.java
+	deleted:    src/main/java/com/fishcam/adapter/web/dto/response/TopDebiteurResponse.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/response/TransactionCCResponse.java
+	deleted:    src/main/java/com/fishcam/adapter/web/dto/response/TransactionDetteResponse.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/response/TransactionEpargneResponse.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/response/TransfertEpargneVersCCResponse.java
+	modified:   src/main/java/com/fishcam/adapter/web/dto/response/UserResponse.java
+	modified:   src/main/java/com/fishcam/adapter/web/mapper/ClientMapper.java
+	modified:   src/main/java/com/fishcam/adapter/web/mapper/CompteCourantMapper.java
+	deleted:    src/main/java/com/fishcam/adapter/web/mapper/DetteMapper.java
+	modified:   src/main/java/com/fishcam/adapter/web/mapper/EpargneMapper.java
+	modified:   src/main/java/com/fishcam/adapter/web/mapper/NotificationMapper.java
+	modified:   src/main/java/com/fishcam/adapter/web/mapper/PoissonnerieMapper.java
+	modified:   src/main/java/com/fishcam/adapter/web/mapper/TransactionCCMapper.java
+	deleted:    src/main/java/com/fishcam/adapter/web/mapper/TransactionDetteMapper.java
+	modified:   src/main/java/com/fishcam/adapter/web/mapper/TransactionEpargneMapper.java
+	modified:   src/main/java/com/fishcam/adapter/web/mapper/UserMapper.java
+	modified:   src/main/java/com/fishcam/application/auth/AuthService.java
+	modified:   src/main/java/com/fishcam/application/client/ClientService.java
+	modified:   src/main/java/com/fishcam/application/comptecourant/CompteCourantService.java
+	modified:   src/main/java/com/fishcam/application/comptecourant/TransfertEpargneVersCCUseCase.java
+	deleted:    src/main/java/com/fishcam/application/dette/DetteService.java
+	deleted:    src/main/java/com/fishcam/application/dette/PayerDetteAvecEpargneUseCase.java
+	modified:   src/main/java/com/fishcam/application/epargne/EpargneService.java
+	modified:   src/main/java/com/fishcam/application/notification/NotificationService.java
+	modified:   src/main/java/com/fishcam/application/poissonnerie/PoissonnerieService.java
+	modified:   src/main/java/com/fishcam/application/user/UserService.java
+	modified:   src/main/java/com/fishcam/domain/Fournisseur.java
+	modified:   src/main/java/com/fishcam/domain/FournisseurRepository.java
+	modified:   src/main/java/com/fishcam/domain/client/Client.java
+	modified:   src/main/java/com/fishcam/domain/client/ClientRepository.java
+	modified:   src/main/java/com/fishcam/domain/comptecourant/CompteCourant.java
+	modified:   src/main/java/com/fishcam/domain/comptecourant/CompteCourantRepository.java
+	modified:   src/main/java/com/fishcam/domain/comptecourant/StatutCompteCourant.java
+	modified:   src/main/java/com/fishcam/domain/comptecourant/TransactionCompteCourant.java
+	modified:   src/main/java/com/fishcam/domain/comptecourant/TransactionCompteCourantRepository.java
+	modified:   src/main/java/com/fishcam/domain/comptecourant/TypeTransactionCC.java
+	deleted:    src/main/java/com/fishcam/domain/dette/Dette.java
+	deleted:    src/main/java/com/fishcam/domain/dette/DetteRepository.java
+	deleted:    src/main/java/com/fishcam/domain/dette/StatutDette.java
+	deleted:    src/main/java/com/fishcam/domain/dette/TransactionDette.java
+	deleted:    src/main/java/com/fishcam/domain/dette/TransactionDetteRepository.java
+	modified:   src/main/java/com/fishcam/domain/epargne/Epargne.java
+	modified:   src/main/java/com/fishcam/domain/epargne/EpargneRepository.java
+	modified:   src/main/java/com/fishcam/domain/epargne/TransactionEpargne.java
+	modified:   src/main/java/com/fishcam/domain/epargne/TransactionEpargneRepository.java
+	modified:   src/main/java/com/fishcam/domain/notification/Notification.java
+	modified:   src/main/java/com/fishcam/domain/notification/NotificationRepository.java
+	modified:   src/main/java/com/fishcam/domain/notification/TypeNotification.java
+	modified:   src/main/java/com/fishcam/domain/poissonnerie/Poissonnerie.java
+	modified:   src/main/java/com/fishcam/domain/poissonnerie/PoissonnerieRepository.java
+	modified:   src/main/java/com/fishcam/domain/user/User.java
+	modified:   src/main/java/com/fishcam/domain/user/UserRepository.java
+	modified:   src/main/java/com/fishcam/infrastructure/config/DataInitializer.java
+	modified:   src/main/java/com/fishcam/infrastructure/config/WebConfig.java
+	modified:   src/main/java/com/fishcam/infrastructure/exception/BusinessException.java
+	modified:   src/main/java/com/fishcam/infrastructure/exception/GlobalExceptionHandler.java
+	modified:   src/main/java/com/fishcam/infrastructure/exception/ResourceNotFoundException.java
+	modified:   src/main/java/com/fishcam/infrastructure/security/CustomUserDetailsService.java
+	modified:   src/main/java/com/fishcam/infrastructure/security/JwtAuthenticationFilter.java
+	modified:   src/main/java/com/fishcam/infrastructure/security/JwtService.java
+	modified:   src/main/java/com/fishcam/infrastructure/security/SecurityConfig.java
+	modified:   src/main/resources/application.properties
+	modified:   supprimer.sh
+
+jack@jack-HP:~/CODE/demo$ ^C
+jack@jack-HP:~/CODE/demo$ 
+
+
+
+
+
+
+
+
+

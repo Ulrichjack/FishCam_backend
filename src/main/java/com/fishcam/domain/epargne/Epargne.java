@@ -33,12 +33,12 @@ public class Epargne {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal currentBalance;
 
-    @OneToOne   
-    private User createBy;
+    @ManyToOne
+    private User createdBy;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
     @UpdateTimestamp

@@ -1,8 +1,8 @@
 package com.fishcam.domain.notification;
 
 public enum TypeNotification {
-    DETTE_ELEVEE,
-    ALERTE_DIMANCHE,
-    DETTE_SOLDEE,
-    INFO
+    COMPTE_COURANT_ALERTE,  // Alerte franchissement seuil
+    COMPTE_SOLDE,           // Compte soldé
+    RAPPORT_JOURNALIER,     // Rapport 19h
+    INFO                    // Pour infos générales
 }

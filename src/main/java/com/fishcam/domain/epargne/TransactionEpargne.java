@@ -5,6 +5,8 @@ import com.fishcam.domain.user.User;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
 //Historique complet des dépôts et retraits
@@ -39,6 +41,7 @@ public class TransactionEpargne {
     private User effectuePar;
 
     @Column(nullable = false)
+    @CreationTimestamp
     private LocalDateTime transactionDate;
 
 
