@@ -54,7 +54,6 @@ public class CompteCourantService {
 
         CompteCourant compte = new CompteCourant();
         compte.setClient(client);
-        compte.setPoissonnerie(client.getPoissonnerie());
         compte.setCreatedBy(createdBy);
         compte.setSolde(BigDecimal.ZERO);
         compte.setLimiteCreditMax(new BigDecimal("50000"));

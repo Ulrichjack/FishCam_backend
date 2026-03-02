@@ -47,15 +47,12 @@ public class EpargneService {
             throw new BusinessException("Ce client a déjà un compte épargne");
         }
 
-        Poissonnerie poissonnerie = poissonnerieRepository.findById(request.getPoissonnerieId())
-                .orElseThrow(() -> new ResourceNotFoundException("Poissonnerie non trouvée"));
 
         User createdBy = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException("Utilisateur non trouvé"));
 
         Epargne epargne = epargneMapper.toEntity(request);
         epargne.setClient(client);
-        epargne.setPoissonnerie(poissonnerie);
         epargne.setCreatedBy(createdBy);
         epargne.setCurrentBalance(request.getInitialAmount());
 
@@ -68,7 +65,6 @@ public class EpargneService {
         transaction.setType(TypeTransactionEpargne.DEPOT);
         transaction.setAmount(request.getInitialAmount());
         transaction.setEffectuePar(createdBy);
-        transaction.setPoissonnerie(poissonnerie);
         transaction.setTransactionDate(LocalDateTime.now());
 
         transactionEpargneRepository.save(transaction);
