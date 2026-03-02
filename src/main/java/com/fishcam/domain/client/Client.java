@@ -44,7 +44,7 @@ public class Client {
 
     private LocalDate dateOfBirth;
 
-    @Column(length = 20)
+    @Column(length = 1000)
     private String notes;
 
     @ManyToOne
