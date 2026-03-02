@@ -26,9 +26,7 @@ public class CompteCourant {
     @JoinColumn(name = "client_id", nullable = false, unique = true)
     private Client client;
 
-    @ManyToOne
-    @JoinColumn(name = "poissonnerie_id", nullable = false)
-    private Poissonnerie poissonnerie;
+
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal solde = BigDecimal.ZERO;
@@ -52,6 +50,9 @@ public class CompteCourant {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    public Poissonnerie getPoissonnerie() {
+        return client != null ? client.getPoissonnerie() : null;
+    }
     public boolean estEnDette() {
         return solde.compareTo(BigDecimal.ZERO) < 0;
     }

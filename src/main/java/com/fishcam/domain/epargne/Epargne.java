@@ -27,8 +27,7 @@ public class Epargne {
     @JoinColumn(name = "client_id", nullable = false, unique = true)
     private Client client;
 
-    @ManyToOne
-    private Poissonnerie poissonnerie;
+
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal currentBalance;
@@ -43,5 +42,10 @@ public class Epargne {
     @Column(nullable = false)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+
+    public Poissonnerie getPoissonnerie() {
+        return client != null ? client.getPoissonnerie() : null;
+    }
     
 }

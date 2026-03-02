@@ -17,16 +17,9 @@ public interface EpargneRepository extends JpaRepository<Epargne, Long> {
     //L'épargne d'un client (0 ou 1 maximum)
     Optional<Epargne> findByClient(Client client);
 
-
-    List<Epargne> findByPoissonnerie(Poissonnerie poissonnerie);
-
-    //Épargnes avec solde supérieur à X
-    List<Epargne> findByCurrentBalanceGreaterThan(BigDecimal amount);
-
     //Vérifie si un client a déjà une épargne
     boolean existsByClient(Client client);
 
-    //Requête somme des épargnes
-    @Query("SELECT SUM(e.currentBalance) FROM Epargne e WHERE e.poissonnerie = :poissonnerie")
-    BigDecimal sumBalancesByPoissonnerie(@Param("poissonnerie") Poissonnerie poissonnerie);
+
+
 }
