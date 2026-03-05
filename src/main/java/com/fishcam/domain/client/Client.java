@@ -14,7 +14,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "client")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Client {

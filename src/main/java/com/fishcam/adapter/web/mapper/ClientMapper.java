@@ -18,7 +18,15 @@ public interface ClientMapper {
     @Mapping(target = "soldeEpargne", ignore = true)
     ClientDetailResponse toDetailResponse(Client entity);
 
-    @Mapping(source = "poissonnerieId", target = "poissonnerie", ignore = true)
+
+    @Mapping(target = "poissonnerie", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "notes", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "active", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "compteCourant", ignore = true)
     Client toEntity(CreateClientRequest request);
 
     void updateEntityFromRequest(UpdateClientRequest request, @MappingTarget Client entity);

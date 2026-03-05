@@ -10,7 +10,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "notification")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Notification {
@@ -26,7 +27,7 @@ public class Notification {
     @ManyToOne
     private Poissonnerie poissonnerie;
 
-    @Column(nullable = false, length = 500)
+    @Column(nullable = false, length = 2500)
     private String message;
 
     @Column(nullable = false)

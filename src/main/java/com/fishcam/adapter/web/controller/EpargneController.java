@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +32,7 @@ public class EpargneController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Ouvrir un compte épargne pour un client")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE')")
     public ApiResponse<EpargneResponse> createEpargne(
             @Valid @RequestBody CreateEpargneRequest request,
             Authentication authentication) {
@@ -50,6 +52,7 @@ public class EpargneController {
 
     @PostMapping("/depot")
     @Operation(summary = "Effectuer un dépôt sur un compte épargne")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE')")
     public ApiResponse<EpargneResponse> deposer(
             @Valid @RequestBody DepotEpargneRequest request,
             Authentication authentication) {
@@ -70,6 +73,7 @@ public class EpargneController {
 
     @PostMapping("/retrait")
     @Operation(summary = "Effectuer un retrait sur un compte épargne")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE')")
     public ApiResponse<EpargneResponse> retirer(
             @Valid @RequestBody RetraitEpargneRequest request,
             Authentication authentication) {
@@ -90,6 +94,7 @@ public class EpargneController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Récupérer les détails d'un compte épargne avec historique")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
     public ApiResponse<EpargneDetailResponse> getEpargneDetail(@PathVariable Long id) {
         log.debug("Récupération détail épargne {}", id);
         EpargneDetailResponse data = epargneService.getEpargneDetail(id);

@@ -14,7 +14,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "epargne_saving")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Epargne {

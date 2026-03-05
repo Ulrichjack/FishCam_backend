@@ -37,3 +37,4 @@ build/
 *.txt
 !README.txt
 .bashrc
+fishcam-data-dev/

@@ -3,15 +3,14 @@ package com.fishcam.domain.fournisseur;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Fournisseur {
@@ -26,9 +25,7 @@ public class Fournisseur {
     @Column(nullable = false)
     private String nom;
 
-    @Email
-    @Column(nullable = false)
-    private String email;
+
 
     @Column(length = 100)
     private String ville;

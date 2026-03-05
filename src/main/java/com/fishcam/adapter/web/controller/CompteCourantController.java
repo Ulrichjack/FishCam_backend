@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,7 @@ public class CompteCourantController {
 
     @PostMapping("/client/{clientId}")
     @Operation(summary = "Créer un compte courant pour un client")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE')")
     public ResponseEntity<ApiResponse<CompteCourantResponse>> createCompteCourant(
             @PathVariable Long clientId,
             Authentication authentication) {
@@ -55,6 +57,7 @@ public class CompteCourantController {
 
     @PostMapping("/emprunts")
     @Operation(summary = "Enregistrer un emprunt")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
     public ResponseEntity<ApiResponse<CompteCourantResponse>> enregistrerEmprunt(
             @Valid @RequestBody EmpruntRequest request,
             Authentication authentication) {
@@ -78,6 +81,7 @@ public class CompteCourantController {
 
     @PostMapping("/remboursements")
     @Operation(summary = "Enregistrer un remboursement")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE')")
     public ResponseEntity<ApiResponse<CompteCourantResponse>> enregistrerRemboursement(
             @Valid @RequestBody RemboursementCCRequest request,
             Authentication authentication) {
@@ -101,6 +105,7 @@ public class CompteCourantController {
 
     @PutMapping("/{compteId}/limite-credit")
     @Operation(summary = "Modifier la limite de crédit")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
     public ResponseEntity<ApiResponse<CompteCourantResponse>> modifierLimiteCredit(
             @PathVariable Long compteId,
             @Valid @RequestBody ModifierLimiteCreditRequest request,
@@ -125,6 +130,7 @@ public class CompteCourantController {
 
     @PostMapping("/transfert-epargne")
     @Operation(summary = "Transférer épargne vers compte courant")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE')")
     public ResponseEntity<ApiResponse<TransfertEpargneVersCCResponse>> transfererEpargne(
             @Valid @RequestBody TransfertEpargneVersCCRequest request,
             Authentication authentication) {
@@ -147,6 +153,7 @@ public class CompteCourantController {
 
     @GetMapping("/client/{clientId}")
     @Operation(summary = "Obtenir le compte courant d'un client")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
     public ResponseEntity<ApiResponse<CompteCourantResponse>> getCompteCourantByClient(
             @PathVariable Long clientId) {
 
@@ -166,6 +173,7 @@ public class CompteCourantController {
 
     @GetMapping("/{compteId}")
     @Operation(summary = "Obtenir les détails complets d'un compte courant")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
     public ResponseEntity<ApiResponse<CompteCourantDetailResponse>> getCompteCourantDetail(
             @PathVariable Long compteId) {
 
@@ -185,6 +193,7 @@ public class CompteCourantController {
 
     @GetMapping("/poissonnerie/{poissonnerieId}/en-dette")
     @Operation(summary = "Lister tous les comptes en dette")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
     public ResponseEntity<ApiResponse<List<CompteCourantResponse>>> getComptesEnDette(
             @PathVariable Long poissonnerieId) {
 

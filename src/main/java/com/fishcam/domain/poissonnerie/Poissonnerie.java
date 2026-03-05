@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "poissonnerie")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Poissonnerie {

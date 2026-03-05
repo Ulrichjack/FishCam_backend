@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +32,7 @@ public class ClientController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Créer un nouveau client")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
     public ApiResponse<ClientResponse> createClient(
             @Valid @RequestBody CreateClientRequest request,
             Authentication authentication) {  // ← CHANGEMENT ICI
@@ -50,6 +52,7 @@ public class ClientController {
 
     @GetMapping("/poissonnerie/{poissonnerieId}")
     @Operation(summary = "Lister les clients d'une poissonnerie")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
     public ApiResponse<Page<ClientResponse>> getClientsByPoissonnerie(
             @PathVariable Long poissonnerieId,
             Pageable pageable) {
@@ -67,6 +70,7 @@ public class ClientController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Récupérer le détail d'un client")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
     public ApiResponse<ClientDetailResponse> getClientDetail(@PathVariable Long id) {
         log.debug("Récupération détail client ID: {}", id);
         ClientDetailResponse data = clientService.getClientDetail(id);
@@ -81,6 +85,7 @@ public class ClientController {
 
     @GetMapping("/search")
     @Operation(summary = "Rechercher des clients par nom/téléphone")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
     public ApiResponse<Page<ClientResponse>> searchClients(
             @RequestParam Long poissonnerieId,
             @RequestParam(required = false) String term,
@@ -99,6 +104,7 @@ public class ClientController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Modifier un client")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE')")
     public ApiResponse<ClientResponse> updateClient(
             @PathVariable Long id,
             @Valid @RequestBody UpdateClientRequest request) {
@@ -117,6 +123,7 @@ public class ClientController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Désactiver un client")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
     public ApiResponse<Void> deleteClient(@PathVariable Long id) {
         log.info("Désactivation client ID: {}", id);
         clientService.deleteClient(id);
@@ -130,6 +137,7 @@ public class ClientController {
 
     @PatchMapping("/{id}/reactivate")
     @Operation(summary = "Réactiver un client désactivé")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
     public ApiResponse<ClientResponse> reactivateClient(@PathVariable Long id) {
         log.info("Réactivation client ID: {}", id);
         ClientResponse data = clientService.reactivateClient(id);
@@ -144,6 +152,7 @@ public class ClientController {
 
     @GetMapping("/inactive/poissonnerie/{poissonnerieId}")
     @Operation(summary = "Lister les clients désactivés d'une poissonnerie")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
     public ApiResponse<Page<ClientResponse>> getInactiveClients(
             @PathVariable Long poissonnerieId,
             Pageable pageable) {

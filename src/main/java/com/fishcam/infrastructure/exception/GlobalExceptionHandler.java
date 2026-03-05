@@ -4,6 +4,7 @@ import com.fishcam.adapter.web.dto.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -77,6 +78,19 @@ public class GlobalExceptionHandler {
                         .success(false)
                         .code(400)
                         .message(ex.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .build());
+    }
+
+    // Ajouter ce handler dans GlobalExceptionHandler
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
+        log.warn("Accès refusé: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .code(403)
+                        .message("Accès refusé : " + ex.getMessage())
                         .timestamp(LocalDateTime.now())
                         .build());
     }

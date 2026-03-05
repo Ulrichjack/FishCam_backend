@@ -14,7 +14,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transaction_saving")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransactionEpargne {

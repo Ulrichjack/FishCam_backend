@@ -33,7 +33,8 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "transaction_compte_courant")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransactionCompteCourant {

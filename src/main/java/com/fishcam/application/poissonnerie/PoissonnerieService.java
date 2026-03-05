@@ -4,6 +4,7 @@ import com.fishcam.adapter.web.dto.request.CreatePoissonnerieRequest;
 import com.fishcam.adapter.web.dto.request.UpdatePoissonnerieRequest;
 import com.fishcam.adapter.web.dto.response.PoissonnerieResponse;
 import com.fishcam.adapter.web.mapper.PoissonnerieMapper;
+import com.fishcam.application.notification.NotificationService;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.poissonnerie.PoissonnerieRepository;
 import com.fishcam.infrastructure.exception.BusinessException;
@@ -22,6 +23,8 @@ public class PoissonnerieService {
 
     private final PoissonnerieRepository poissonnerieRepository;
     private final PoissonnerieMapper poissonnerieMapper;
+    private final NotificationService notificationService;
+
 
     @Transactional
     public PoissonnerieResponse createPoissonnerie (CreatePoissonnerieRequest request){
@@ -74,4 +77,9 @@ public class PoissonnerieService {
                 .orElseThrow(() -> new ResourceNotFoundException("Poissonnerie non trouvée avec l'id : " + id));
     }
 
+    @Transactional
+    public void cloturerJournee(Long poissonnerieId) {
+        Poissonnerie poissonnerie = getEntityById(poissonnerieId); // privée, utilisable ici
+        notificationService.createRapportJournalier(poissonnerie);
+    }
 }

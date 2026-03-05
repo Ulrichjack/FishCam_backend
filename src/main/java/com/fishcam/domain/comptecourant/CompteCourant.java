@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "compte_courant")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompteCourant {
