@@ -36,6 +36,10 @@ public class AvatarService {
             "image/jpeg", "image/jpg", "image/png", "image/webp"
     );
 
+    private static final List<String> ALLOWED_EXTENSIONS = List.of(
+            "jpg", "jpeg", "png", "webp"
+    );
+
     @Transactional
     public String uploadAvatar(Long userId, MultipartFile file) {
         // Vérifier que l'utilisateur existe
@@ -46,6 +50,11 @@ public class AvatarService {
         String contentType = file.getContentType();
         if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
             throw new BusinessException("Format non supporté. Utilisez JPG, PNG ou WEBP.");
+        }
+
+        String extension = getExtension(file.getOriginalFilename());
+        if (!ALLOWED_EXTENSIONS.contains(extension)) {
+            throw new BusinessException("Extension non autorisée. Utilisez .jpg, .png ou .webp");
         }
 
         // Vérifier la taille (max 5MB)
@@ -69,7 +78,6 @@ public class AvatarService {
             }
 
             // Générer un nom unique
-            String extension = getExtension(file.getOriginalFilename());
             String fileName = UUID.randomUUID() + "." + extension;
             Path filePath = uploadPath.resolve(fileName);
 

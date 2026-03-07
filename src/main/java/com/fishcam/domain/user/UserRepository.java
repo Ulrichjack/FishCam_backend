@@ -15,11 +15,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByRole(Role role);
 
-    List<User> findByActiveTrue();
 
     List<User> findByDefaultPoissonnerie(Poissonnerie poissonnerie);
 
-    List<User> findByScope(UserScope scope);
 
     boolean existsByPhone(String phone);
 

@@ -1,6 +1,5 @@
 package com.fishcam.domain.epargne;
 
-import com.fishcam.domain.poissonnerie.Poissonnerie;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

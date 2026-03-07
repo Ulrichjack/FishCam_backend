@@ -1,5 +1,7 @@
-package com.fishcam.domain.poissonnerie;
+package com.fishcam.domain.achat;
 
+
+import com.fishcam.domain.produit.Produit;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,36 +13,37 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-
 @Entity
-@Table(name = "poissonnerie")
+@Table(name = "ligne_achat")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class Poissonnerie {
-    
+@AllArgsConstructor
+public class LigneAchat {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "achat_journalier_id", nullable = false)
+    private AchatJournalier achatJournalier;
 
-    @Column(length = 225)
-    private String address;
-
-    @Column(length = 20)
-    private String phone;
-
-    @Column(nullable = false)
-    private Boolean active;
+    @ManyToOne
+    @JoinColumn(name = "produit_id", nullable = false)
+    private Produit produit;
 
     @Column(nullable = false)
-    private BigDecimal loyer = BigDecimal.ZERO;
+    private Integer quantiteCartons;
 
     @Column(nullable = false)
-    private BigDecimal fondDeCaisseDefaut = BigDecimal.valueOf(10000);
+    private BigDecimal poidsKg;
+
+    @Column(nullable = false)
+    private BigDecimal montantCarton;
+
+    @Column(nullable = false)
+    private BigDecimal prixVenteKilo;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
@@ -49,8 +52,4 @@ public class Poissonnerie {
     @Column(nullable = false)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-    
-   
-
-
 }

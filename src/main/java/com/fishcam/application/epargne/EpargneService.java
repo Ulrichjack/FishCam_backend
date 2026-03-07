@@ -10,7 +10,6 @@ import com.fishcam.adapter.web.mapper.TransactionEpargneMapper;
 import com.fishcam.domain.client.Client;
 import com.fishcam.domain.client.ClientRepository;
 import com.fishcam.domain.epargne.*;
-import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.poissonnerie.PoissonnerieRepository;
 import com.fishcam.domain.user.User;
 import com.fishcam.domain.user.UserRepository;

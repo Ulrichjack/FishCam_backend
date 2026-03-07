@@ -1,6 +1,7 @@
-package com.fishcam.domain.epargne;
+package com.fishcam.domain.achat;
 
-import com.fishcam.domain.client.Client;
+
+import com.fishcam.domain.fournisseur.Fournisseur;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.user.User;
 import jakarta.persistence.*;
@@ -11,32 +12,38 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "epargne_saving")
+@Table(name = "achat_journalier")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Epargne {
+public class AchatJournalier {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "client_id", nullable = false, unique = true)
-    private Client client;
-
-
-
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal currentBalance;
+    @Column(nullable = false)
+    private LocalDate dateAchat;
 
     @ManyToOne
-    private User createdBy;
+    @JoinColumn(name = "poissonnerie_id", nullable = false)
+    private Poissonnerie poissonnerie;
+
+    @ManyToOne
+    @JoinColumn(name = "fournisseur_id", nullable = false)
+    private Fournisseur fournisseur;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User enregistrePar;
+
+    @Column(nullable = false)
+    private  Boolean cloture = false;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
@@ -47,8 +54,4 @@ public class Epargne {
     private LocalDateTime updatedAt;
 
 
-    public Poissonnerie getPoissonnerie() {
-        return client != null ? client.getPoissonnerie() : null;
-    }
-    
 }

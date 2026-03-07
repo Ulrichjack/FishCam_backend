@@ -1,4 +1,5 @@
-package com.fishcam.domain.poissonnerie;
+package com.fishcam.domain.produit;
+
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,46 +12,40 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-
 @Entity
-@Table(name = "poissonnerie")
+@Table(name="produit")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Poissonnerie {
-    
+public class Produit {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String name;
+    @Column(nullable = false, length = 100, unique = true )
+    private String nom;
 
-    @Column(length = 225)
-    private String address;
 
-    @Column(length = 20)
-    private String phone;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Unite unite = Unite.KG;
 
     @Column(nullable = false)
-    private Boolean active;
+    private BigDecimal poidsParCarton;
 
-    @Column(nullable = false)
-    private BigDecimal loyer = BigDecimal.ZERO;
+    @Column(nullable = false )
+    private Boolean actif = true;
 
-    @Column(nullable = false)
-    private BigDecimal fondDeCaisseDefaut = BigDecimal.valueOf(10000);
-
-    @Column(nullable = false, updatable = false)
     @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
     @UpdateTimestamp
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
-    
-   
 
 
 }

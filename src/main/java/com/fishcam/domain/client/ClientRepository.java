@@ -1,7 +1,6 @@
 package com.fishcam.domain.client;
 
 import com.fishcam.domain.poissonnerie.Poissonnerie;
-import com.fishcam.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

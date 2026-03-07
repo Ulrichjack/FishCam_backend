@@ -1,14 +1,27 @@
-# 🗺️ ROADMAP COMPLÈTE — FISH-CAM ERP BACKEND
+# 🗺️ ROADMAP COMPLÈTE — FISH-CAM ERP BACKEND (V2)
 
 > **Application Spring Boot de gestion de poissonnerie**
 > Repo : `Ulrichjack/FishCam_backend`
-> Dernière mise à jour : 2026-03-01
+> Dernière mise à jour : 2026-03-05
+> Basé sur le cahier réel du patron + optimisations système
 
 ---
 
-## 📌 RÉSUMÉ GLOBAL — CE QUI EST FAIT ET CE QUI MANQUE
+## 📌 PRINCIPES FONDAMENTAUX
 
-### ✅ DÉJÀ FAIT
+```
+1. ON NUMÉRISE LE CAHIER DU PATRON — On ne change pas sa méthode, on l'améliore
+2. MINIMUM DE SAISIE — Le système calcule et préremplie au maximum
+3. PAS DE TABLE INUTILE — Si on peut calculer, on ne stocke pas
+4. 1 FACTURE = 1 BOUTIQUE = 1 JOUR — La secrétaire choisit la boutique UNE FOIS
+5. LigneAchat EST l'historique des prix — Pas besoin de table séparée
+```
+
+---
+
+## 📌 RÉSUMÉ GLOBAL
+
+### ✅ DÉJÀ FAIT (Phase 0 terminée)
 
 | # | Module | Détails |
 |---|--------|---------|
@@ -16,25 +29,25 @@
 | 2 | **Gestion Clients** | CRUD complet, lien Client → Poissonnerie |
 | 3 | **Comptes Courants (Dettes)** | Emprunts, remboursements, alerte seuil -5000 FCFA, limite crédit |
 | 4 | **Épargnes** | Dépôts, retraits, transfert épargne → compte courant |
-| 5 | **Notifications** | Alertes auto (seuil dette, compte soldé), rapport journalier |
+| 5 | **Notifications** | Alertes auto (seuil dette, compte soldé), rapport journalier, rattrapage au démarrage |
 | 6 | **Multi-poissonneries** | Entité Poissonnerie, UserScope (SINGLE/MULTI) |
-| 7 | **Gestion Utilisateurs** | Rôles (SUPER_ADMIN, PATRON, CAISSIERE, ENREGISTREUR) |
+| 7 | **Gestion Utilisateurs** | Rôles (SUPER_ADMIN, PATRON, CAISSIERE, ENREGISTREUR), avatar photo |
+| 8 | **Nettoyage repo** | Fichiers perso supprimés, bugs corrigés, .gitignore à jour |
+| 9 | **Profils dev/prod** | application-dev.properties, application-prod.properties séparés |
 
-### ❌ CE QUI MANQUE
+### ❌ CE QUI RESTE À FAIRE
 
 | Phase | Module | Priorité | Durée |
 |-------|--------|----------|-------|
-| 0 | **Nettoyage Git + Corrections bugs** | 🔴 CRITIQUE | 1-2 jours |
-| 1 | **Achats, Produits & Historique des Prix** | 🔴 HAUTE | 1-2 semaines |
-| 2 | **Dépenses Quotidiennes** | 🔴 HAUTE | 3-4 jours |
-| 3 | **Bilan Journalier** | 🔴 HAUTE | 1 semaine |
-| 4 | **Clôture Mensuelle (bouton fin de mois)** | 🟡 MOYENNE | 1 semaine |
-| 5 | **Fournisseur & Livreurs** | 🟡 MOYENNE | 3-4 jours |
-| 6 | **Prêts Multi-Boutiques** | 🟡 MOYENNE | 3-4 jours |
-| 7 | **Rapports, Statistiques & Export PDF** | 🟢 BASSE | 1 semaine |
-| 8 | **Tests Unitaires + Swagger + Release** | 🟢 BASSE | 3-4 jours |
+| 1 | **Produits, Employés & Factures d'achat** | 🔴 HAUTE | 1-2 semaines |
+| 2 | **Clôture Journalière** | 🔴 HAUTE | 3-4 jours |
+| 3 | **Récapitulatif & Bilan** | 🔴 HAUTE | 1 semaine |
+| 4 | **Fournisseur & Livreurs** | 🟡 MOYENNE | 3-4 jours |
+| 5 | **Prêts Multi-Boutiques** | 🟡 MOYENNE | 3-4 jours |
+| 6 | **Rapports, Export PDF & Admin** | 🟢 BASSE | 1 semaine |
+| 7 | **Tests Finaux + Swagger + Release** | 🟢 BASSE | 3-4 jours |
 
-**Durée totale estimée : 6-8 semaines**
+**Durée totale estimée : 5-7 semaines**
 
 ---
 
@@ -52,22 +65,13 @@
 ```
 main (ne JAMAIS coder ici)
   └── develop (branche de travail quotidien)
-        ├── chore/cleanup-repo
-        ├── fix/data-initializer-phone
-        ├── fix/client-notes-length
-        ├── fix/remove-duplicate-poissonnerie
-        ├── fix/notification-startup-check
-        ├── refactor/fournisseur-package
-        ├── docs/update-readme
-        ├── feature/user-avatar
-        ├── feature/security-swagger
-        ├── feature/achats-produits
-        ├── feature/depenses-quotidiennes
-        ├── feature/bilan-journalier
-        ├── feature/cloture-mensuelle
+        ├── feature/produits-employes
+        ├── feature/factures-achats
+        ├── feature/cloture-journaliere
+        ├── feature/recapitulatif-bilan
         ├── feature/livreurs-evaluation
         ├── feature/prets-multi-boutiques
-        ├── feature/rapports-statistiques
+        ├── feature/rapports-export
         └── feature/tests-finaux
 ```
 
@@ -76,772 +80,651 @@ main (ne JAMAIS coder ici)
 | Préfixe | Usage | Exemple |
 |---------|-------|---------|
 | `feat:` | Nouvelle fonctionnalité | `feat: add Produit entity` |
-| `fix:` | Correction de bug | `fix: correct phone in DataInitializer` |
+| `fix:` | Correction de bug | `fix: correct price calculation` |
 | `refactor:` | Restructuration | `refactor: move Fournisseur to own package` |
 | `chore:` | Maintenance | `chore: remove temp files` |
-| `test:` | Tests | `test: add CompteCourant tests` |
+| `test:` | Tests | `test: add LigneAchat tests` |
 | `docs:` | Documentation | `docs: update README` |
 
 ---
 
 ## ═══════════════════════════════════════════════════════
-## PHASE 0 : NETTOYAGE + CORRECTIONS (1-2 jours)
+## PHASE 1 : PRODUITS, EMPLOYÉS & FACTURES D'ACHAT (1-2 semaines)
+## Remplacer le carnet des achats journaliers
 ## ═══════════════════════════════════════════════════════
 
-### 0.1 — Créer branche `develop`
-
-```bash
-git checkout main && git pull origin main
-git checkout -b develop
-git push origin develop
-```
-
-### 0.2 — Supprimer fichiers inutiles
-
-**Branche** : `chore/cleanup-repo`
-
-Fichiers à supprimer du repo :
-
-| Fichier | Pourquoi |
-|---------|----------|
-| `commit.txt` | Notes personnelles |
-| `question.txt` | Questions perso |
-| `fishcam_terminal.txt` | Raccourcis terminal perso |
-| `supprimer.sh` | Script temporaire |
-| `EVALUATION_ET_SUGGESTIONS.md` | Évaluation externe |
-| `GUIDE_IMPLEMENTATION_PRATIQUE.md` | Guide perso |
-| `How to Write Good Git Commits.md` | Guide perso |
-| `guide.odt` | Document LibreOffice |
-| `.bashrc` | Config terminal perso |
-
-Commandes :
-
-```bash
-git checkout develop
-git checkout -b chore/cleanup-repo
-git rm commit.txt question.txt fishcam_terminal.txt supprimer.sh
-git rm EVALUATION_ET_SUGGESTIONS.md GUIDE_IMPLEMENTATION_PRATIQUE.md
-git rm "How to Write Good Git Commits.md" guide.odt .bashrc
-git commit -m "chore: remove personal/temporary files from repository"
-```
-
-Ajouter au `.gitignore` :
-
-```
-# Personal files
-*.odt
-*.txt
-!README.txt
-.bashrc
-```
-
-```bash
-git add .gitignore
-git commit -m "chore: update .gitignore to exclude personal files"
-git checkout develop
-git merge chore/cleanup-repo
-git push origin develop
-```
-
-### 0.3 — Corriger bug DataInitializer
-
-**Branche** : `fix/data-initializer-phone`
-
-**Bug** : `existsByPhone("677000000")` mais user créé avec `setPhone("692087724")`
-→ Super admin recréé à chaque redémarrage de l'application !
-
-**Corrections** :
-- Mettre le même numéro dans le check ET la création
-- Ajouter `@Profile("dev")` pour que ça ne tourne pas en production
-
-```bash
-git checkout develop
-git checkout -b fix/data-initializer-phone
-# Faire les corrections dans DataInitializer.java
-git commit -m "fix: correct phone number mismatch in DataInitializer"
-git commit -m "feat: add @Profile dev to DataInitializer for safety"
-git checkout develop
-git merge fix/data-initializer-phone
-git push origin develop
-```
-
-### 0.4 — Corriger Client notes length
-
-**Branche** : `fix/client-notes-length`
-
-**Bug** : `@Column(length = 20)` pour des notes, c'est trop court (20 caractères !)
-
-**Correction** : Changer en `@Column(length = 1000)`
-
-```bash
-git checkout develop
-git checkout -b fix/client-notes-length
-# Modifier Client.java
-git commit -m "fix: increase Client notes column length from 20 to 1000"
-git checkout develop
-git merge fix/client-notes-length
-git push origin develop
-```
-
-### 0.5 — Supprimer poissonnerie en double
-
-**Branche** : `fix/remove-duplicate-poissonnerie`
-
-**Problème** : `CompteCourant` et `Epargne` ont chacun un lien direct vers
-`Poissonnerie`, alors qu'on peut récupérer via `client.getPoissonnerie()`.
-C'est une duplication inutile.
-
-**Correction** :
-- Supprimer `poissonnerie_id` de `CompteCourant` et `Epargne`
-- Utiliser `getClient().getPoissonnerie()` à la place dans les services
-- Mettre à jour les requêtes dans les repositories
-
-```bash
-git checkout develop
-git checkout -b fix/remove-duplicate-poissonnerie
-# Modifier CompteCourant.java, Epargne.java et leurs services
-git commit -m "refactor: remove duplicate poissonnerie link from CompteCourant and Epargne"
-git checkout develop
-git merge fix/remove-duplicate-poissonnerie
-git push origin develop
-```
-
-### 0.6 — Réorganiser Fournisseur
-
-**Branche** : `refactor/fournisseur-package`
-
-**Problème** : `Fournisseur.java` est directement dans `domain/` au lieu de
-`domain/fournisseur/`. Et il manque des champs importants.
-
-**Corrections** :
-- Déplacer `domain/Fournisseur.java` → `domain/fournisseur/Fournisseur.java`
-- Déplacer `FournisseurRepository` aussi
-- Ajouter champs : `telephone`, `createdAt`, lien `Poissonnerie`
-
-```bash
-git checkout develop
-git checkout -b refactor/fournisseur-package
-git commit -m "refactor: move Fournisseur to domain/fournisseur package"
-git commit -m "feat: add phone, createdAt and Poissonnerie link to Fournisseur"
-git checkout develop
-git merge refactor/fournisseur-package
-git push origin develop
-```
-
-### 0.7 — Améliorer sécurité + Swagger sur code existant
-
-**Branche** : `feat/security-swagger`
-
-**Ce qu'il faut faire** :
-- Ajouter `@PreAuthorize` sur TOUS les controllers existants (Client, CompteCourant, Epargne, Notification, User)
-- Ajouter `@Operation` et `@ApiResponse` Swagger/OpenAPI sur les endpoints existants
-- Vérifier que les rôles sont bien appliqués partout
-
-```bash
-git checkout develop
-git checkout -b feat/security-swagger
-git commit -m "feat: add @PreAuthorize role-based access on all existing controllers"
-git commit -m "docs: add Swagger @Operation annotations on all existing endpoints"
-git checkout develop
-git merge feat/security-swagger
-git push origin develop
-```
-
-### 0.8 — Ajouter image profil utilisateur
-
-**Branche** : `feature/user-avatar`
-
-**Fonctionnalité** : Chaque utilisateur peut avoir une photo de profil.
-Comme c'est sur un seul PC, on stocke les images localement.
-
-**Implémentation** :
-- Ajouter champ `avatarPath` (String) sur l'entité `User`
-- Créer dossier `fishcam-data/avatars/` configurable dans `application.yml`
-- Nom fichier = `UUID.randomUUID()` + extension (jamais de doublon)
-- Endpoint `POST /api/v1/users/{id}/avatar` → upload image
-- Endpoint `GET /api/v1/users/{id}/avatar` → récupérer image
-- Le frontend envoie l'image, le backend la sauvegarde et renvoie le chemin
-
-Structure dossier sur le PC :
-
-```
-fishcam-data/
-  └── avatars/
-      ├── 550e8400-e29b-41d4-a716-446655440000.jpg
-      ├── 6ba7b810-9dad-11d1-80b4-00c04fd430c8.jpg
-      └── f47ac10b-58cc-4372-a567-0e02b2c3d479.jpg
-```
-
-Configuration dans `application.yml` :
-
-```yaml
-fishcam:
-  upload:
-    avatar-dir: fishcam-data/avatars
-```
-
-```bash
-git checkout develop
-git checkout -b feature/user-avatar
-git commit -m "feat: add avatarPath field to User entity"
-git commit -m "feat: add avatar upload and download endpoints"
-git commit -m "feat: configure local file storage for avatars"
-git checkout develop
-git merge feature/user-avatar
-git push origin develop
-```
-
-### 0.9 — Corriger les notifications pour PC pas toujours allumé
-
-**Branche** : `fix/notification-startup-check`
-
-**Problème** : `@Scheduled(cron = "0 0 19 * * *")` ne se déclenche que si
-le PC est allumé et l'application tourne à 19h. Si le PC est éteint → pas
-de rapport.
-
-**Solution** :
-1. Garder le `@Scheduled` pour quand le PC est allumé à 19h
-2. Ajouter `@EventListener(ApplicationReadyEvent.class)` au démarrage
-   → Vérifie si les journées précédentes ont été clôturées
-   → Si non → crée une notification "⚠️ Journée du XX non clôturée"
-3. Le rapport se génère AUSSI quand le patron clique "Clôturer la journée"
-   → Comme ça, peu importe l'heure ou si le PC était éteint
-
-**Pour les tests** (changer temporairement) :
+### 1.1 — Enum Unite
 
 ```java
-// Toutes les 2 minutes (pour tester) :
-@Scheduled(cron = "0 */2 * * * *")
+package com.fishcam.domain.produit;
 
-// Toutes les 30 secondes (pour tester vite) :
-@Scheduled(fixedRate = 30000)
-
-// Production (tous les jours à 19h) :
-@Scheduled(cron = "0 0 19 * * *")
+public enum Unite {
+    KG("Kilogramme"),
+    CARTON("Carton"),
+    PIECE("Pièce");
+}
 ```
 
-```bash
-git checkout develop
-git checkout -b fix/notification-startup-check
-git commit -m "feat: add startup check for unclosed previous days"
-git commit -m "feat: generate daily report on manual day close"
-git checkout develop
-git merge fix/notification-startup-check
-git push origin develop
+### 1.2 — Entité Produit (Catalogue des poissons)
+
+**GLOBAL** : pas lié à une boutique. Les 3 boutiques vendent les mêmes produits.
+
+| Champ | Type | Exemple | Notes |
+|-------|------|---------|-------|
+| id | Long (auto) | 1 | |
+| nom | String (100, unique) | "JAX 23+" | |
+| unite | Enum Unite | KG | Par défaut KG |
+| poidsParCarton | BigDecimal | 21.0 | Poids moyen d'1 carton |
+| actif | Boolean | true | Par défaut true |
+| createdAt | LocalDateTime | auto | updatable = false |
+| updatedAt | LocalDateTime | auto | |
+
+**Ce qui N'EST PAS sur Produit :**
+- ❌ Pas de prix (le dernier prix vient de LigneAchat)
+- ❌ Pas de poissonnerie (produit global)
+- ❌ Pas de catégorie (tout est poisson congelé)
+
+### 1.3 — Entité Employe (Employés avec ou sans accès système)
+
+**Pourquoi ?** Certains employés (vendeurs, gardiens) travaillent en boutique
+mais n'ont PAS accès au système. Il faut quand même compter leur salaire.
+
+| Champ | Type | Exemple | Notes |
+|-------|------|---------|-------|
+| id | Long (auto) | 1 | |
+| prenom | String (50) | "Marie" | |
+| nom | String (50) | "Ngono" | |
+| poste | String (50) | "Caissière" | |
+| salaire | BigDecimal | 40 000 | Fixe, modifiable par patron |
+| telephone | String (20) | "677445566" | Optionnel |
+| poissonnerie | ManyToOne → Poissonnerie | Boutique LELE | Obligatoire |
+| user | ManyToOne → User (nullable) | null | Lié SI accès système |
+| actif | Boolean | true | |
+| createdAt | LocalDateTime | auto | |
+| updatedAt | LocalDateTime | auto | |
+
+**Exemples :**
+
+| Employé | Boutique | Poste | Salaire | Accès système ? |
+|---------|----------|-------|---------|-----------------|
+| Marie | Centrale | Caissière | 40 000 | ✅ Oui (User lié) |
+| Paul | Centrale | Vendeur | 35 000 | ✅ Oui (User lié) |
+| Jean | LELE | Vendeur | 30 000 | ❌ Non |
+| Pierre | BARE | Vendeur | 30 000 | ❌ Non |
+| Amadou | BARE | Gardien | 20 000 | ❌ Non |
+
+### 1.4 — Modifier Poissonnerie (ajouter champs)
+
+| Champ ajouté | Type | Exemple | Notes |
+|-------------|------|---------|-------|
+| loyer | BigDecimal | 50 000 | Prérempli dans bilan mensuel |
+| fondDeCaisseDefaut | BigDecimal | 10 000 | Prérempli chaque soir |
+
+### 1.5 — Modifier Fournisseur
+
+- Retirer le lien ManyToOne → Poissonnerie (fournisseur est GLOBAL)
+- Ajouter champ `actif` (Boolean, défaut true)
+- Ajouter `updatedAt`
+
+### 1.6 — Entité AchatJournalier (= Facture du jour pour 1 boutique)
+
+**1 facture = 1 boutique = 1 jour**
+
+La secrétaire choisit la boutique UNE SEULE FOIS au début.
+Tout ce qu'elle ajoute ensuite est pour cette boutique.
+
+| Champ | Type | Source | Notes |
+|-------|------|--------|-------|
+| id | Long (auto) | Auto | |
+| dateAchat | LocalDate | Saisi | Date du jour |
+| poissonnerie | ManyToOne → Poissonnerie | Saisi | Choisie AU DÉBUT |
+| fournisseur | ManyToOne → Fournisseur | Saisi | Ex: CONGELCAM |
+| enregistrePar | ManyToOne → User | Auto (JWT) | La secrétaire |
+| cloture | Boolean | false | true = plus modifiable |
+| createdAt | LocalDateTime | auto | |
+| updatedAt | LocalDateTime | auto | |
+
+**Ce qui N'EST PAS sur AchatJournalier :**
+- ❌ Pas de totalAchat (calculé dans le service/DTO)
+- ❌ Pas de totalVentePrevisible (calculé dans le service/DTO)
+
+### 1.7 — Entité LigneAchat (Chaque carton dans la facture)
+
+**C'est LE cœur du système. LigneAchat EST aussi l'historique des prix.**
+
+| Champ | Type | Source | Exemple |
+|-------|------|--------|---------|
+| id | Long (auto) | Auto | 1 |
+| achatJournalier | ManyToOne → AchatJournalier | Auto | La facture |
+| produit | ManyToOne → Produit | Saisi | JAX 23+ |
+| quantiteCartons | Integer | Saisi | 3 |
+| poidsKg | BigDecimal | Saisi (prérempli) | 63.0 |
+| montantCarton | BigDecimal | Saisi (prérempli) | 100 500 |
+| prixVenteKilo | BigDecimal | Saisi (prérempli) | 1 706 |
+| createdAt | LocalDateTime | auto | |
+| updatedAt | LocalDateTime | auto | |
+
+**Ce qui N'EST PAS sur LigneAchat (calculé dans DTO Response) :**
+- ❌ prixAchatKilo → `montantCarton / poidsKg`
+- ❌ prixVenteTotal → `prixVenteKilo × poidsKg`
+- ❌ margeKilo → `prixVenteKilo - prixAchatKilo`
+- ❌ margeTotal → `prixVenteTotal - montantCarton`
+- ❌ poissonnerie → c'est sur la facture, pas sur chaque ligne
+
+**Ce qui N'EST PAS en base (table supprimée) :**
+- ❌ Table HistoriquePrix → LigneAchat EST l'historique
+- ❌ Table PrixBoutique → Le dernier prix vient de la dernière LigneAchat
+
+### 1.8 — Préremplissage des prix (logique clé)
+
+Quand la secrétaire choisit un produit dans le formulaire :
+
+```
+REQUÊTE :
+  GET /api/v1/lignes/dernier-prix?produitId=1&poissonnerieId=1
+
+SQL DU BACKEND :
+  SELECT la.quantite_cartons, la.poids_kg, la.montant_carton, la.prix_vente_kilo
+  FROM ligne_achat la
+  JOIN achat_journalier aj ON la.achat_journalier_id = aj.id
+  WHERE la.produit_id = 1
+    AND aj.poissonnerie_id = 1
+  ORDER BY la.id DESC
+  LIMIT 1
+
+RÉPONSE :
+  {
+    "quantiteCartons": 3,
+    "poidsKg": 63.0,
+    "montantCarton": 100500,
+    "prixVenteKilo": 1706
+  }
+
+→ Le frontend préremplie TOUT
+→ La secrétaire modifie seulement ce qui a changé
+→ Elle valide → POST → nouvelle LigneAchat
+→ Cette ligne DEVIENT le nouveau "dernier prix"
+→ Demain elle sera préremplie
 ```
 
-### 0.10 — Mettre à jour README
+**CAS SPÉCIAUX :**
 
-**Branche** : `docs/update-readme`
+```
+Nouveau produit, jamais acheté dans cette boutique :
+  → Pas de données → champs vides → la secrétaire tape tout
+  → La prochaine fois ce sera prérempli
 
-Mettre à jour le README.MD avec :
-- Description complète du projet Fish-Cam ERP
-- Liste des modules (faits et à venir)
-- Technologies utilisées
-- Comment lancer le projet
-- Structure du projet
+Prix d'achat a changé chez CONGELCAM :
+  → La secrétaire modifie le montant → valide
+  → Nouvelle ligne avec nouveau prix → historique conservé
 
-```bash
-git checkout develop
-git checkout -b docs/update-readme
-git commit -m "docs: update README with complete project description and modules"
-git checkout develop
-git merge docs/update-readme
-git push origin develop
+Patron change le prix de vente :
+  → La secrétaire modifie prixVenteKilo → valide
+  → Demain le nouveau prix sera prérempli pour cette boutique
+  
+   Le poids PAR CARTON vient du Produit.poidsParCarton
+  Le poids TOTAL est calculé : quantiteCartons × poidsParCarton
+  Le prix d'achat est prérempli depuis la dernière LigneAchat de CETTE boutique
+  Le prix de vente/kg est prérempli depuis la dernière LigneAchat de CETTE boutique
 ```
 
-### ✅ Fin Phase 0 — Merger develop dans main
+### 1.9 — L'écran de la secrétaire
 
-```bash
-git checkout main
-git merge develop
-git push origin main
+```
+ÉTAPE 1 — Elle choisit la boutique :
+
+┌─────────────────────────────────────────────┐
+│  📋 FACTURES DU JOUR — 15/03/2026          │
+│                                              │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+│  │ 🏪 Boutique  │  │ 🏪 Boutique  │  │ 🏪 Boutique  │
+│  │  Centrale    │  │   LELE       │  │   BARE       │
+│  │  [Ouvrir]    │  │  [Ouvrir]    │  │  [Ouvrir]    │
+│  └──────────────┘  └──────────────┘  └──────────────┘
+└─────────────────────────────────────────────┘
+
+ÉTAPE 2 — Formulaire + preview :
+
+┌──────────────────────────────────────────────────────────────┐
+│  📋 FACTURE — Boutique Centrale — 15/03/2026                │
+│  Fournisseur : [CONGELCAM ▼]                                 │
+│                                                               │
+│  ┌─── FORMULAIRE ──────────────┐  ┌─── FACTURE (preview) ───┐│
+│  │                              │  │                          ││
+│  │ Produit: [JAX 23+  ▼]       │  │ Cartons│Produit │Poids  ││
+│  │                              │  │ │Achat  │Vente/kg│Vente ││
+│  │ → Prérempli auto :   │  │ ───────────────────────│││
+│  │ Poids/carton : 21 kg (du Produit)     │
+│  │ Cartons:    [3]              │  │ 3│JAX23+│63kg│100500   ││
+│  │ Poids:      [63] kg         │  │  │      │    │107478   ││
+│  │ Prix achat: [100 500]       │  │ 2│MAC315│40kg│51000    ││
+│  │ Vente/kg:   [1 706]         │  │  │      │    │68000    ││
+│  │        
+                      │  │ ────────────────────── ││
+│  │ Vente total: 107 478 (auto) │  │ Total achat: 151 500   ││
+│  │                              │  │ Total vente: 175 478   ││
+│  │ [+ Ajouter à la facture]    │  │                          ││
+│  └──────────────────────────────┘  └──────────────────────────┘│
+│                                                                │
+│  [ 💾 Clôturer la facture ]                                   │
+└────────────────────────────────────────────────────────────────┘
 ```
 
-**Résultat** : Repo propre, bugs corrigés, sécurité renforcée, prêt pour
-les nouvelles fonctionnalités.
+### 1.10 — La facture vue par le patron (fidèle au cahier)
 
----
+```
+📋 FACTURE — Boutique Centrale — 15/03/2026
+Fournisseur : CONGELCAM Nkongsamba
+Enregistré par : Marie (Secrétaire)
+Statut : ✅ Clôturée
 
-## ═══════════════════════════════════════════════════════
-## PHASE 1 : ACHATS, PRODUITS & HISTORIQUE DES PRIX (1-2 semaines)
-## Remplacer le carnet des achats (Image 2)
-## ═══════════════════════════════════════════════════════
+┌────────┬──────────────┬────────┬──────────┬──────────┬──────────┬─────────┐
+│Cartons │ Produit      │ Poids  │ Achat    │ Vente/kg │ Vente    │ Marge   │
+├────────┼──────────────┼────────┼──────────┼──────────┼──────────┼─────────┤
+│   03   │ JAX 23+      │ 63 kg  │ 100 500  │  1 706   │ 107 478  │  6 978  │
+│   02   │ MAC 315      │ 40 kg  │  51 000  │  1 700   │  68 000  │ 17 000  │
+│   01   │ SYLUGA 1/1   │ 10 kg  │  13 000  │  1 500   │  15 000  │  2 000  │
+│   01   │ SYLUR SMO    │ 10 kg  │  11 000  │  1 300   │  13 000  │  2 000  │
+│   01   │ BW           │ 20 kg  │  17 000  │    950   │  19 000  │  2 000  │
+│   01   │ MAC 16+      │ 21 kg  │  28 500  │  1 500   │  31 500  │  3 000  │
+├────────┼──────────────┼────────┼──────────┼──────────┼──────────┼─────────┤
+│   09   │ TOTAL        │164 kg  │ 221 000  │          │ 253 978  │ 32 978  │
+└────────┴──────────────┴────────┴──────────┴──────────┴──────────┴─────────┘
 
-**Branche** : `feature/achats-produits`
-
-```bash
-git checkout develop
-git checkout -b feature/achats-produits
+Marge prévisible : 253 978 - 221 000 = 32 978 FCFA
 ```
 
-### 1.1 — Entité Produit (Catalogue des poissons)
-
-| Champ | Type | Exemple |
-|-------|------|---------|
-| id | Long (auto) | 1 |
-| nom | String (100) | "JAX 23+" |
-| categorie | String (50) | "Poisson congelé" |
-| unite | String (20) | "kg" |
-| dernierPrixAchat | BigDecimal | 100 500 |
-| dernierPrixVente | BigDecimal | 107 500 |
-| actif | Boolean | true |
-| poissonnerie | ManyToOne → Poissonnerie | Boutique Centrale |
-| createdAt | LocalDateTime | auto |
-| updatedAt | LocalDateTime | auto |
-
-### 1.2 — Entité HistoriquePrix (Tracer les changements de prix)
-
-| Champ | Type | Exemple |
-|-------|------|---------|
-| id | Long (auto) | 1 |
-| produit | ManyToOne → Produit | JAX 23+ |
-| dateChangement | LocalDate | 2026-03-08 |
-| ancienPrixAchat | BigDecimal | 100 500 |
-| nouveauPrixAchat | BigDecimal | 95 000 |
-| ancienPrixVente | BigDecimal | 107 500 |
-| nouveauPrixVente | BigDecimal | 102 000 |
-| modifiePar | ManyToOne → User | Secrétaire |
-| createdAt | LocalDateTime | auto |
-
-**Fonctionnement** : Quand la secrétaire enregistre un achat et que le prix
-a changé par rapport au dernier prix enregistré, le système :
-1. Sauvegarde l'ancien prix dans HistoriquePrix automatiquement
-2. Met à jour dernierPrixAchat et dernierPrixVente sur le Produit
-3. La prochaine fois, le nouveau prix est prérempli
-
-### 1.3 — Entité AchatJournalier (En-tête = une page du carnet)
-
-| Champ | Type | Source |
-|-------|------|--------|
-| id | Long (auto) | Auto |
-| dateAchat | LocalDate | Saisi |
-| poissonnerie | ManyToOne → Poissonnerie | Saisi (secrétaire choisit la boutique) |
-| totalPrixAchat | BigDecimal | Calculé auto (somme des lignes) |
-| totalPrixVentePrevisible | BigDecimal | Calculé auto (somme des lignes) |
-| enregistrePar | ManyToOne → User | Auto (depuis JWT) |
-| createdAt | LocalDateTime | Auto |
-
-### 1.4 — Entité LigneAchat (Chaque ligne du carnet)
-
-| Champ | Type | Exemple |
-|-------|------|---------|
-| id | Long (auto) | 1 |
-| achatJournalier | ManyToOne → AchatJournalier | (la page du jour) |
-| produit | ManyToOne → Produit | JAX 23+ |
-| quantiteCartons | Integer | 3 |
-| poidsKg | BigDecimal | 63.0 |
-| prixAchat | BigDecimal | 100 500 |
-| prixVente | BigDecimal | 107 500 |
-
-### 1.5 — Fonctionnalités clés UX pour la secrétaire
-
-**A. Recherche rapide (autocomplétion)** :
-- La secrétaire tape "JA" → le système propose "JAX 23+", "JAX 15+"
-- Elle tape "MA" → "MAC 315", "MAC 10+"
-- Elle tape "B" → "BW", "BARS Holl"
-- Endpoint : `GET /api/v1/produits/search?q=JA&poissonnerieId=1`
-
-**B. Préremplissage des prix** :
-- Quand elle sélectionne un produit, le dernier prix d'achat et de vente
-  sont préremplis automatiquement
-- Elle n'a qu'à modifier si le prix a changé cette semaine
-
-**C. Mise à jour automatique des prix** :
-- Si elle modifie le prix → l'historique est créé automatiquement
-- Le produit est mis à jour avec le nouveau prix
-- La prochaine saisie utilisera ce nouveau prix
-
-**D. Totaux automatiques** :
-- totalPrixAchat = somme de toutes les lignes.prixAchat
-- totalPrixVentePrevisible = somme de toutes les lignes.prixVente
-- Calculés automatiquement à l'enregistrement
-
-### 1.6 — Fichiers à créer
+### 1.11 — Fichiers à créer
 
 ```
 domain/produit/Produit.java
 domain/produit/ProduitRepository.java
-domain/produit/HistoriquePrix.java
-domain/produit/HistoriquePrixRepository.java
+domain/produit/Unite.java
+domain/employe/Employe.java
+domain/employe/EmployeRepository.java
 domain/achat/AchatJournalier.java
 domain/achat/AchatJournalierRepository.java
 domain/achat/LigneAchat.java
 domain/achat/LigneAchatRepository.java
 application/produit/ProduitService.java
+application/employe/EmployeService.java
 application/achat/AchatJournalierService.java
 adapter/web/controller/ProduitController.java
+adapter/web/controller/EmployeController.java
 adapter/web/controller/AchatJournalierController.java
 adapter/web/dto/request/CreateProduitRequest.java
-adapter/web/dto/request/UpdatePrixRequest.java
-adapter/web/dto/request/CreateAchatJournalierRequest.java
-adapter/web/dto/request/LigneAchatRequest.java
+adapter/web/dto/request/UpdateProduitRequest.java
+adapter/web/dto/request/CreateEmployeRequest.java
+adapter/web/dto/request/UpdateEmployeRequest.java
+adapter/web/dto/request/CreateFactureRequest.java
+adapter/web/dto/request/CreateLigneRequest.java
+adapter/web/dto/request/UpdateLigneRequest.java
 adapter/web/dto/response/ProduitResponse.java
-adapter/web/dto/response/HistoriquePrixResponse.java
-adapter/web/dto/response/AchatJournalierResponse.java
+adapter/web/dto/response/EmployeResponse.java
+adapter/web/dto/response/FactureResponse.java
+adapter/web/dto/response/FactureDetailResponse.java
 adapter/web/dto/response/LigneAchatResponse.java
+adapter/web/dto/response/DernierPrixResponse.java
 adapter/web/mapper/ProduitMapper.java
+adapter/web/mapper/EmployeMapper.java
 adapter/web/mapper/AchatMapper.java
 ```
 
-### 1.7 — Endpoints
+### 1.12 — Endpoints
+
+**PRODUITS :**
 
 | Méthode | URL | Rôle | Description |
 |---------|-----|------|-------------|
-| POST | `/api/v1/produits` | PATRON | Créer un produit |
-| GET | `/api/v1/produits/poissonnerie/{id}` | Tous | Liste complète des produits |
-| GET | `/api/v1/produits/search?q=&poissonnerieId=` | Tous | Recherche rapide (autocomplétion) |
-| PUT | `/api/v1/produits/{id}/prix` | PATRON, ENREGISTREUR | Changer le prix manuellement |
-| GET | `/api/v1/produits/{id}/historique-prix?mois=&annee=` | PATRON | Voir l'évolution du prix |
-| POST | `/api/v1/achats` | PATRON, ENREGISTREUR | Créer achat journalier avec lignes |
-| GET | `/api/v1/achats/poissonnerie/{id}/jour?date=` | Tous | Achats d'un jour |
-| GET | `/api/v1/achats/poissonnerie/{id}/mois?mois=&annee=` | PATRON | Tous les achats du mois |
-| GET | `/api/v1/achats/{id}` | Tous | Détail d'un achat avec ses lignes |
+| POST | /api/v1/produits | PATRON, ENREGISTREUR, CAISSIERE | Créer |
+| PUT  | /api/v1/produits/{id} | PATRON, ENREGISTREUR, CAISSIERE | Modifier |
+| DELETE | /api/v1/produits/{id} | PATRON | Désactiver || GET | `/api/v1/produits` | Tous | Lister tous les produits |
+| GET | `/api/v1/produits/search?q=JA` | Tous | Recherche rapide (autocomplétion) |
+| GET | `/api/v1/produits/{id}` | Tous | Détail d'un produit |
+| PUT | `/api/v1/produits/{id}` | PATRON | Modifier un produit |
+| DELETE | `/api/v1/produits/{id}` | PATRON | Désactiver (soft delete) |
 
-### 1.8 — Tests unitaires
+**EMPLOYÉS :**
 
-1. ✅ Créer un achat journalier avec 5 lignes → totaux calculés correctement
-2. ✅ Les totaux correspondent à la somme des lignes
-3. ✅ Changement de prix → historique créé automatiquement
-4. ✅ Recherche rapide "JA" → trouve "JAX 23+"
-5. ❌ Créer un achat pour une boutique inexistante → ResourceNotFoundException
-6. ❌ Créer un achat avec montant négatif → BusinessException
-7. ✅ Récupérer les achats du mois → liste correcte
+| Méthode | URL | Rôle | Description |
+|---------|-----|------|-------------|
+| POST | `/api/v1/employes` | PATRON | Ajouter un employé |
+| GET | `/api/v1/employes?poissonnerieId=1` | PATRON | Lister par boutique |
+| GET | `/api/v1/employes/{id}` | PATRON | Détail employé |
+| PUT | `/api/v1/employes/{id}` | PATRON | Modifier salaire/poste |
+| DELETE | `/api/v1/employes/{id}` | PATRON | Désactiver |
+
+**FACTURES (AchatJournalier) :**
+
+| Méthode | URL | Rôle | Description |
+|---------|-----|------|-------------|
+| POST | `/api/v1/factures` | PATRON, ENREGISTREUR | Créer facture du jour |
+| GET | `/api/v1/factures?poissonnerieId=1&date=2026-03-15` | Tous | Factures du jour |
+| GET | `/api/v1/factures/{id}` | Tous | Détail facture avec toutes les lignes |
+| PUT | `/api/v1/factures/{id}/cloturer` | PATRON, ENREGISTREUR | Clôturer la facture |
+
+**LIGNES DE FACTURE :**
+
+| Méthode | URL | Rôle | Description |
+|---------|-----|------|-------------|
+| POST | `/api/v1/factures/{id}/lignes` | PATRON, ENREGISTREUR | Ajouter une ligne |
+| PUT | `/api/v1/factures/{id}/lignes/{lid}` | PATRON, ENREGISTREUR | Modifier (prix, poids...) |
+| DELETE | `/api/v1/factures/{id}/lignes/{lid}` | PATRON, ENREGISTREUR | Supprimer une ligne |
+| GET | `/api/v1/lignes/dernier-prix?produitId=1&poissonnerieId=1` | Tous | Dernier prix pour préremplir |
+| GET | /api/v1/lignes/historique-prix?produitId=1 | PATRON | Évolution des prix |
+
+### 1.13 — Tests
+
+1. ✅ Créer un produit → OK
+2. ✅ Recherche "JA" → trouve "JAX 23+"
+3. ✅ Créer un employé sans accès système → OK
+4. ✅ Créer facture + ajouter 5 lignes → totaux calculés correctement dans DTO
+5. ✅ Modifier une ligne (changer prix) → OK tant que facture pas clôturée
+6. ✅ Supprimer une ligne → OK tant que facture pas clôturée
+7. ❌ Modifier une ligne sur facture clôturée → BusinessException
+8. ✅ Dernier prix par produit et boutique → correct
+9. ✅ Nouveau produit sans historique → réponse vide
+10. ❌ Créer achat avec montant négatif → BusinessException
 
 ```bash
-git commit -m "feat: add Produit entity with dernierPrix fields"
-git commit -m "feat: add HistoriquePrix entity for price tracking"
-git commit -m "feat: add AchatJournalier and LigneAchat entities"
-git commit -m "feat: add ProduitService with search and price update"
-git commit -m "feat: add AchatJournalierService with auto totals and price history"
-git commit -m "feat: add ProduitController with search endpoint"
-git commit -m "feat: add AchatController with CRUD endpoints"
-git commit -m "test: add Produit and Achat unit tests"
 git checkout develop
-git merge feature/achats-produits
+git checkout -b feature/produits-employes
+# Créer Produit, Unite, Employe, modifier Poissonnerie
+git commit -m "feat: add Produit entity with Unite enum"
+git commit -m "feat: add Employe entity for employees with/without system access"
+git commit -m "feat: add loyer and fondDeCaisseDefaut to Poissonnerie"
+git commit -m "feat: add ProduitService with search"
+git commit -m "feat: add EmployeService with CRUD"
+git commit -m "feat: add ProduitController and EmployeController"
+git checkout develop
+git merge feature/produits-employes
+
+git checkout -b feature/factures-achats
+# Créer AchatJournalier, LigneAchat
+git commit -m "feat: add AchatJournalier entity (daily invoice per shop)"
+git commit -m "feat: add LigneAchat entity with price prefill logic"
+git commit -m "feat: add AchatJournalierService with line management"
+git commit -m "feat: add dernier-prix endpoint for price prefill"
+git commit -m "feat: add facture cloturer logic"
+git commit -m "test: add Produit, Employe and Facture unit tests"
+git checkout develop
+git merge feature/factures-achats
 git push origin develop
 ```
 
 ---
 
 ## ═══════════════════════════════════════════════════════
-## PHASE 2 : DÉPENSES QUOTIDIENNES (3-4 jours)
-## Transport, ration, glace... saisis par Patron + Vendeuse
+## PHASE 2 : CLÔTURE JOURNALIÈRE (3-4 jours)
+## Le patron ferme la journée — Remplace le cahier du soir
 ## ═══════════════════════════════════════════════════════
 
-**Branche** : `feature/depenses-quotidiennes`
+### 2.1 — Entité ClotureJournaliere
 
-```bash
-git checkout develop
-git checkout -b feature/depenses-quotidiennes
+Le patron remplit ça CHAQUE SOIR pour chaque boutique.
+
+| Champ | Type | Source | Notes |
+|-------|------|--------|-------|
+| id | Long (auto) | Auto | |
+| dateCloture | LocalDate | Auto | Date du jour |
+| poissonnerie | ManyToOne → Poissonnerie | Auto | La boutique |
+| **CALCULÉS AUTO (depuis les factures du jour)** | | | |
+| totalAchat | BigDecimal | Calculé | Somme montantCarton des lignes |
+| totalVentePrevisible | BigDecimal | Calculé | Somme prixVenteKilo × poidsKg |
+| **SAISIS PAR LE PATRON** | | | |
+| argentCaisse | BigDecimal | Saisi | Tout l'argent dans la caisse |
+| fondDeCaisse | BigDecimal | Prérempli | Monnaie laissée (défaut depuis Poissonnerie) |
+| transport | BigDecimal | Saisi | 0 si pas de transport |
+| ration | BigDecimal | Saisi | Repas des employés |
+| autresFrais | BigDecimal | Saisi | 0 si rien |
+| descriptionAutres | String (500) | Saisi | Optionnel |
+| **CALCULÉS AUTO** | | | |
+| venteRealisee | BigDecimal | Calculé | argentCaisse - fondDeCaisse |
+| totalDepenses | BigDecimal | Calculé | transport + ration + autresFrais |
+| beneficeNet | BigDecimal | Calculé | venteRealisee - totalAchat - totalDepenses |
+| **MÉTADONNÉES** | | | |
+| cloturePar | ManyToOne → User | Auto (JWT) | Le patron |
+| createdAt | LocalDateTime | Auto | |
+dette :
+ClotureJournaliere.java :
+... (tout ce qu'on a déjà prévu)
++ montantDettesJour           → BigDecimal (calculé auto)
++ montantRemboursementsJour   → BigDecimal (calculé auto)
++ nombreDettesJour            → Integer (calculé auto)
+**Les dépenses sont DIRECTEMENT ici, pas dans une table séparée.**
+
+### 2.2 — L'écran du patron le soir
+
 ```
+🌙 CLÔTURE — Boutique Centrale — 15/03/2026
 
-### 2.1 — Entité DepenseQuotidienne
+── CALCULÉ AUTO (depuis les factures) ─────────────
+Total achat du jour      :  221 000 FCFA
+Vente prévisible         :  253 978 FCFA
 
-| Champ | Type | Exemple |
-|-------|------|---------|
-| id | Long (auto) | 1 |
-| dateDepense | LocalDate | 2026-03-15 |
-| type | Enum (TypeDepenseQuotidienne) | TRANSPORT |
-| montant | BigDecimal | 5 000 |
-| description | String (500) | "Transport marchandise depuis Douala" |
-| poissonnerie | ManyToOne → Poissonnerie | Boutique Centrale |
-| saisiPar | ManyToOne → User | Patron ou Vendeuse |
-| createdAt | LocalDateTime | auto |
+── LE PATRON REMPLIT ──────────────────────────────
+Argent total caisse      : [ 260 000 ]
+Fond de caisse (monnaie) : [ 10 000 ]  ← prérempli
+= Vente réalisée         :  250 000 FCFA (calculé auto)
 
-### 2.2 — Enum TypeDepenseQuotidienne
+── DÉPENSES DU JOUR (optionnel) ────────────────��──
+Transport                : [ 5 000 ]
+Ration                   : [ 3 000 ]
+Autres frais             : [ 0 ]
+Description              : [ _________ ]
+= Total dépenses         :  8 000 FCFA (calculé auto)
 
-```java
-TRANSPORT("Transport des marchandises"),
-RATION("Repas des employés"),
-GLACE("Glace pour congélateurs"),
-CARBURANT("Carburant"),
-AUTRE("Autre dépense")
+── RÉSULTAT ───────────────────────────────────────
+Vente réalisée           :  250 000
+- Achat du jour          : -221 000
+- Dépenses               :   -8 000
+= BÉNÉFICE NET DU JOUR   :  21 000 FCFA ✅
+
+[ 💾 Clôturer la journée ]
 ```
 
 ### 2.3 — Fichiers à créer
 
 ```
-domain/depense/DepenseQuotidienne.java
-domain/depense/TypeDepenseQuotidienne.java
-domain/depense/DepenseQuotidienneRepository.java
-application/depense/DepenseQuotidienneService.java
-adapter/web/controller/DepenseQuotidienneController.java
-adapter/web/dto/request/CreateDepenseRequest.java
-adapter/web/dto/response/DepenseResponse.java
-adapter/web/mapper/DepenseMapper.java
+domain/cloture/ClotureJournaliere.java
+domain/cloture/ClotureJournaliereRepository.java
+application/cloture/ClotureJournaliereService.java
+adapter/web/controller/ClotureJournaliereController.java
+adapter/web/dto/request/CloturerJourneeRequest.java
+adapter/web/dto/response/PreparationClotureResponse.java
+adapter/web/dto/response/ClotureJournaliereResponse.java
+adapter/web/mapper/ClotureMapper.java
 ```
 
 ### 2.4 — Endpoints
 
 | Méthode | URL | Rôle | Description |
 |---------|-----|------|-------------|
-| POST | `/api/v1/depenses` | PATRON, CAISSIERE | Ajouter une dépense |
-| GET | `/api/v1/depenses/poissonnerie/{id}/jour?date=` | PATRON, CAISSIERE | Dépenses du jour |
-| GET | `/api/v1/depenses/poissonnerie/{id}/mois?mois=&annee=` | PATRON | Total par type sur le mois |
-| DELETE | `/api/v1/depenses/{id}` | PATRON | Supprimer une dépense (erreur) |
+| GET | `/api/v1/clotures/preparer?poissonnerieId=1&date=2026-03-15` | PATRON | Voir calculs auto avant clôture |
+| POST | `/api/v1/clotures` | PATRON | Saisir vente réalisée + dépenses + valider |
+| GET | `/api/v1/clotures?poissonnerieId=1&date=2026-03-15` | PATRON | Voir la clôture du jour |
 
-### 2.5 — Repository avec requêtes agrégées
+### 2.5 — Tests
 
-```java
-// Somme des dépenses par type pour un mois
-@Query("SELECT COALESCE(SUM(d.montant), 0) FROM DepenseQuotidienne d " +
-       "WHERE d.poissonnerie.id = :poissonnerieId " +
-       "AND d.type = :type " +
-       "AND MONTH(d.dateDepense) = :mois " +
-       "AND YEAR(d.dateDepense) = :annee")
-BigDecimal sumByPoissonnerieAndTypeAndMois(Long poissonnerieId,
-    TypeDepenseQuotidienne type, int mois, int annee);
-```
-
-### 2.6 — Tests
-
-1. ✅ Créer dépense transport → OK
-2. ✅ Total par type sur le mois → correct
-3. ❌ Montant négatif → erreur
-4. ✅ Patron peut supprimer, vendeuse ne peut pas
+1. ✅ Préparer clôture → totalAchat et ventePrevisible calculés depuis factures
+2. ✅ Clôturer → venteRealisee = argentCaisse - fondDeCaisse
+3. ✅ Bénéfice net correct
+4. ❌ Clôturer une journée déjà clôturée → BusinessException
+5. ❌ Clôturer sans factures → avertissement
 
 ```bash
-git commit -m "feat: add DepenseQuotidienne entity, enum and repository"
-git commit -m "feat: add DepenseQuotidienneService with monthly aggregation"
-git commit -m "feat: add DepenseController with CRUD endpoints"
-git commit -m "test: add DepenseQuotidienneService unit tests"
 git checkout develop
-git merge feature/depenses-quotidiennes
+git checkout -b feature/cloture-journaliere
+git commit -m "feat: add ClotureJournaliere entity with daily expenses"
+git commit -m "feat: add ClotureJournaliereService with auto-calculation"
+git commit -m "feat: add ClotureController with prepare and close endpoints"
+git commit -m "test: add ClotureJournaliere unit tests"
+git checkout develop
+git merge feature/cloture-journaliere
 git push origin develop
 ```
 
 ---
 
 ## ═══════════════════════════════════════════════════════
-## PHASE 3 : BILAN JOURNALIER (1 semaine)
-## Le tableau du soir du patron — Remplacer Image 1
+## PHASE 3 : RÉCAPITULATIF & BILAN (1 semaine)
+## Reproduire le document FISH-CAM + bilan amélioré
 ## ═══════════════════════════════════════════════════════
 
-**Branche** : `feature/bilan-journalier`
+### 3.1 — Récapitulatif journalier (= Document FISH-CAM)
 
-```bash
-git checkout develop
-git checkout -b feature/bilan-journalier
-```
+**PAS une entité en base.** C'est un CALCUL dans le service à partir
+des ClotureJournaliere.
 
-### 3.1 — Entité BilanJournalier
-
-| Champ | Type | Source | Qui |
-|-------|------|--------|-----|
-| id | Long (auto) | Auto | |
-| dateBilan | LocalDate | Auto | |
-| poissonnerie | ManyToOne → Poissonnerie | Auto | |
-| montantAchat | BigDecimal | **Calculé auto** depuis AchatJournalier | Système |
-| ventePrevisible | BigDecimal | **Calculé auto** depuis AchatJournalier | Système |
-| venteRealisee | BigDecimal | **Saisi manuellement** | **Patron le soir** |
-| totalDepensesJour | BigDecimal | **Calculé auto** depuis DepenseQuotidienne | Système |
-| beneficeBrutJour | BigDecimal | **Calculé auto** (vente - achat - dépenses) | Système |
-| nombreDettesCreees | Integer | **Calculé auto** depuis CompteCourant | Système |
-| montantDettesCreees | BigDecimal | **Calculé auto** depuis CompteCourant | Système |
-| montantRemboursementsJour | BigDecimal | **Calculé auto** depuis CompteCourant | Système |
-| saisiPar | ManyToOne → User | Auto (JWT) | Patron |
-| cloture | Boolean | false → true | Patron |
-| createdAt | LocalDateTime | Auto | |
-
-### 3.2 — Fichiers à créer
+Le patron choisit un intervalle libre :
 
 ```
-domain/bilan/BilanJournalier.java
-domain/bilan/BilanJournalierRepository.java
-application/bilan/BilanJournalierService.java
-adapter/web/controller/BilanJournalierController.java
-adapter/web/dto/request/CloturerJourneeRequest.java
-adapter/web/dto/response/BilanJournalierResponse.java
-adapter/web/dto/response/BilanConsolideResponse.java
-adapter/web/mapper/BilanMapper.java
+📊 RÉCAPITULATIF — Boutique LELE
+Du [ 01/12/2025 ] au [ 31/12/2025 ]    [🔍 Afficher]
+
+┌──────┬───────────┬───────────┬───────────┬──────────┬──────────┐
+│ Jour │ Achat     │ Prévu     │ Réalisé   │ Dépenses │ Bénéfice │
+├──────┼───────────┼───────────┼───────────┼──────────┼──────────┤
+│  1   │ 178 000   │ 193 900   │ 193 900   │  6 000   │  9 900   │
+│  2   │ 232 500   │ 256 300   │ 183 500   │  8 000   │ -57 000  │
+│ ...  │           │           │           │          │          │
+├──────┼───────────┼───────────┼───────────┼──────────┼──────────┤
+│TOTAL │4 500 000  │5 100 000  │4 800 000  │ 150 000  │ 150 000  │
+└──────┴───────────┴───────────┴───────────┴──────────┴──────────┘
+```
+Quand tu coderas BilanService, dans le DTO response tu ajoutes :
+
+BilanMensuelResponse.java :
+... (tout ce qu'on a déjà prévu)
++ dettesDebutMois             → BigDecimal
++ nouvellesDettes             → BigDecimal
++ remboursementsMois          → BigDecimal
++ dettesFinMois               → BigDecimal
++ topDebiteurs                → List<DebiteurResponse>
+### 3.2 — Bilan mensuel (avec charges fixes)
+
+**PAS une entité en base non plus.** Le patron tape seulement
+l'électricité. Le reste est prérempli ou calculé.
+
+```
+📊 BILAN — Boutique LELE — DÉCEMBRE 2025
+
+═══ PARTIE 1 — Détail jour par jour ═══
+(le récapitulatif ci-dessus)
+
+═══ PARTIE 2 — Résultat du mois ═══
+
+REVENUS
+  Total ventes réalisées        :  4 800 000 FCFA   ← calculé auto
+
+COÛTS MARCHANDISE
+  Total achats                  : -4 500 000 FCFA   ← calculé auto
+
+DÉPENSES QUOTIDIENNES
+  Transport                     :    -45 000 FCFA   ← calculé auto
+  Ration                        :    -90 000 FCFA   ← calculé auto
+  Autres frais                  :    -15 000 FCFA   ← calculé auto
+  Sous-total                    :   -150 000 FCFA
+
+= MARGE OPÉRATIONNELLE          :    150 000 FCFA
+
+CHARGES FIXES
+  Loyer                         :    -50 000 FCFA   ← prérempli depuis Poissonnerie
+  Électricité                   : [  -25 000 ] FCFA ← SAISI par patron (variable)
+  Salaires (3 employés)         :   -120 000 FCFA   ← calculé auto depuis Employe
+    Marie (Caissière)    40 000
+    Paul (Vendeur)       35 000
+    Jean (Vendeur)       45 000
+  Sous-total                    :   -195 000 FCFA
+
+══════════════════════════════════════════
+RÉSULTAT NET DU MOIS             :    -45 000 🔴
+══════════════════════════════════════════
 ```
 
-### 3.3 — Endpoints
+### 3.3 — Comparaison des 3 boutiques
+
+```
+📊 COMPARAISON — DÉCEMBRE 2025
+
+┌───────────────┬────────────┬────────────┬────────────┐
+│               │ Centrale   │ LELE       │ BARE       │
+├───────────────┼────────────┼────────────┼────────────┤
+│ Ventes        │ 5 200 000  │ 4 800 000  │ 3 100 000  │
+│ Achats        │-4 800 000  │-4 500 000  │-2 900 000  │
+│ Dépenses      │  -180 000  │  -150 000  │  -120 000  │
+│ Charges fixes │  -195 000  │  -195 000  │  -160 000  │
+├───────────────┼────────────┼────────────┼────────────┤
+│ RÉSULTAT NET  │   25 000 🟢│  -45 000 🔴│  -80 000 🔴│
+└───────────────┴────────────┴────────────┴────────────┘
+```
+
+### 3.4 — Fichiers à créer
+
+```
+application/rapport/RecapitulatifService.java
+application/rapport/BilanService.java
+adapter/web/controller/RapportController.java
+adapter/web/dto/request/BilanMensuelRequest.java
+adapter/web/dto/response/RecapitulatifResponse.java
+adapter/web/dto/response/RecapitulatifLigneResponse.java
+adapter/web/dto/response/BilanMensuelResponse.java
+adapter/web/dto/response/ComparaisonBoutiquesResponse.java
+adapter/web/mapper/RapportMapper.java
+```
+
+### 3.5 — Endpoints
 
 | Méthode | URL | Rôle | Description |
 |---------|-----|------|-------------|
-| GET | `/api/v1/bilans/preparer?poissonnerieId=&date=` | PATRON | Voir calculs auto avant clôture |
-| POST | `/api/v1/bilans/cloturer` | PATRON | Saisir vente réalisée + valider |
-| GET | `/api/v1/bilans/poissonnerie/{id}/mois?mois=&annee=` | PATRON | Tableau mensuel (= Image 1) |
-| GET | `/api/v1/bilans/consolide/jour?date=` | PATRON | Vue 3 boutiques du jour |
+| GET | `/api/v1/rapports/recapitulatif?poissonnerieId=1&du=2025-12-01&au=2025-12-31` | PATRON | Tableau jour par jour |
+| POST | `/api/v1/rapports/bilan-mensuel` | PATRON | Bilan avec électricité saisie |
+| GET | `/api/v1/rapports/comparaison?mois=12&annee=2025` | PATRON | Vue 3 boutiques |
 
-### 3.4 — Vue consolidée 3 boutiques
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  📊 BILAN CONSOLIDÉ — 15/03/2026                               │
-│                                                                  │
-│  Boutique Centrale : Ventes 183 500 | Dépenses 10 000 | Dettes 15 000
-│  Boutique 2        : Ventes  80 000 | Dépenses  0     | Dettes 0
-│  Boutique 3        : Ventes  65 000 | Dépenses  2 000 | Dettes 0
-│  ────────────────────────────────────────────────────────────── │
-│  TOTAL             : Ventes 328 500 | Dépenses 12 000 | Dettes 15 000
-│                                                                  │
-│  💰 Total à récupérer par le patron : 328 500 - 12 000 = 316 500
-└─────────────────────────────────────────────────────────────────┘
+**Body du POST bilan-mensuel :**
+```json
+{
+  "poissonnerieId": 1,
+  "mois": 12,
+  "annee": 2025,
+  "electricite": 25000,
+  "loyerOverride": null,
+  "autresCharges": 0,
+  "descriptionAutresCharges": null
+}
 ```
 
-### 3.5 — Tests
+Le loyer est prérempli mais `loyerOverride` permet de changer si besoin ce mois-là.
 
-1. ✅ Préparer un bilan → montantAchat et ventePrevisible calculés depuis achats
-2. ✅ Clôturer une journée → bénéfice brut correct
-3. ✅ Vue consolidée → total des 3 boutiques correct
-4. ❌ Clôturer une journée déjà clôturée → erreur
-5. ✅ Dettes du jour visibles dans le bilan
+### 3.6 — Tests
+
+1. ✅ Récapitulatif → sommes correctes
+2. ✅ Bilan → bénéfice net correct
+3. ✅ Salaires calculés auto depuis Employe
+4. ✅ Loyer prérempli depuis Poissonnerie
+5. ✅ Comparaison 3 boutiques → totaux corrects
 
 ```bash
-git commit -m "feat: add BilanJournalier entity and repository"
-git commit -m "feat: add BilanJournalierService with auto-calculation"
-git commit -m "feat: add BilanController with daily close and monthly view"
-git commit -m "feat: add consolidated view for all 3 poissonneries"
-git commit -m "test: add BilanJournalierService unit tests"
 git checkout develop
-git merge feature/bilan-journalier
+git checkout -b feature/recapitulatif-bilan
+git commit -m "feat: add RecapitulatifService with date range filter"
+git commit -m "feat: add BilanService with auto salary and rent calculation"
+git commit -m "feat: add shop comparison endpoint"
+git commit -m "feat: add RapportController with all report endpoints"
+git commit -m "test: add rapport and bilan unit tests"
+git checkout develop
+git merge feature/recapitulatif-bilan
 git push origin develop
 ```
 
 ---
 
 ## ═══════════════════════════════════════════════════════
-## PHASE 4 : CLÔTURE MENSUELLE (1 semaine)
-## Bouton fin de mois — 2 étapes séparées
+## PHASE 4 : FOURNISSEUR & LIVREURS (3-4 jours)
+## Évaluer les livreurs CONGELCAM
 ## ═══════════════════════════════════════════════════════
 
-**Branche** : `feature/cloture-mensuelle`
-
-```bash
-git checkout develop
-git checkout -b feature/cloture-mensuelle
-```
-
-### 4.1 — Entité ClotureMensuelle
-
-**PARTIE 1 — Calculé automatiquement par le système** :
-
-| Champ | Source |
-|-------|--------|
-| totalVentesRealisees | Somme BilanJournalier.venteRealisee du mois |
-| totalVentesPrevisibles | Somme BilanJournalier.ventePrevisible du mois |
-| totalAchats | Somme BilanJournalier.montantAchat du mois |
-| totalTransport | Somme DepenseQuotidienne type=TRANSPORT du mois |
-| totalRation | Somme DepenseQuotidienne type=RATION du mois |
-| totalGlace | Somme DepenseQuotidienne type=GLACE du mois |
-| totalAutresDepensesQuotidiennes | Somme DepenseQuotidienne type=AUTRE du mois |
-| beneficeAvantCharges | Calculé auto |
-
-**PARTIE 2 — Saisi par le patron via le bouton fin de mois** :
-
-| Champ | Exemple |
-|-------|---------|
-| electricite | 45 000 FCFA |
-| loyer | 100 000 FCFA |
-| salaires | 150 000 FCFA |
-| autresChargesFixes | 25 000 FCFA |
-| descriptionAutresCharges | "Réparation congélateur" |
-
-**PARTIE 3 — Résultat final** :
-
-| Champ | Formule |
-|-------|---------|
-| totalChargesFixes | electricite + loyer + salaires + autresChargesFixes |
-| beneficeNet | Ventes - Achats - Dépenses quotidiennes - Charges fixes |
-| cloturee | true (VERROUILLÉ après validation) |
-| cloturePar | Le patron (User) |
-| dateCloture | Quand il a validé |
-
-### 4.2 — Flux en 2 étapes
-
-```
-ÉTAPE 1 : GET /api/v1/clotures/preparer?poissonnerieId=1&mois=3&annee=2026
-
-Le patron clique "📊 Clôture du Mois"
-→ Le système calcule TOUT automatiquement
-→ Affiche les totaux + champs vides pour charges fixes
-
-┌──────────────────────────────────────────────────┐
-│  DÉJÀ CALCULÉ (ne touche à rien) :              │
-│  Ventes Réalisées : 4 850 000 FCFA  ✅          │
-│  Achats :          -4 200 000 FCFA  ✅          │
-│  Transport :          -85 000 FCFA  ✅          │
-│  Ration :             -62 000 FCFA  ✅          │
-│  Glace :              -28 000 FCFA  ✅          │
-│  Bénéfice AVANT charges : 475 000 FCFA         │
-│                                                  │
-│  À SAISIR :                                      │
-│  ⚡ Électricité :  [________]                    │
-│  🏠 Loyer :        [________]                    │
-│  💰 Salaires :     [________]                    │
-│  📦 Autres :       [________]                    │
-└──────────────────────────────────────────────────┘
-
-ÉTAPE 2 : POST /api/v1/clotures/valider
-
-Le patron remplit et clique "🔒 Valider"
-→ Le système calcule le bénéfice NET
-→ VERROUILLE le mois (impossible de modifier)
-→ Crée notification "Mars 2026 clôturé : +155 000 FCFA"
-```
-
-### 4.3 — Fichiers à créer
-
-```
-domain/cloture/ClotureMensuelle.java
-domain/cloture/ClotureMensuelleRepository.java
-application/cloture/ClotureMensuelleService.java
-adapter/web/controller/ClotureMensuelleController.java
-adapter/web/dto/request/ValiderClotureRequest.java
-adapter/web/dto/response/PreparationClotureResponse.java
-adapter/web/dto/response/ClotureMensuelleResponse.java
-adapter/web/mapper/ClotureMapper.java
-```
-
-### 4.4 — Endpoints
-
-| Méthode | URL | Rôle | Description |
-|---------|-----|------|-------------|
-| GET | `/api/v1/clotures/preparer?poissonnerieId=&mois=&annee=` | PATRON | Étape 1 : voir calculs auto |
-| POST | `/api/v1/clotures/valider` | PATRON | Étape 2 : saisir charges + valider |
-| GET | `/api/v1/clotures/poissonnerie/{id}?annee=` | PATRON | Historique des clôtures |
-| GET | `/api/v1/clotures/consolide?mois=&annee=` | PATRON | Vue consolidée 3 boutiques |
-
-### 4.5 — Sécurité
-
-**SEUL le patron peut clôturer** : `@PreAuthorize("hasAnyRole('PATRON', 'SUPER_ADMIN')")`
-
-### 4.6 — Tests
-
-1. ✅ Préparer clôture → totaux auto corrects
-2. ✅ Valider clôture → bénéfice NET correct
-3. ❌ Mois déjà clôturé → erreur
-4. ❌ Vendeuse essaye de clôturer → accès refusé
-5. ✅ Vue consolidée 3 boutiques → total correct
-
-```bash
-git commit -m "feat: add ClotureMensuelle entity with auto and manual fields"
-git commit -m "feat: add ClotureMensuelleService with 2-step process"
-git commit -m "feat: add ClotureMensuelleController with prepare and validate"
-git commit -m "test: add ClotureMensuelleService unit tests"
-git checkout develop
-git merge feature/cloture-mensuelle
-git push origin develop
-```
-
----
-
-## ═══════════════════════════════════════════════════════
-## PHASE 5 : FOURNISSEUR & LIVREURS (3-4 jours)
-## Évaluer les livreurs qui changent chaque semaine
-## ═══════════════════════════════════════════════════════
-
-**Branche** : `feature/livreurs-evaluation`
-
-```bash
-git checkout develop
-git checkout -b feature/livreurs-evaluation
-```
-
-### 5.1 — Entité Livreur
+### 4.1 — Entité Livreur
 
 | Champ | Type | Exemple |
 |-------|------|---------|
@@ -849,17 +732,17 @@ git checkout -b feature/livreurs-evaluation
 | nom | String | "Jean" |
 | prenom | String | "Mballa" |
 | telephone | String | "677445566" |
-| fournisseur | ManyToOne → Fournisseur | Fournisseur Principal |
+| fournisseur | ManyToOne → Fournisseur | CONGELCAM |
 | actif | Boolean | true |
 | createdAt | LocalDateTime | auto |
 
-### 5.2 — Entité EvaluationLivreur
+### 4.2 — Entité EvaluationLivreur
 
 | Champ | Type | Exemple |
 |-------|------|---------|
 | id | Long (auto) | 1 |
 | livreur | ManyToOne → Livreur | Jean Mballa |
-| achatJournalier | ManyToOne → AchatJournalier | Achat du 15/03 |
+| achatJournalier | ManyToOne → AchatJournalier | Facture du 15/03 |
 | dateEvaluation | LocalDate | 2026-03-15 |
 | qualiteProduit | Integer (1-5) | 4 ⭐ |
 | respectQuantite | Integer (1-5) | 3 ⭐ |
@@ -870,7 +753,7 @@ git checkout -b feature/livreurs-evaluation
 | evaluePar | ManyToOne → User | Patron |
 | createdAt | LocalDateTime | auto |
 
-### 5.3 — Verdict automatique
+### 4.3 — Verdict automatique
 
 ```
 Note moyenne = (qualité + quantité + ponctualité + poids) / 4
@@ -881,24 +764,7 @@ Note moyenne = (qualité + quantité + ponctualité + poids) / 4
 <  2.0  → 🔴 MAUVAIS — À remplacer
 ```
 
-### 5.4 — Fichiers à créer
-
-```
-domain/livreur/Livreur.java
-domain/livreur/LivreurRepository.java
-domain/livreur/EvaluationLivreur.java
-domain/livreur/EvaluationLivreurRepository.java
-application/livreur/LivreurService.java
-adapter/web/controller/LivreurController.java
-adapter/web/dto/request/CreateLivreurRequest.java
-adapter/web/dto/request/CreateEvaluationRequest.java
-adapter/web/dto/response/LivreurResponse.java
-adapter/web/dto/response/EvaluationResponse.java
-adapter/web/dto/response/BilanLivreurResponse.java
-adapter/web/mapper/LivreurMapper.java
-```
-
-### 5.5 — Endpoints
+### 4.4 — Endpoints
 
 | Méthode | URL | Rôle | Description |
 |---------|-----|------|-------------|
@@ -908,19 +774,14 @@ adapter/web/mapper/LivreurMapper.java
 | GET | `/api/v1/livreurs/{id}/evaluations` | PATRON | Historique évaluations |
 | GET | `/api/v1/livreurs/{id}/bilan?mois=&annee=` | PATRON | Bilan mensuel + verdict |
 
-### 5.6 — Tests
-
-1. ✅ Créer livreur → OK
-2. ✅ Évaluer livreur → note moyenne correcte
-3. ✅ Bilan mensuel → verdict correct (EXCELLENT si >= 4.0)
-4. ❌ Évaluer avec note > 5 → erreur
-
 ```bash
+git checkout develop
+git checkout -b feature/livreurs-evaluation
 git commit -m "feat: add Livreur entity and repository"
-git commit -m "feat: add EvaluationLivreur entity with rating criteria"
-git commit -m "feat: add LivreurService with evaluation and monthly report"
-git commit -m "feat: add LivreurController with CRUD and evaluation endpoints"
-git commit -m "test: add LivreurService and evaluation unit tests"
+git commit -m "feat: add EvaluationLivreur with rating criteria"
+git commit -m "feat: add LivreurService with evaluation and verdict"
+git commit -m "feat: add LivreurController with CRUD and evaluation"
+git commit -m "test: add Livreur and evaluation unit tests"
 git checkout develop
 git merge feature/livreurs-evaluation
 git push origin develop
@@ -929,73 +790,42 @@ git push origin develop
 ---
 
 ## ═══════════════════════════════════════════════════════
-## PHASE 6 : PRÊTS MULTI-BOUTIQUES (3-4 jours)
+## PHASE 5 : PRÊTS MULTI-BOUTIQUES (3-4 jours)
 ## Adapter les dettes pour les 3 boutiques
 ## ═══════════════════════════════════════════════════════
 
-**Branche** : `feature/prets-multi-boutiques`
-
-```bash
-git checkout develop
-git checkout -b feature/prets-multi-boutiques
-```
-
-### 6.1 — Ajouter le flag `pretActif` sur Poissonnerie
+### 5.1 — Ajouter `pretActif` sur Poissonnerie
 
 | Boutique | pretActif | Raison |
 |----------|-----------|--------|
 | Boutique Centrale | `true` | Le patron gère les prêts ici |
-| Boutique 2 | `false` | Pas de PC, pas de prêts pour le moment |
-| Boutique 3 | `false` | Pas de PC, pas de prêts pour le moment |
+| Boutique LELE | `false` | Pas de PC |
+| Boutique BARE | `false` | Pas de PC |
 
-### 6.2 — Modifier CompteCourantService
+### 5.2 — Matrice complète des permissions
 
-Avant de créer un emprunt, vérifier :
-```java
-if (!client.getPoissonnerie().getPretActif()) {
-    throw new BusinessException("Les prêts ne sont pas activés pour cette boutique");
-}
-```
-
-### 6.3 — Matrice complète des permissions
-
-| Action | PATRON | CAISSIERE (Vendeuse) | ENREGISTREUR (Secrétaire) |
-|--------|--------|----------------------|---------------------------|
+| Action | PATRON | CAISSIERE | ENREGISTREUR |
+|--------|--------|-----------|--------------|
 | Créer emprunt | ✅ | ✅ | ❌ |
 | Remboursement | ✅ | ✅ | ❌ |
 | Épargne (dépôt/retrait) | ✅ | ✅ | ❌ |
 | Voir les comptes | ✅ | ✅ | ✅ (lecture seule) |
 | Créer produit | ✅ | ❌ | ❌ |
-| Créer achat journalier | ✅ | ❌ | ✅ |
-| Ajouter dépense | ✅ | ✅ | ❌ |
-| Supprimer dépense | ✅ | ❌ | ❌ |
+| Créer/modifier facture | ✅ | ❌ | ✅ |
+| Ajouter dépense | ✅ | ✅ (via clôture) | ❌ |
 | Clôturer journée | ✅ | ❌ | ❌ |
-| Clôturer mois | ✅ | ❌ | ❌ |
-| Évaluer livreur | ✅ | ❌ | ✅ |
-| Voir rapports/stats | ✅ | ❌ | ❌ |
+| Voir rapports/bilans | ✅ | ❌ | ❌ |
+| Gérer employés | ✅ | ❌ | ❌ |
 | Gérer utilisateurs | ✅ | ❌ | ❌ |
-
-### 6.4 — Lier les dettes au bilan journalier
-
-Quand le patron clôture la journée, le système ajoute automatiquement :
-- Nombre de nouvelles dettes créées aujourd'hui
-- Montant total des nouvelles dettes
-- Montant total des remboursements du jour
-- Ça explique l'écart entre vente prévisible et cash encaissé
-
-### 6.5 — Tests
-
-1. ✅ Emprunt sur boutique avec pretActif=true → OK
-2. ❌ Emprunt sur boutique avec pretActif=false → BusinessException
-3. ✅ Secrétaire ne peut pas créer de dettes → accès refusé
-4. ✅ Résumé dettes dans le bilan journalier correct
+| Évaluer livreur | ✅ | ❌ | ✅ |
 
 ```bash
-git commit -m "feat: add pretActif flag to Poissonnerie entity"
+git checkout develop
+git checkout -b feature/prets-multi-boutiques
+git commit -m "feat: add pretActif flag to Poissonnerie"
 git commit -m "feat: add loan verification in CompteCourantService"
 git commit -m "feat: add @PreAuthorize role-based access for all operations"
-git commit -m "feat: link daily debt summary to BilanJournalier"
-git commit -m "test: add multi-boutique debt management tests"
+git commit -m "test: add multi-boutique permission tests"
 git checkout develop
 git merge feature/prets-multi-boutiques
 git push origin develop
@@ -1004,130 +834,81 @@ git push origin develop
 ---
 
 ## ═══════════════════════════════════════════════════════
-## PHASE 7 : RAPPORTS, STATISTIQUES & EXPORT PDF (1 semaine)
+## PHASE 6 : RAPPORTS, EXPORT PDF & ADMIN (1 semaine)
 ## ═══════════════════════════════════════════════════════
 
-**Branche** : `feature/rapports-statistiques`
+### 6.1 — Export PDF
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/v1/exports/facture/{id}/pdf` | Facture du jour en PDF |
+| `GET /api/v1/exports/recapitulatif/pdf?...` | Récapitulatif (= document FISH-CAM) en PDF |
+| `GET /api/v1/exports/bilan/pdf?...` | Bilan mensuel en PDF |
+
+**Technologie** : iTextPDF ou JasperReports
+
+### 6.2 — Export base de données (SUPER_ADMIN uniquement)
+
+```
+GET /api/v1/admin/export-database
+
+→ Exporte toute la base en JSON
+→ Seul SUPER_ADMIN peut faire ça
+→ Pour récupérer les données à distance
+→ Pour alimenter le futur modèle Python
+```
+
+### 6.3 — Statistiques (si temps)
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/v1/stats/top-produits?...` | Top 10 produits les plus achetés |
+| `GET /api/v1/stats/evolution-prix?produitId=1&...` | Évolution prix d'un produit |
+
+### 6.4 — Impression depuis navigateur (Phase 1 simple)
+
+Avant le PDF, le frontend peut utiliser `window.print()` pour imprimer
+directement depuis l'écran. Gratuit, pas de librairie.
 
 ```bash
 git checkout develop
-git checkout -b feature/rapports-statistiques
-```
-
-### 7.1 — Statistiques Produits
-
-| Endpoint | Description |
-|----------|-------------|
-| `GET /api/v1/stats/top-produits?poissonnerieId=&mois=&annee=` | Top 10 produits les plus achetés |
-| `GET /api/v1/stats/produit/{id}/historique?periode=` | Évolution d'un produit sur le temps |
-| `GET /api/v1/stats/produits/evolution-prix?mois=&annee=` | Produits dont le prix a changé |
-
-### 7.2 — Statistiques Financières
-
-| Endpoint | Description |
-|----------|-------------|
-| `GET /api/v1/stats/financier/semaine?poissonnerieId=&date=` | Bilan d'une semaine |
-| `GET /api/v1/stats/financier/mois?poissonnerieId=&mois=&annee=` | Bilan du mois |
-| `GET /api/v1/stats/financier/comparaison?mois1=&mois2=&annee=` | Comparer 2 mois |
-| `GET /api/v1/stats/financier/consolide?annee=` | Vue annuelle 3 boutiques |
-
-### 7.3 — Statistiques Livreurs
-
-| Endpoint | Description |
-|----------|-------------|
-| `GET /api/v1/stats/livreurs/classement?mois=&annee=` | Classement des livreurs |
-| `GET /api/v1/stats/livreurs/problemes?mois=&annee=` | Livreurs avec problèmes signalés |
-
-### 7.4 — Export PDF
-
-| Endpoint | Description |
-|----------|-------------|
-| `GET /api/v1/exports/inventaire-mensuel/{poissonnerieId}?mois=&annee=` | Générer Image 1 en PDF |
-| `GET /api/v1/exports/bilan-mensuel/{poissonnerieId}?mois=&annee=` | Bilan complet du mois PDF |
-| `GET /api/v1/exports/livreur/{id}/bilan?mois=&annee=` | Bilan d'un livreur PDF |
-| `GET /api/v1/exports/consolide?mois=&annee=` | Bilan consolidé 3 boutiques PDF |
-
-**Technologie** : iTextPDF ou Apache POI pour générer les PDF
-
-### 7.5 — Fichiers à créer
-
-```
-application/stats/StatistiquesService.java
-application/export/ExportPdfService.java
-adapter/web/controller/StatistiquesController.java
-adapter/web/controller/ExportController.java
-adapter/web/dto/response/TopProduitsResponse.java
-adapter/web/dto/response/BilanFinancierResponse.java
-adapter/web/dto/response/ComparaisonMoisResponse.java
-adapter/web/dto/response/ClassementLivreursResponse.java
-```
-
-### 7.6 — Tests
-
-1. ✅ Top produits → classement correct
-2. ✅ Bilan mensuel → chiffres corrects
-3. ✅ Comparaison mois → écarts calculés
-4. ✅ Export PDF → fichier généré sans erreur
-
-```bash
-git commit -m "feat: add top products statistics endpoint"
-git commit -m "feat: add financial statistics with weekly and monthly views"
-git commit -m "feat: add month comparison statistics"
-git commit -m "feat: add delivery person ranking statistics"
-git commit -m "feat: add PDF export for monthly inventory"
-git commit -m "feat: add PDF export for monthly financial report"
-git commit -m "test: add statistics and export unit tests"
+git checkout -b feature/rapports-export
+git commit -m "feat: add PDF export for invoices and reports"
+git commit -m "feat: add database export endpoint for SUPER_ADMIN"
+git commit -m "feat: add basic product statistics"
+git commit -m "test: add export and statistics tests"
 git checkout develop
-git merge feature/rapports-statistiques
+git merge feature/rapports-export
 git push origin develop
 ```
 
 ---
 
 ## ═══════════════════════════════════════════════════════
-## PHASE 8 : TESTS + SWAGGER + RELEASE (3-4 jours)
+## PHASE 7 : TESTS FINAUX + SWAGGER + RELEASE (3-4 jours)
 ## ═══════════════════════════════════════════════════════
 
-**Branche** : `feature/tests-finaux`
-
-```bash
-git checkout develop
-git checkout -b feature/tests-finaux
-```
-
-### 8.1 — Tests manquants pour le code existant (Modules 1-3)
+### 7.1 — Tests manquants
 
 | Fichier test | Ce qu'il teste |
-|-------------|-------|
-| `CompteCourantServiceTest.java` | Emprunts, remboursements, alertes seuil -5000, limite crédit |
-| `EpargneServiceTest.java` | Dépôts, retraits, transfert épargne → compte courant |
-| `NotificationServiceTest.java` | Rapport journalier, alertes auto |
-| `AuthServiceTest.java` | Login OK, mauvais mot de passe, compte désactivé |
-| `ClientServiceTest.java` | CRUD client, recherche |
-| `UserServiceTest.java` | CRUD utilisateur, gestion rôles |
+|-------------|----------------|
+| ProduitServiceTest | CRUD produit, recherche |
+| EmployeServiceTest | CRUD employé, salaires |
+| AchatJournalierServiceTest | Facture, lignes, préremplissage |
+| ClotureJournaliereServiceTest | Clôture, calculs auto |
+| BilanServiceTest | Bilan mensuel, comparaison |
+| LivreurServiceTest | Évaluations, verdict |
 
-### 8.2 — Swagger/OpenAPI complet
+### 7.2 — Swagger complet
 
-Ajouter les annotations sur TOUS les controllers :
+Ajouter sur TOUS les controllers :
 - `@Operation(summary = "...", description = "...")`
-- `@ApiResponse(responseCode = "200", description = "...")`
-- `@ApiResponse(responseCode = "400", description = "...")`
-- `@ApiResponse(responseCode = "404", description = "...")`
+- `@ApiResponse(responseCode = "200/400/404")`
 - `@Parameter(description = "...")`
 
-### 8.3 — Release finale
+### 7.3 — Release
 
 ```bash
-git commit -m "test: add unit tests for existing CompteCourant module"
-git commit -m "test: add unit tests for existing Epargne module"
-git commit -m "test: add unit tests for existing Auth module"
-git commit -m "test: add unit tests for existing Notification module"
-git commit -m "docs: add complete Swagger annotations on all endpoints"
-git checkout develop
-git merge feature/tests-finaux
-git push origin develop
-
-# Quand TOUT est stable et testé :
 git checkout main
 git merge develop
 git tag -a v1.0.0 -m "Version 1.0.0 - Fish-Cam ERP complet"
@@ -1136,34 +917,38 @@ git push origin main --tags
 
 ---
 
-## 👥 LES 3 EMPLOYÉS ET LEURS RÔLES
+## 👥 LES EMPLOYÉS ET LEURS RÔLES
 
-| Rôle dans l'entreprise | Personne | Ce qu'elle fait | Rôle dans l'app |
-|------------------------|----------|-----------------|-----------------|
-| **Patron** | Propriétaire des 3 boutiques | Tout vérifier, clôturer jour/mois, gérer users | `PATRON` |
-| **Vendeuse principale** | Proche du patron, de confiance | Ventes, dettes, épargnes, dépenses quotidiennes | `CAISSIERE` |
-| **Secrétaire d'achat** | Employée qui vient à 15h | Saisir achats pour les 3 boutiques, évaluer livreurs | `ENREGISTREUR` |
+| Rôle entreprise | Ce qu'elle fait | Rôle app | Accès |
+|----------------|-----------------|----------|-------|
+| Patron | Vérifie tout, clôture jour/mois, gère users | PATRON | Total |
+| Vendeuse principale | Ventes, dettes, épargnes | CAISSIERE | Dettes + épargnes |
+| Secrétaire d'achat | Saisit les factures à 15h, évalue livreurs | ENREGISTREUR | Factures + livreurs |
+| Vendeurs boutique | Vendent au comptoir | (pas d'accès) | Via entité Employe |
+| Super Admin (toi) | Maintenance, export données | SUPER_ADMIN | Tout + export DB |
 
 ---
 
-## 🏗️ ARCHITECTURE FINALE DES MODULES
+## 🏗️ ARCHITECTURE FINALE
 
 ```
 ╔═══════════════════════════════════════════════╗
 ║           FISH-CAM ERP v1.0                   ║
-║   Système de Gestion de Poissonnerie          ║
 ╠═══════════════════════════════════════════════╣
 ║                                               ║
-║  MODULE 1  : Auth & Utilisateurs        ✅   ║
-║  MODULE 2  : Clients & Comptes Courants ✅   ║
-║  MODULE 3  : Épargnes                   ✅   ║
-║  MODULE 4  : Achats, Produits & Prix    📦   ║
-║  MODULE 5  : Dépenses Quotidiennes      💸   ║
-║  MODULE 6  : Bilan Journalier           📊   ║
-║  MODULE 7  : Clôture Mensuelle          📋   ║
-║  MODULE 8  : Fournisseur & Livreurs     🚚   ║
-║  MODULE 9  : Prêts Multi-Boutiques      🏪   ║
-║  MODULE 10 : Rapports & Export PDF      📈   ║
+║  ✅ Auth & Utilisateurs                       ║
+║  ✅ Clients & Comptes Courants (Dettes)       ║
+║  ✅ Épargnes                                  ║
+║  ✅ Notifications & Rapports auto             ║
+║  ✅ Multi-poissonneries & Avatars             ║
+║                                               ║
+║  📦 Phase 1 : Produits, Employés, Factures   ║
+║  📦 Phase 2 : Clôture Journalière            ║
+║  📦 Phase 3 : Récapitulatif & Bilan          ║
+║  📦 Phase 4 : Fournisseur & Livreurs         ║
+║  📦 Phase 5 : Prêts Multi-Boutiques          ║
+║  📦 Phase 6 : Export PDF & Admin             ║
+║  📦 Phase 7 : Tests + Swagger + Release      ║
 ║                                               ║
 ╚═══════════════════════════════════════════════╝
 ```
@@ -1173,100 +958,78 @@ git push origin main --tags
 - Java 17 + Spring Boot 3.x
 - Spring Security + JWT
 - PostgreSQL
+- MapStruct (mapping DTO ↔ entité)
 - Swagger/OpenAPI 3
-- iTextPDF (exports PDF)
+- iTextPDF (exports PDF — Phase 6)
 - JUnit 5 + Mockito (tests)
 - Lombok
-- Bean Validation (jakarta.validation)
 
----
-
-## 📂 STRUCTURE DES PACKAGES (Clean Architecture)
+## 📂 STRUCTURE DES PACKAGES
 
 ```
 com.fishcam/
-├── domain/                          ← Entités métier pures
+├── domain/
 │   ├── user/
 │   ├── client/
 │   ├── poissonnerie/
 │   ├── comptecourant/
 │   ├── epargne/
-│   ├── produit/                     ← NOUVEAU (Phase 1)
-│   │   ├── Produit.java
-│   │   ├── ProduitRepository.java
-│   │   ├── HistoriquePrix.java
-│   │   └── HistoriquePrixRepository.java
-│   ├── achat/                       ← NOUVEAU (Phase 1)
-│   │   ├── AchatJournalier.java
-│   │   ├── AchatJournalierRepository.java
-│   │   ├── LigneAchat.java
-│   │   └── LigneAchatRepository.java
-│   ├── depense/                     ← NOUVEAU (Phase 2)
-│   │   ├── DepenseQuotidienne.java
-│   │   ├── TypeDepenseQuotidienne.java
-│   │   └── DepenseQuotidienneRepository.java
-│   ├── bilan/                       ← NOUVEAU (Phase 3)
-│   │   ├── BilanJournalier.java
-│   │   └── BilanJournalierRepository.java
-│   ├── cloture/                     ← NOUVEAU (Phase 4)
-│   │   ├── ClotureMensuelle.java
-│   │   └── ClotureMensuelleRepository.java
-│   ├── fournisseur/                 ← RÉORGANISÉ (Phase 0.6)
-│   │   ├── Fournisseur.java
-│   │   └── FournisseurRepository.java
-│   └── livreur/                     ← NOUVEAU (Phase 5)
-│       ├── Livreur.java
-│       ├── LivreurRepository.java
-│       ├── EvaluationLivreur.java
-│       └── EvaluationLivreurRepository.java
+│   ├── notification/
+│   ├── produit/           ← Phase 1
+│   ├── employe/           ← Phase 1
+│   ├── achat/             ← Phase 1
+│   ├── cloture/           ← Phase 2
+│   ├── fournisseur/       ← Phase 0 (réorganisé)
+│   └── livreur/           ← Phase 4
 │
-├── application/                     ← Services métier
+├── application/
 │   ├── auth/
 │   ├── user/
 │   ├── client/
 │   ├── comptecourant/
 │   ├── epargne/
 │   ├── notification/
-│   ├── produit/                     ← NOUVEAU
-│   │   └── ProduitService.java
-│   ├── achat/                       ← NOUVEAU
-│   │   └── AchatJournalierService.java
-│   ├── depense/                     ← NOUVEAU
-│   │   └── DepenseQuotidienneService.java
-│   ├── bilan/                       ← NOUVEAU
-│   │   └── BilanJournalierService.java
-│   ├── cloture/                     ← NOUVEAU
-│   │   └── ClotureMensuelleService.java
-│   ├── livreur/                     ← NOUVEAU
-│   │   └── LivreurService.java
-│   ├── stats/                       ← NOUVEAU
-│   │   └── StatistiquesService.java
-│   └── export/                      ← NOUVEAU
-│       └── ExportPdfService.java
+│   ├── produit/           ← Phase 1
+│   ├── employe/           ← Phase 1
+│   ├── achat/             ← Phase 1
+│   ├── cloture/           ← Phase 2
+│   ├── rapport/           ← Phase 3
+│   ├── livreur/           ← Phase 4
+│   └── export/            ← Phase 6
 │
-├── adapter/web/                     ← Controllers REST + DTOs
+├── adapter/web/
 │   ├── controller/
-│   │   ├── AuthController.java
-│   │   ├── ClientController.java
-│   │   ├── CompteCourantController.java
-│   │   ├── EpargneController.java
-│   │   ├── NotificationController.java
-│   │   ├── UserController.java
-│   │   ├── ProduitController.java          ← NOUVEAU
-│   │   ├── AchatJournalierController.java  ← NOUVEAU
-│   │   ├── DepenseQuotidienneController.java ← NOUVEAU
-│   │   ├── BilanJournalierController.java  ← NOUVEAU
-│   │   ├── ClotureMensuelleController.java ← NOUVEAU
-│   │   ├── LivreurController.java          ← NOUVEAU
-│   │   ├── StatistiquesController.java     ← NOUVEAU
-│   │   └── ExportController.java           ← NOUVEAU
-│   ├── dto/
-│   │   ├── request/
-│   │   └── response/
+│   ├── dto/request/
+│   ├── dto/response/
 │   └── mapper/
 │
-└── infrastructure/                  ← Config, Sécurité, Exceptions
+└── infrastructure/
     ├── config/
     ├── security/
     └── exception/
 ```
+
+---
+
+## 📋 TABLES SUPPRIMÉES (par rapport à la ROADMAP V1)
+
+| Table | Raison de la suppression |
+|-------|------------------------|
+| HistoriquePrix | LigneAchat EST l'historique des prix |
+| PrixBoutique | Le dernier prix vient de la dernière LigneAchat |
+| BilanMensuel (entité) | C'est un calcul dans le service, pas une entité |
+| DepenseQuotidienne | Intégrée directement dans ClotureJournaliere |
+| ClotureMensuelle (entité) | Remplacée par BilanService (calcul à la volée) |
+
+## 📋 TABLES AJOUTÉES (par rapport à la ROADMAP V1)
+
+| Table | Raison |
+|-------|--------|
+| Employe | Employés sans accès système + calcul auto des salaires |
+
+## 📋 CHAMPS AJOUTÉS SUR TABLES EXISTANTES
+
+| Table | Champ ajouté | Raison |
+|-------|-------------|--------|
+| Poissonnerie | loyer | Prérempli dans bilan mensuel |
+| Poissonnerie | fondDeCaisseDefaut | Prérempli chaque soir |

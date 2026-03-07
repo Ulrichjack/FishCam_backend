@@ -1,6 +1,5 @@
-package com.fishcam.domain.epargne;
+package com.fishcam.domain.employe;
 
-import com.fishcam.domain.client.Client;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.user.User;
 import jakarta.persistence.*;
@@ -15,30 +14,44 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "epargne_saving")
+@Table(name="employe")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class Epargne {
+@NoArgsConstructor
+public class Employe {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "client_id", nullable = false, unique = true)
-    private Client client;
+    @Column(nullable = false, length = 50 )
+    private String prenom;
 
+    @Column(nullable = false, length = 50 )
+    private String nom;
 
+    @Column(nullable = false, length = 50 )
+    private String poste;
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal currentBalance;
+    @Column(nullable = false)
+    private BigDecimal salaire;
+
+    @Column(length = 20 )
+    private String telephone;
 
     @ManyToOne
-    private User createdBy;
+    @JoinColumn(name="poissonnerie_id", nullable = false)
+    private Poissonnerie poissonnerie;
 
-    @Column(nullable = false, updatable = false)
+    @ManyToOne
+    @JoinColumn(name= "user_id")
+    private User user;
+
+    @Column(nullable = false)
+    private Boolean actif;
+
+    @Column(nullable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -46,9 +59,4 @@ public class Epargne {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-
-    public Poissonnerie getPoissonnerie() {
-        return client != null ? client.getPoissonnerie() : null;
-    }
-    
 }
