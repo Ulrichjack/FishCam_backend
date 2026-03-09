@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -77,6 +78,9 @@ public class ProduitService {
             produit.setUnite(request.getUnite());
         }
         if(request.getPoidsParCarton() != null ){
+            if(request.getPoidsParCarton().compareTo(BigDecimal.ZERO) <= 0){
+                throw new BusinessException("Le poids par carton doit être positif");
+            }
             produit.setPoidsParCarton(request.getPoidsParCarton());
         }
        Produit savedProduit = produitRepository.save(produit);
