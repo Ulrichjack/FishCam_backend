@@ -30,7 +30,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        log.info("🚀 [DEV] Initialisation des données de test...");
+        log.info(" [DEV] Initialisation des données de test...");
 
         if (poissonnerieRepository.count() == 0) {
             Poissonnerie poissonnerie = new Poissonnerie();
@@ -49,7 +49,7 @@ public class DataInitializer implements CommandLineRunner {
         log.info("📱 COMPTES DE TEST DISPONIBLES :");
         log.info("═══════════════════════════════════════════════════");
         log.info("SUPER_ADMIN → Phone: 692087724 | Password: admin123");
-        log.info("PATRON      → Phone: 677111111 | Password: patron123");
+        log.info("PATRON      → Phone: 676028800 | Password: patron123");
         log.info("CAISSIERE   → Phone: 677222222 | Password: caissier123");
         log.info("ENREGISTREUR→ Phone: 677333333 | Password: vendeur123");
         log.info("═══════════════════════════════════════════════════");
