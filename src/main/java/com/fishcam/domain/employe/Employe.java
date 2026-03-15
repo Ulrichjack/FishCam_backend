@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="employe")
+@Table(name = "employe")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,27 +25,27 @@ public class Employe {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50 )
+    @Column(nullable = false, length = 50)
     private String prenom;
 
-    @Column(nullable = false, length = 50 )
+    @Column(nullable = false, length = 50)
     private String nom;
 
-    @Column(nullable = false, length = 50 )
+    @Column(nullable = false, length = 50)
     private String poste;
 
     @Column(nullable = false)
     private BigDecimal salaire;
 
-    @Column(length = 20 )
+    @Column(length = 20)
     private String telephone;
 
     @ManyToOne
-    @JoinColumn(name="poissonnerie_id", nullable = false)
+    @JoinColumn(name = "poissonnerie_id", nullable = false)
     private Poissonnerie poissonnerie;
 
     @ManyToOne
-    @JoinColumn(name= "user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(nullable = false)

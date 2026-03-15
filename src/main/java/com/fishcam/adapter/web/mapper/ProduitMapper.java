@@ -10,12 +10,12 @@ import org.mapstruct.Mapping;
 public interface ProduitMapper {
 
 
-    ProduitResponse toReponse (Produit produit);
+    ProduitResponse toReponse(Produit produit);
 
-    @Mapping(target = "id",ignore = true)
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "actif", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    Produit toEntity (CreateProduitRequest request);
+    Produit toEntity(CreateProduitRequest request);
 
 }

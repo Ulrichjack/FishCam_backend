@@ -27,46 +27,45 @@ public class ProduitService {
     private final ProduitMapper produitMapper;
 
     @Transactional
-    public ProduitResponse createProduit(CreateProduitRequest request){
-            if(produitRepository.existsByNom(request.getNom())){
-                throw new BusinessException("Le produit ayant ce nom existe deja ");
-            }
-            Produit produit = produitMapper.toEntity(request);
-            produit.setActif(true);
+    public ProduitResponse createProduit(CreateProduitRequest request) {
+        if (produitRepository.existsByNom(request.getNom())) {
+            throw new BusinessException("Le produit ayant ce nom existe deja ");
+        }
+        Produit produit = produitMapper.toEntity(request);
+        produit.setActif(true);
 
-            Produit savedProduit = produitRepository.save(produit);
-            return produitMapper.toReponse(savedProduit);
+        Produit savedProduit = produitRepository.save(produit);
+        return produitMapper.toReponse(savedProduit);
     }
 
 
-
-    public Page<ProduitResponse> getAllProduits(Pageable pageable){
-         Page<Produit> produitPage = produitRepository.findByActifTrue(pageable);
-         return produitPage.map(produitMapper::toReponse);
+    public Page<ProduitResponse> getAllProduits(Pageable pageable) {
+        Page<Produit> produitPage = produitRepository.findByActifTrue(pageable);
+        return produitPage.map(produitMapper::toReponse);
 
     }
 
-    public List <ProduitResponse> searchProduits(String q){
+    public List<ProduitResponse> searchProduits(String q) {
 
         return produitRepository.findByNomContainingIgnoreCaseAndActifTrue(q).stream()
                 .map(produitMapper::toReponse).toList();
     }
 
 
-    public  ProduitResponse getProduitById (Long id){
+    public ProduitResponse getProduitById(Long id) {
         Produit produit = produitRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException(
+                .orElseThrow(() -> new ResourceNotFoundException(
                         "Produit non trouvé avec l'id : " + id));
 
-        return  produitMapper.toReponse(produit);
+        return produitMapper.toReponse(produit);
     }
 
     @Transactional
-    public ProduitResponse updateProduit(Long productId, UpdateProduitRequest request){
+    public ProduitResponse updateProduit(Long productId, UpdateProduitRequest request) {
         Produit produit = produitRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Le produit non trouve avec l'id : " +productId ));
-        if(request.getNom() != null ) {
+                        "Le produit non trouve avec l'id : " + productId));
+        if (request.getNom() != null) {
             if (!request.getNom().equals(produit.getNom())
                     && produitRepository.existsByNom(request.getNom())) {
                 throw new BusinessException("Ce nom existe déjà");
@@ -74,22 +73,22 @@ public class ProduitService {
             produit.setNom(request.getNom());
         }
 
-        if(request.getUnite() != null ){
+        if (request.getUnite() != null) {
             produit.setUnite(request.getUnite());
         }
-        if(request.getPoidsParCarton() != null ){
-            if(request.getPoidsParCarton().compareTo(BigDecimal.ZERO) <= 0){
+        if (request.getPoidsParCarton() != null) {
+            if (request.getPoidsParCarton().compareTo(BigDecimal.ZERO) <= 0) {
                 throw new BusinessException("Le poids par carton doit être positif");
             }
             produit.setPoidsParCarton(request.getPoidsParCarton());
         }
-       Produit savedProduit = produitRepository.save(produit);
+        Produit savedProduit = produitRepository.save(produit);
         return produitMapper.toReponse(savedProduit);
     }
 
 
     @Transactional
-    public void  deleteProduit(Long produitId){
+    public void deleteProduit(Long produitId) {
         Produit produit = produitRepository.findById(produitId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Le produit non trouve avec l'id : " + produitId
@@ -97,9 +96,6 @@ public class ProduitService {
         produit.setActif(false);
         produitRepository.save(produit);
     }
-
-
-
 
 
 }

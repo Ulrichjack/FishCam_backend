@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="produit")
+@Table(name = "produit")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,7 +25,7 @@ public class Produit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100, unique = true )
+    @Column(nullable = false, length = 100, unique = true)
     private String nom;
 
 
@@ -36,7 +36,7 @@ public class Produit {
     @Column(nullable = false)
     private BigDecimal poidsParCarton;
 
-    @Column(nullable = false )
+    @Column(nullable = false)
     private Boolean actif = true;
 
     @CreationTimestamp

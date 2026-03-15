@@ -14,7 +14,7 @@ public class StatistiquesEpargneResponse {
     private String poissonnerieNom;
     private Integer nombreComptes;
     private BigDecimal totalEpargne;
-    private  BigDecimal moyenneParCompte;
+    private BigDecimal moyenneParCompte;
 
 
 }

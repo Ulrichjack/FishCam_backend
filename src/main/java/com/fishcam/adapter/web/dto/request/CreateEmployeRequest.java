@@ -28,7 +28,7 @@ public class CreateEmployeRequest {
     @Positive
     private BigDecimal salaire;
 
-    @Size(max=20)
+    @Size(max = 20)
     private String telephone;
 
     @NotNull

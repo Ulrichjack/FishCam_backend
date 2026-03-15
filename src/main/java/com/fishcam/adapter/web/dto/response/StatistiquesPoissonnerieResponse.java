@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class StatistiquesPoissonnerieResponse {
     private PoissonnerieResponse poissonnerieResponse;
-    private  Integer nombreClients;
+    private Integer nombreClients;
     private StatistiquesEpargneResponse epargnes;
 }

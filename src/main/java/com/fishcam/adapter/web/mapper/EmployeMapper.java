@@ -15,12 +15,12 @@ public interface EmployeMapper {
     @Mapping(source = "user.id", target = "userId")
     EmployeResponse toResponse(Employe employe);
 
-    @Mapping(target = "id", ignore = true )
-    @Mapping(target = "poissonnerie",ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "poissonnerie", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "actif", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    Employe toEntity (CreateEmployeRequest createEmployeRequest);
+    Employe toEntity(CreateEmployeRequest createEmployeRequest);
 
 }

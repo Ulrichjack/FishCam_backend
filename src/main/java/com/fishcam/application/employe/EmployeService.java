@@ -10,6 +10,7 @@ import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.poissonnerie.PoissonnerieRepository;
 import com.fishcam.domain.user.User;
 import com.fishcam.domain.user.UserRepository;
+import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,17 +30,21 @@ public class EmployeService {
 
 
     @Transactional
-    public EmployeResponse createEmploye(CreateEmployeRequest request){
+    public EmployeResponse createEmploye(CreateEmployeRequest request) {
 
         Poissonnerie poissonnerie = poissonnerieRepository.findById(request.getPoissonnerieId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Poissonnerie non trouvée avec l'id : " + request.getPoissonnerieId()
                 ));
-
+        if (request.getTelephone() != null && !request.getTelephone().isBlank()) {
+            if (existsByTelephoneAndPoissonnerie(request.getTelephone(), poissonnerie.getId())) {
+                throw new BusinessException("Un employé avec ce numéro existe déjà");
+            }
+        }
         User userLie = null;
-        if(request.getUserId() != null){
+        if (request.getUserId() != null) {
             userLie = userRepository.findById(request.getUserId())
-                    .orElseThrow(()-> new ResourceNotFoundException("Utilisateur lié non trouvé"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Utilisateur lié non trouvé"));
         }
 
         Employe employe = employeMapper.toEntity(request);
@@ -53,43 +58,43 @@ public class EmployeService {
     }
 
 
-    public List<EmployeResponse> getEmployesByPoissonnerie(Long poissonnerieId){
-         Poissonnerie poissonnerie = poissonnerieRepository.findById(poissonnerieId)
-                 .orElseThrow(() -> new ResourceNotFoundException(
-                         "Poissonnerie non trouvée avec l'id : " + poissonnerieId));
-         return employeRepository.findByPoissonnerieId(poissonnerieId)
-                 .stream()
-                 .map(employeMapper::toResponse)
-                 .toList();
+    public List<EmployeResponse> getEmployesByPoissonnerie(Long poissonnerieId) {
+        Poissonnerie poissonnerie = poissonnerieRepository.findById(poissonnerieId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Poissonnerie non trouvée avec l'id : " + poissonnerieId));
+        return employeRepository.findByPoissonnerieId(poissonnerieId)
+                .stream()
+                .map(employeMapper::toResponse)
+                .toList();
     }
 
-    public EmployeResponse getEmployeById(Long employeId){
-       Employe employe =  employeRepository.findById(employeId)
-               .orElseThrow(() -> new ResourceNotFoundException(
-                       "Employé non trouvée avec l'id : " + employeId));
+    public EmployeResponse getEmployeById(Long employeId) {
+        Employe employe = employeRepository.findById(employeId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Employé non trouvée avec l'id : " + employeId));
 
         return employeMapper.toResponse(employe);
     }
 
     @Transactional
-    public EmployeResponse updateEmploye (Long employeId, UpdateEmployeRequest request){
-        Employe employe =  employeRepository.findById(employeId)
+    public EmployeResponse updateEmploye(Long employeId, UpdateEmployeRequest request) {
+        Employe employe = employeRepository.findById(employeId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Employé non trouvée avec l'id : " + employeId));
 
-        if(request.getNom() != null && !request.getNom().trim().isBlank()){
+        if (request.getNom() != null && !request.getNom().trim().isBlank()) {
             employe.setNom(request.getNom().trim());
         }
-        if(request.getPrenom() != null && !request.getPrenom().trim().isBlank() ){
+        if (request.getPrenom() != null && !request.getPrenom().trim().isBlank()) {
             employe.setPrenom(request.getPrenom().trim());
         }
-        if(request.getPoste() != null && !request.getPoste().trim().isBlank()){
+        if (request.getPoste() != null && !request.getPoste().trim().isBlank()) {
             employe.setPoste(request.getPoste().trim());
         }
-        if(request.getSalaire() != null){
+        if (request.getSalaire() != null) {
             employe.setSalaire(request.getSalaire());
         }
-        if(request.getTelephone() != null && !request.getTelephone().trim().isBlank() ){
+        if (request.getTelephone() != null && !request.getTelephone().trim().isBlank()) {
             employe.setTelephone(request.getTelephone().trim());
         }
         Employe savedEmploye = employeRepository.save(employe);
@@ -98,13 +103,19 @@ public class EmployeService {
     }
 
     @Transactional
-    public void  deleteEmploye(Long employeId){
+    public void deleteEmploye(Long employeId) {
         Employe employe = employeRepository.findById(employeId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Employé non trouve avec l'id : " + employeId
                 ));
         employe.setActif(false);
         employeRepository.save(employe);
+    }
+
+    public boolean existsByTelephoneAndPoissonnerie(String phone, Long poissonnerieId) {
+        return poissonnerieRepository.findById(poissonnerieId)
+                .map(p -> employeRepository.findByTelephoneAndPoissonnerie(phone, p).isPresent())
+                .orElse(false);
     }
 
 }

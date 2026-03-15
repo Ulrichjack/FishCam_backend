@@ -4,17 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EpargneResponse {
+public class FournisseurResponse {
 
     private Long id;
-    private ClientResponse client;
-    // private PoissonnerieResponse poissonnerie;
-    private BigDecimal currentBalance;
+    private String nom;
+    private String ville;
+    private String telephone;
+    private Boolean actif = true;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
 }

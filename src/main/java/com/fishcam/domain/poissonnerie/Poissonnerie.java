@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Poissonnerie {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -49,8 +49,6 @@ public class Poissonnerie {
     @Column(nullable = false)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-    
-   
 
 
 }

@@ -27,7 +27,7 @@ public class PoissonnerieService {
 
 
     @Transactional
-    public PoissonnerieResponse createPoissonnerie (CreatePoissonnerieRequest request){
+    public PoissonnerieResponse createPoissonnerie(CreatePoissonnerieRequest request) {
         String nom = request.getName().trim();
         if (poissonnerieRepository.existsByNameIgnoreCase(nom)) {
             throw new BusinessException("Une poissonnerie avec ce nom '" + nom + "' existe déjà");
@@ -49,11 +49,12 @@ public class PoissonnerieService {
     }
 
     @Transactional
-    public PoissonnerieResponse updatePoissonnerie(Long id, UpdatePoissonnerieRequest request){
+    public PoissonnerieResponse updatePoissonnerie(Long id, UpdatePoissonnerieRequest request) {
         Poissonnerie poissonnerie = getEntityById(id);
-        if(request.getName() != null && !request.getName().trim().equalsIgnoreCase(poissonnerie.getName())) {
+        if (request.getName() != null && !request.getName().trim().equalsIgnoreCase(poissonnerie.getName())) {
             if (poissonnerieRepository.existsByNameIgnoreCase(request.getName().trim())) {
-                throw new BusinessException ("Une poissonnerie avec ce nom '" + request.getName().trim()+ "' existe déjà");            }
+                throw new BusinessException("Une poissonnerie avec ce nom '" + request.getName().trim() + "' existe déjà");
+            }
         }
         poissonnerieMapper.updateEntityFromRequest(request, poissonnerie);
         return poissonnerieMapper.toResponse(poissonnerie);
@@ -61,18 +62,17 @@ public class PoissonnerieService {
     }
 
     @Transactional
-    public void deletePoissonnerie(Long poissonerieId){
+    public void deletePoissonnerie(Long poissonerieId) {
         Poissonnerie poissonnerie = poissonnerieRepository.findById(poissonerieId)
-                        .orElseThrow(() -> new ResourceNotFoundException(
-                                "La Poissonnerie non trouve avec l'id : " +poissonerieId
-                        ));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "La Poissonnerie non trouve avec l'id : " + poissonerieId
+                ));
         poissonnerie.setActive(false);
 
     }
 
 
-
-    private Poissonnerie getEntityById(Long id){
+    private Poissonnerie getEntityById(Long id) {
         return poissonnerieRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Poissonnerie non trouvée avec l'id : " + id));
     }

@@ -102,30 +102,31 @@ public class AuthService {
                         : null)
                 .build();
     }
+
     /**
      * Changer SON PROPRE mot de passe.
      * Accessible par TOUT LE MONDE (connecté).
      * L'utilisateur doit connaître son ancien mot de passe.
      *
-     * @param request  ancien + nouveau mot de passe
-     * @param currentUser  l'utilisateur connecté (depuis JWT)
+     * @param request     ancien + nouveau mot de passe
+     * @param currentUser l'utilisateur connecté (depuis JWT)
      * @return message de succès
      */
     @Transactional
     public String changePassword(ChangePasswordRequest request, User currentUser) {
         // verifier ancine mot de passe est correct
-        if (!passwordEncoder.matches(request.getAncienMotDePasse(),currentUser.getPassword())){
+        if (!passwordEncoder.matches(request.getAncienMotDePasse(), currentUser.getPassword())) {
             throw new BusinessException("Ancien mot de passe incorrect");
         }
 
         //2. verifier le nouveau est different de ancien
         if (passwordEncoder.matches(request.getNouveauMotDePasse(), currentUser.getPassword())) {
-            throw  new BusinessException("Le nouveau mot de passe doit etre different de l'ancien");
+            throw new BusinessException("Le nouveau mot de passe doit etre different de l'ancien");
         }
         //3.encoder et sauvegarder le nouveua mot de passe
         currentUser.setPassword(passwordEncoder.encode(request.getNouveauMotDePasse()));
         userRepository.save(currentUser);
-        log.info("Mot de passe change pour {} ({}) ", currentUser.getPhone(),currentUser.getRole());
+        log.info("Mot de passe change pour {} ({}) ", currentUser.getPhone(), currentUser.getRole());
 
         return "Mot de passe changé avec succès";
     }
@@ -134,14 +135,14 @@ public class AuthService {
      * Réinitialiser le mot de passe D'UN AUTRE utilisateur.
      * Accessible uniquement par PATRON et SUPER_ADMIN.
      * Pas besoin de l'ancien mot de passe (c'est le chef qui reset).
-     *
+     * <p>
      * Cas d'usage : un employé a oublié son mot de passe,
      * le patron le réinitialise pour lui.
-     *
+     * <p>
      * Sécurité : un PATRON ne peut pas reset un SUPER_ADMIN.
      *
-     * @param request  userId + nouveau mot de passe
-     * @param admin    l'utilisateur admin connecté (depuis JWT)
+     * @param request userId + nouveau mot de passe
+     * @param admin   l'utilisateur admin connecté (depuis JWT)
      * @return message de succès avec le nom de l'utilisateur
      */
     @Transactional

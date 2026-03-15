@@ -31,7 +31,6 @@ public class CompteCourant {
     private Client client;
 
 
-
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal solde = BigDecimal.ZERO;
 
@@ -57,6 +56,7 @@ public class CompteCourant {
     public Poissonnerie getPoissonnerie() {
         return client != null ? client.getPoissonnerie() : null;
     }
+
     public boolean estEnDette() {
         return solde.compareTo(BigDecimal.ZERO) < 0;
     }

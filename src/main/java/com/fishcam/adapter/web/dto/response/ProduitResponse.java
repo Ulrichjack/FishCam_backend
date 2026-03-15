@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
 public class ProduitResponse {
     private Long id;
     private String nom;
-    private Unite unite ;
+    private Unite unite;
     private BigDecimal poidsParCarton;
-    private Boolean actif ;
+    private Boolean actif;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

@@ -14,19 +14,19 @@ import java.time.LocalDateTime;
 
 /**
  * Transaction sur un compte courant.
- *
+ * <p>
  * Chaque mouvement (emprunt ou remboursement) est enregistré.
  * On garde l'historique complet avec le solde avant/après.
- *
+ * <p>
  * Exemples :
- *
+ * <p>
  * Transaction 1 - EMPRUNT
  * - Type : EMPRUNT
  * - Montant : 3000 FCFA
  * - Solde avant : -2000 FCFA
  * - Solde après : -5000 FCFA
  * - Description : "Achat de carpes"
- *
+ * <p>
  * Transaction 2 - REMBOURSEMENT
  * - Type : REMBOURSEMENT
  * - Montant : 2000 FCFA

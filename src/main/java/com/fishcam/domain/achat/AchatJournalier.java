@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 public class AchatJournalier {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -43,7 +43,7 @@ public class AchatJournalier {
     private User enregistrePar;
 
     @Column(nullable = false)
-    private  Boolean cloture = false;
+    private Boolean cloture = false;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp

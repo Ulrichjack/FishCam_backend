@@ -1,5 +1,7 @@
 package com.fishcam.infrastructure.config;
 
+import com.fishcam.domain.fournisseur.Fournisseur;
+import com.fishcam.domain.fournisseur.FournisseurRepository;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.poissonnerie.PoissonnerieRepository;
 import com.fishcam.domain.user.Role;
@@ -27,6 +29,7 @@ public class DataInitializer implements CommandLineRunner {
     private final PoissonnerieRepository poissonnerieRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FournisseurRepository fournisseurRepository;
 
     @Override
     public void run(String... args) {
@@ -42,6 +45,15 @@ public class DataInitializer implements CommandLineRunner {
             log.info("✅ Poissonnerie TEST créée (ID: {})", poissonnerie.getId());
 
             createTestUsers(poissonnerie);
+        }
+
+        if (fournisseurRepository.count() == 0) {
+            Fournisseur f = new Fournisseur();
+            f.setNom("CONGELCAM");
+            f.setVille("Nkongsamba");
+            f.setActif(true);
+            fournisseurRepository.save(f);
+            log.info("✅ Fournisseur CONGELCAM créé");
         }
 
         log.info("");

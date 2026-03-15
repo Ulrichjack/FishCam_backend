@@ -1,1150 +1,148 @@
-Hibernate:
-    select
-        n1_0.id
-    from
-        notification n1_0
-    where
-        n1_0.user_id=?
-        and n1_0.message like ? escape '\'
-        and n1_0.type=?
-    fetch
-        first ? rows only
-08:19:23.303 [restartedMain] DEBUG org.hibernate.SQL -
-    insert
-    into
-        notification
-        (created_at, message, poissonnerie_id, read, type, user_id)
-    values
-        (?, ?, ?, ?, ?, ?)
-    returning id
-Hibernate:
-    insert
-    into
-        notification
-        (created_at, message, poissonnerie_id, read, type, user_id)
-    values
-        (?, ?, ?, ?, ?, ?)
-    returning id
-08:19:23.306 [restartedMain] WARN  c.f.a.n.NotificationService - ⚠️ Alerte journée non clôturée créée : 2026-02-26 - poissonnerie 1
-08:19:23.310 [restartedMain] DEBUG org.hibernate.SQL -
-    select
-        n1_0.id
-    from
-        notification n1_0
-    where
-        n1_0.user_id=?
-        and n1_0.message like ? escape '\'
-        and n1_0.type=?
-    fetch
-        first ? rows only
-Hibernate:
-    select
-        n1_0.id
-    from
-        notification n1_0
-    where
-        n1_0.user_id=?
-        and n1_0.message like ? escape '\'
-        and n1_0.type=?
-    fetch
-        first ? rows only
-08:19:23.313 [restartedMain] DEBUG org.hibernate.SQL -
-    insert
-    into
-        notification
-        (created_at, message, poissonnerie_id, read, type, user_id)
-    values
-        (?, ?, ?, ?, ?, ?)
-    returning id
-Hibernate:
-    insert
-    into
-        notification
-        (created_at, message, poissonnerie_id, read, type, user_id)
-    values
-        (?, ?, ?, ?, ?, ?)
-    returning id
-08:19:23.315 [restartedMain] WARN  c.f.a.n.NotificationService - ⚠️ Alerte journée non clôturée créée : 2026-02-26 - poissonnerie 1
-08:19:23.319 [restartedMain] DEBUG org.hibernate.SQL -
-    select
-        n1_0.id
-    from
-        notification n1_0
-    where
-        n1_0.user_id=?
-        and n1_0.message like ? escape '\'
-        and n1_0.type=?
-    fetch
-        first ? rows only
-Hibernate:
-    select
-        n1_0.id
-    from
-        notification n1_0
-    where
-        n1_0.user_id=?
-        and n1_0.message like ? escape '\'
-        and n1_0.type=?
-    fetch
-        first ? rows only
-08:19:23.322 [restartedMain] DEBUG org.hibernate.SQL -
-    insert
-    into
-        notification
-        (created_at, message, poissonnerie_id, read, type, user_id)
-    values
-        (?, ?, ?, ?, ?, ?)
-    returning id
-Hibernate:
-    insert
-    into
-        notification
-        (created_at, message, poissonnerie_id, read, type, user_id)
-    values
-        (?, ?, ?, ?, ?, ?)
-    returning id
-08:19:23.324 [restartedMain] WARN  c.f.a.n.NotificationService - ⚠️ Alerte journée non clôturée créée : 2026-02-26 - poissonnerie 1
-08:19:23.328 [restartedMain] DEBUG org.hibernate.SQL -
-    select
-        n1_0.id
-    from
-        notification n1_0
-    where
-        n1_0.user_id=?
-        and n1_0.message like ? escape '\'
-        and n1_0.type=?
-    fetch
-        first ? rows only
-Hibernate:
-    select
-        n1_0.id
-    from
-        notification n1_0
-    where
-        n1_0.user_id=?
-        and n1_0.message like ? escape '\'
-        and n1_0.type=?
-    fetch
-        first ? rows only
-08:19:23.331 [restartedMain] DEBUG org.hibernate.SQL -
-    insert
-    into
-        notification
-        (created_at, message, poissonnerie_id, read, type, user_id)
-    values
-        (?, ?, ?, ?, ?, ?)
-    returning id
-Hibernate:
-    insert
-    into
-        notification
-        (created_at, message, poissonnerie_id, read, type, user_id)
-    values
-        (?, ?, ?, ?, ?, ?)
-    returning id
-08:19:23.334 [restartedMain] WARN  c.f.a.n.NotificationService - ⚠️ Alerte journée non clôturée créée : 2026-02-26 - poissonnerie 1
-08:19:23.338 [restartedMain] DEBUG org.hibernate.SQL -
-    select
-        rjr1_0.id
-    from
-        rapport_journalier_record rjr1_0
-    where
-        rjr1_0.poissonnerie_id=?
-        and rjr1_0.date_rapport=?
-    fetch
-        first ? rows only
-Hibernate:
-    select
-        rjr1_0.id
-    from
-        rapport_journalier_record rjr1_0
-    where
-        rjr1_0.poissonnerie_id=?
-        and rjr1_0.date_rapport=?
-    fetch
-        first ? rows only
-08:19:23.344 [restartedMain] DEBUG org.hibernate.SQL -
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        u1_0.default_poissonnerie_id,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    where
-        u1_0.default_poissonnerie_id=?
-Hibernate:
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        u1_0.default_poissonnerie_id,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    where
-        u1_0.default_poissonnerie_id=?
-08:19:23.351 [restartedMain] DEBUG org.hibernate.SQL -
-    select
-        n1_0.id
-    from
-        notification n1_0
-    where
-        n1_0.user_id=?
-        and n1_0.message like ? escape '\'
-        and n1_0.type=?
-    fetch
-        first ? rows only
-Hibernate:
-    select
-        n1_0.id
-    from
-        notification n1_0
-    where
-        n1_0.user_id=?
-        and n1_0.message like ? escape '\'
-        and n1_0.type=?
-    fetch
-        first ? rows only
-08:19:23.354 [restartedMain] DEBUG org.hibernate.SQL -
-    insert
-    into
-        notification
-        (created_at, message, poissonnerie_id, read, type, user_id)
-    values
-        (?, ?, ?, ?, ?, ?)
-    returning id
-Hibernate:
-    insert
-    into
-        notification
-        (created_at, message, poissonnerie_id, read, type, user_id)
-    values
-        (?, ?, ?, ?, ?, ?)
-    returning id
-08:19:23.358 [restartedMain] WARN  c.f.a.n.NotificationService - ⚠️ Alerte journée non clôturée créée : 2026-02-25 - poissonnerie 1
-08:19:23.361 [restartedMain] DEBUG org.hibernate.SQL -
-    select
-        n1_0.id
-    from
-        notification n1_0
-    where
-        n1_0.user_id=?
-        and n1_0.message like ? escape '\'
-        and n1_0.type=?
-    fetch
-        first ? rows only
-Hibernate:
-    select
-        n1_0.id
-    from
-        notification n1_0
-    where
-        n1_0.user_id=?
-        and n1_0.message like ? escape '\'
-        and n1_0.type=?
-    fetch
-        first ? rows only
-08:19:23.365 [restartedMain] DEBUG org.hibernate.SQL -
-    insert
-    into
-        notification
-        (created_at, message, poissonnerie_id, read, type, user_id)
-    values
-        (?, ?, ?, ?, ?, ?)
-    returning id
-Hibernate:
-    insert
-    into
-        notification
-        (created_at, message, poissonnerie_id, read, type, user_id)
-    values
-        (?, ?, ?, ?, ?, ?)
-    returning id
-08:19:23.368 [restartedMain] WARN  c.f.a.n.NotificationService - ⚠️ Alerte journée non clôturée créée : 2026-02-25 - poissonnerie 1
-08:19:23.374 [restartedMain] DEBUG org.hibernate.SQL -
-    select
-        n1_0.id
-    from
-        notification n1_0
-    where
-        n1_0.user_id=?
-        and n1_0.message like ? escape '\'
-        and n1_0.type=?
-    fetch
-        first ? rows only
-Hibernate:
-    select
-        n1_0.id
-    from
-        notification n1_0
-    where
-        n1_0.user_id=?
-        and n1_0.message like ? escape '\'
-        and n1_0.type=?
-    fetch
-        first ? rows only
-08:19:23.376 [restartedMain] DEBUG org.hibernate.SQL -
-    insert
-    into
-        notification
-        (created_at, message, poissonnerie_id, read, type, user_id)
-    values
-        (?, ?, ?, ?, ?, ?)
-    returning id
-Hibernate:
-    insert
-    into
-        notification
-        (created_at, message, poissonnerie_id, read, type, user_id)
-    values
-        (?, ?, ?, ?, ?, ?)
-    returning id
-08:19:23.379 [restartedMain] WARN  c.f.a.n.NotificationService - ⚠️ Alerte journée non clôturée créée : 2026-02-25 - poissonnerie 1
-08:19:23.385 [restartedMain] DEBUG org.hibernate.SQL -
-    select
-        n1_0.id
-    from
-        notification n1_0
-    where
-        n1_0.user_id=?
-        and n1_0.message like ? escape '\'
-        and n1_0.type=?
-    fetch
-        first ? rows only
-Hibernate:
-    select
-        n1_0.id
-    from
-        notification n1_0
-    where
-        n1_0.user_id=?
-        and n1_0.message like ? escape '\'
-        and n1_0.type=?
-    fetch
-        first ? rows only
-08:19:23.388 [restartedMain] DEBUG org.hibernate.SQL -
-    insert
-    into
-        notification
-        (created_at, message, poissonnerie_id, read, type, user_id)
-    values
-        (?, ?, ?, ?, ?, ?)
-    returning id
-Hibernate:
-    insert
-    into
-        notification
-        (created_at, message, poissonnerie_id, read, type, user_id)
-    values
-        (?, ?, ?, ?, ?, ?)
-    returning id
-08:19:23.391 [restartedMain] WARN  c.f.a.n.NotificationService - ⚠️ Alerte journée non clôturée créée : 2026-02-25 - poissonnerie 1
-08:19:23.401 [restartedMain] INFO  c.f.i.s.NotificationScheduler - ✅ Vérification terminée
-08:19:55.599 [http-nio-8080-exec-2] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-08:19:55.599 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-08:19:55.606 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 7 ms
-08:19:55.640 [http-nio-8080-exec-2] INFO  c.f.application.auth.AuthService - Tentative de connexion pour: 692087724
-08:19:56.059 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL -
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        u1_0.default_poissonnerie_id,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    where
-        u1_0.phone=?
-Hibernate:
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        u1_0.default_poissonnerie_id,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    where
-        u1_0.phone=?
-08:19:56.064 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL -
-    select
-        p1_0.id,
-        p1_0.active,
-        p1_0.address,
-        p1_0.created_at,
-        p1_0.name,
-        p1_0.phone,
-        p1_0.updated_at
-    from
-        poissonnerie p1_0
-    where
-        p1_0.id=?
-Hibernate:
-    select
-        p1_0.id,
-        p1_0.active,
-        p1_0.address,
-        p1_0.created_at,
-        p1_0.name,
-        p1_0.phone,
-        p1_0.updated_at
-    from
-        poissonnerie p1_0
-    where
-        p1_0.id=?
-08:19:56.485 [http-nio-8080-exec-2] ERROR c.f.application.auth.AuthService - Échec d'authentification pour: 692087724
-08:19:56.490 [http-nio-8080-exec-2] ERROR c.f.i.e.GlobalExceptionHandler - Erreur métier: Téléphone ou mot de passe incorrect
-08:19:56.511 [http-nio-8080-exec-2] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [com.fishcam.infrastructure.exception.BusinessException: Téléphone ou mot de passe incorrect]
-08:20:21.366 [http-nio-8080-exec-4] INFO  c.f.application.auth.AuthService - Tentative de connexion pour: 692087724
-08:20:21.370 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL -
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        u1_0.default_poissonnerie_id,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    where
-        u1_0.phone=?
-Hibernate:
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        u1_0.default_poissonnerie_id,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    where
-        u1_0.phone=?
-08:20:21.374 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL -
-    select
-        p1_0.id,
-        p1_0.active,
-        p1_0.address,
-        p1_0.created_at,
-        p1_0.name,
-        p1_0.phone,
-        p1_0.updated_at
-    from
-        poissonnerie p1_0
-    where
-        p1_0.id=?
-Hibernate:
-    select
-        p1_0.id,
-        p1_0.active,
-        p1_0.address,
-        p1_0.created_at,
-        p1_0.name,
-        p1_0.phone,
-        p1_0.updated_at
-    from
-        poissonnerie p1_0
-    where
-        p1_0.id=?
-08:20:21.776 [http-nio-8080-exec-4] ERROR c.f.application.auth.AuthService - Échec d'authentification pour: 692087724
-08:20:21.776 [http-nio-8080-exec-4] ERROR c.f.i.e.GlobalExceptionHandler - Erreur métier: Téléphone ou mot de passe incorrect
-08:20:21.780 [http-nio-8080-exec-4] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [com.fishcam.infrastructure.exception.BusinessException: Téléphone ou mot de passe incorrect]
-08:20:42.625 [http-nio-8080-exec-6] INFO  c.f.application.auth.AuthService - Tentative de connexion pour: 692087724
-08:20:42.628 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL -
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        u1_0.default_poissonnerie_id,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    where
-        u1_0.phone=?
-Hibernate:
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        u1_0.default_poissonnerie_id,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    where
-        u1_0.phone=?
-08:20:42.632 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL -
-    select
-        p1_0.id,
-        p1_0.active,
-        p1_0.address,
-        p1_0.created_at,
-        p1_0.name,
-        p1_0.phone,
-        p1_0.updated_at
-    from
-        poissonnerie p1_0
-    where
-        p1_0.id=?
-Hibernate:
-    select
-        p1_0.id,
-        p1_0.active,
-        p1_0.address,
-        p1_0.created_at,
-        p1_0.name,
-        p1_0.phone,
-        p1_0.updated_at
-    from
-        poissonnerie p1_0
-    where
-        p1_0.id=?
-08:20:43.015 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL -
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        u1_0.default_poissonnerie_id,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    where
-        u1_0.phone=?
-Hibernate:
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        u1_0.default_poissonnerie_id,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    where
-        u1_0.phone=?
-08:20:43.025 [http-nio-8080-exec-6] INFO  c.f.i.security.JwtService - Token généré pour l'utilisateur: 692087724 (SUPER_ADMIN)
-08:20:43.025 [http-nio-8080-exec-6] INFO  c.f.application.auth.AuthService - Connexion réussie pour: 692087724 (ID: 1, Role: SUPER_ADMIN)
-08:21:02.674 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL -
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        u1_0.default_poissonnerie_id,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    where
-        u1_0.phone=?
-Hibernate:
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        u1_0.default_poissonnerie_id,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    where
-        u1_0.phone=?
-08:21:02.678 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL -
-    select
-        p1_0.id,
-        p1_0.active,
-        p1_0.address,
-        p1_0.created_at,
-        p1_0.name,
-        p1_0.phone,
-        p1_0.updated_at
-    from
-        poissonnerie p1_0
-    where
-        p1_0.id=?
-Hibernate:
-    select
-        p1_0.id,
-        p1_0.active,
-        p1_0.address,
-        p1_0.created_at,
-        p1_0.name,
-        p1_0.phone,
-        p1_0.updated_at
-    from
-        poissonnerie p1_0
-    where
-        p1_0.id=?
-08:21:02.690 [http-nio-8080-exec-7] DEBUG c.f.i.security.JwtService - Token valide pour: 692087724
-08:21:02.691 [http-nio-8080-exec-7] DEBUG c.f.i.s.JwtAuthenticationFilter - Utilisateur authentifié: 692087724 (ID: 1)
-08:21:03.896 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL -
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        dp1_0.id,
-        dp1_0.active,
-        dp1_0.address,
-        dp1_0.created_at,
-        dp1_0.name,
-        dp1_0.phone,
-        dp1_0.updated_at,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    left join
-        poissonnerie dp1_0
-            on dp1_0.id=u1_0.default_poissonnerie_id
-    where
-        u1_0.id=?
-Hibernate:
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        dp1_0.id,
-        dp1_0.active,
-        dp1_0.address,
-        dp1_0.created_at,
-        dp1_0.name,
-        dp1_0.phone,
-        dp1_0.updated_at,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    left join
-        poissonnerie dp1_0
-            on dp1_0.id=u1_0.default_poissonnerie_id
-    where
-        u1_0.id=?
-08:21:03.901 [http-nio-8080-exec-7] INFO  c.f.application.auth.AuthService - Mot de passe change pour 692087724 (SUPER_ADMIN)
-08:21:03.902 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL -
-    update
-        app_user
-    set
-        active=?,
-        avatar_path=?,
-        default_poissonnerie_id=?,
-        first_name=?,
-        last_name=?,
-        password=?,
-        phone=?,
-        role=?,
-        scope=?,
-        updated_at=?
-    where
-        id=?
-Hibernate:
-    update
-        app_user
-    set
-        active=?,
-        avatar_path=?,
-        default_poissonnerie_id=?,
-        first_name=?,
-        last_name=?,
-        password=?,
-        phone=?,
-        role=?,
-        scope=?,
-        updated_at=?
-    where
-        id=?
-08:21:11.046 [http-nio-8080-exec-8] INFO  c.f.application.auth.AuthService - Tentative de connexion pour: 692087724
-08:21:11.050 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL -
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        u1_0.default_poissonnerie_id,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    where
-        u1_0.phone=?
-Hibernate:
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        u1_0.default_poissonnerie_id,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    where
-        u1_0.phone=?
-08:21:11.054 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL -
-    select
-        p1_0.id,
-        p1_0.active,
-        p1_0.address,
-        p1_0.created_at,
-        p1_0.name,
-        p1_0.phone,
-        p1_0.updated_at
-    from
-        poissonnerie p1_0
-    where
-        p1_0.id=?
-Hibernate:
-    select
-        p1_0.id,
-        p1_0.active,
-        p1_0.address,
-        p1_0.created_at,
-        p1_0.name,
-        p1_0.phone,
-        p1_0.updated_at
-    from
-        poissonnerie p1_0
-    where
-        p1_0.id=?
-08:21:11.442 [http-nio-8080-exec-8] ERROR c.f.application.auth.AuthService - Échec d'authentification pour: 692087724
-08:21:11.443 [http-nio-8080-exec-8] ERROR c.f.i.e.GlobalExceptionHandler - Erreur métier: Téléphone ou mot de passe incorrect
-08:21:11.446 [http-nio-8080-exec-8] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [com.fishcam.infrastructure.exception.BusinessException: Téléphone ou mot de passe incorrect]
+reponse :
+{
+    "success": true,
+    "data": [
+        {
+            "id": 2,
+            "nom": "SYLVER ",
+            "unite": "KG",
+            "poidsParCarton": 10.00,
+            "actif": true,
+            "createdAt": "2026-03-12T03:58:21.141449",
+            "updatedAt": "2026-03-12T03:58:21.141579"
+        }
+    ],
+    "message": "",
+    "code": 200,
+    "timestamp": "2026-03-12T03:59:43.82139312",
+    "fieldErrors": null
+}
+{
+    "success": true,
+    "data": {
+        "content": [
+            {
+                "id": 1,
+                "nom": "JAX 23+",
+                "unite": "KG",
+                "poidsParCarton": 21.00,
+                "actif": true,
+                "createdAt": "2026-03-12T03:56:36.076929",
+                "updatedAt": "2026-03-12T03:56:36.076986"
+            },
+            {
+                "id": 2,
+                "nom": "SYLVER ",
+                "unite": "KG",
+                "poidsParCarton": 10.00,
+                "actif": true,
+                "createdAt": "2026-03-12T03:58:21.141449",
+                "updatedAt": "2026-03-12T03:58:21.141579"
+            }
+        ],
+        "page": {
+            "size": 20,
+            "number": 0,
+            "totalElements": 2,
+            "totalPages": 1
+        }
+    },
+    "message": "Liste des produits récupérée",
+    "code": 200,
+    "timestamp": "2026-03-12T03:58:28.275371626",
+    "fieldErrors": null
+}
+{
+    "success": true,
+    "data": {
+        "id": 2,
+        "nom": "SYLVER ",
+        "unite": "KG",
+        "poidsParCarton": 10,
+        "actif": true,
+        "createdAt": "2026-03-12T03:58:21.141449",
+        "updatedAt": "2026-03-12T03:58:21.141579"
+    },
+    "message": "Produit créée avec succès",
+    "code": 201,
+    "timestamp": "2026-03-12T03:58:21.15904824",
+    "fieldErrors": null
+}
 
+{
+    "success": true,
+    "data": {
+        "id": 1,
+        "nom": "JAX 23+",
+        "unite": "KG",
+        "poidsParCarton": 20,
+        "actif": true,
+        "createdAt": "2026-03-12T03:56:36.076929",
+        "updatedAt": "2026-03-12T03:56:36.076986"
+    },
+    "message": "Produit modifié avec succès",
+    "code": 200,
+    "timestamp": "2026-03-12T04:01:37.743230738",
+    "fieldErrors": null
+}
 
-08:23:08.223 [http-nio-8080-exec-9] DEBUG org.hibernate.SQL -
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        u1_0.default_poissonnerie_id,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    where
-        u1_0.phone=?
-Hibernate:
-    select
-        u1_0.id,
-        u1_0.active,
-        u1_0.avatar_path,
-        u1_0.created_at,
-        u1_0.default_poissonnerie_id,
-        u1_0.first_name,
-        u1_0.last_name,
-        u1_0.password,
-        u1_0.phone,
-        u1_0.role,
-        u1_0.scope,
-        u1_0.updated_at
-    from
-        app_user u1_0
-    where
-        u1_0.phone=?
-08:23:08.226 [http-nio-8080-exec-9] DEBUG org.hibernate.SQL -
-    select
-        p1_0.id,
-        p1_0.active,
-        p1_0.address,
-        p1_0.created_at,
-        p1_0.name,
-        p1_0.phone,
-        p1_0.updated_at
-    from
-        poissonnerie p1_0
-    where
-        p1_0.id=?
-Hibernate:
-    select
-        p1_0.id,
-        p1_0.active,
-        p1_0.address,
-        p1_0.created_at,
-        p1_0.name,
-        p1_0.phone,
-        p1_0.updated_at
-    from
-        poissonnerie p1_0
-    where
-        p1_0.id=?
-08:23:08.242 [http-nio-8080-exec-9] DEBUG c.f.i.security.JwtService - Token valide pour: 692087724
-08:23:08.242 [http-nio-8080-exec-9] DEBUG c.f.i.s.JwtAuthenticationFilter - Utilisateur authentifié: 692087724 (ID: 1)
-08:23:08.650 [http-nio-8080-exec-9] ERROR c.f.i.e.GlobalExceptionHandler - Erreur métier: Ancien mot de passe incorrect
-08:23:08.652 [http-nio-8080-exec-9] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [com.fishcam.infrastructure.exception.BusinessException: Ancien mot de passe incorrect]
+{
+    "success": true,
+    "data": {
+        "id": 1,
+        "prenom": "Marie",
+        "nom": "Dupont",
+        "poste": "Caissière",
+        "salaire": 150000,
+        "telephone": null,
+        "poissonnerieId": 1,
+        "userId": null,
+        "poissonnerieNom": "FISH CAM VILLE (TEST)",
+        "actif": true,
+        "createdAt": "2026-03-12T04:05:23.351292",
+        "updatedAt": "2026-03-12T04:05:23.351331"
+    },
+    "message": "Employé créé avec succès",
+    "code": 201,
+    "timestamp": "2026-03-12T04:05:23.380476163",
+    "fieldErrors": null
+} il ya un soucis on peut cree deux employe avec le meme nom et prenom donc cest une erreur ou non ?
 
 {
     "success": true,
     "data": [
         {
-            "id": 37,
-            "type": "COMPTE_COURANT_ALERTE",
-            "message": "🔴 Jean-Pierre1 Test a franchi le seuil de -5000 FCFA (solde: -7000.00 FCFA)",
-            "read": false,
-            "poissonnerie": {
-                "id": 1,
-                "address": null,
-                "name": "Test Shop Modifié",
-                "phone": null,
-                "active": false,
-                "createdAt": "2026-03-04T08:19:21.395272",
-                "updatedAt": "2026-03-04T09:58:53.797754"
-            },
-            "createdAt": "2026-03-04T12:37:26.237303"
+            "id": 1,
+            "prenom": "Marie",
+            "nom": "Dupont",
+            "poste": "Caissière",
+            "salaire": 150000.00,
+            "telephone": null,
+            "poissonnerieId": 1,
+            "userId": null,
+            "poissonnerieNom": "FISH CAM VILLE (TEST)",
+            "actif": true,
+            "createdAt": "2026-03-12T04:05:23.351292",
+            "updatedAt": "2026-03-12T04:05:23.351331"
         },
         {
-            "id": 30,
-            "type": "RAPPORT_JOURNALIER",
-            "message": "📊 Rapport du 2026-03-04\n\n💰 Emprunts : 0 transactions - 0 FCFA\n💵 Remboursements : 0 transactions - 0 FCFA\n📉 Solde net : 0 FCFA\n\n⚠️ Comptes en dette : 0 clients\n💳 Total dettes actives : 0 FCFA",
-            "read": false,
-            "poissonnerie": {
-                "id": 1,
-                "address": null,
-                "name": "Test Shop Modifié",
-                "phone": null,
-                "active": false,
-                "createdAt": "2026-03-04T08:19:21.395272",
-                "updatedAt": "2026-03-04T09:58:53.797754"
-            },
-            "createdAt": "2026-03-04T09:59:34.703501"
-        },
-        {
-            "id": 27,
-            "type": "RAPPORT_JOURNALIER",
-            "message": "⚠️ JOURNÉE NON CLÔTURÉE\n\nLe rapport du 2026-02-25 n'a pas été généré.\nLe PC était peut-être éteint à 19h ce jour-là.\nConsultez les transactions manuellement si nécessaire.",
-            "read": false,
-            "poissonnerie": {
-                "id": 1,
-                "address": null,
-                "name": "Test Shop Modifié",
-                "phone": null,
-                "active": false,
-                "createdAt": "2026-03-04T08:19:21.395272",
-                "updatedAt": "2026-03-04T09:58:53.797754"
-            },
-            "createdAt": "2026-03-04T08:19:23.37649"
-        },
-        {
-            "id": 23,
-            "type": "RAPPORT_JOURNALIER",
-            "message": "⚠️ JOURNÉE NON CLÔTURÉE\n\nLe rapport du 2026-02-26 n'a pas été généré.\nLe PC était peut-être éteint à 19h ce jour-là.\nConsultez les transactions manuellement si nécessaire.",
-            "read": false,
-            "poissonnerie": {
-                "id": 1,
-                "address": null,
-                "name": "Test Shop Modifié",
-                "phone": null,
-                "active": false,
-                "createdAt": "2026-03-04T08:19:21.395272",
-                "updatedAt": "2026-03-04T09:58:53.797754"
-            },
-            "createdAt": "2026-03-04T08:19:23.322138"
-        },
-        {
-            "id": 19,
-            "type": "RAPPORT_JOURNALIER",
-            "message": "⚠️ JOURNÉE NON CLÔTURÉE\n\nLe rapport du 2026-02-27 n'a pas été généré.\nLe PC était peut-être éteint à 19h ce jour-là.\nConsultez les transactions manuellement si nécessaire.",
-            "read": false,
-            "poissonnerie": {
-                "id": 1,
-                "address": null,
-                "name": "Test Shop Modifié",
-                "phone": null,
-                "active": false,
-                "createdAt": "2026-03-04T08:19:21.395272",
-                "updatedAt": "2026-03-04T09:58:53.797754"
-            },
-            "createdAt": "2026-03-04T08:19:23.270814"
-        },
-        {
-            "id": 15,
-            "type": "RAPPORT_JOURNALIER",
-            "message": "⚠️ JOURNÉE NON CLÔTURÉE\n\nLe rapport du 2026-02-28 n'a pas été généré.\nLe PC était peut-être éteint à 19h ce jour-là.\nConsultez les transactions manuellement si nécessaire.",
-            "read": false,
-            "poissonnerie": {
-                "id": 1,
-                "address": null,
-                "name": "Test Shop Modifié",
-                "phone": null,
-                "active": false,
-                "createdAt": "2026-03-04T08:19:21.395272",
-                "updatedAt": "2026-03-04T09:58:53.797754"
-            },
-            "createdAt": "2026-03-04T08:19:23.207692"
-        },
-        {
-            "id": 11,
-            "type": "RAPPORT_JOURNALIER",
-            "message": "⚠️ JOURNÉE NON CLÔTURÉE\n\nLe rapport du 2026-03-01 n'a pas été généré.\nLe PC était peut-être éteint à 19h ce jour-là.\nConsultez les transactions manuellement si nécessaire.",
-            "read": false,
-            "poissonnerie": {
-                "id": 1,
-                "address": null,
-                "name": "Test Shop Modifié",
-                "phone": null,
-                "active": false,
-                "createdAt": "2026-03-04T08:19:21.395272",
-                "updatedAt": "2026-03-04T09:58:53.797754"
-            },
-            "createdAt": "2026-03-04T08:19:23.143363"
-        },
-        {
-            "id": 7,
-            "type": "RAPPORT_JOURNALIER",
-            "message": "⚠️ JOURNÉE NON CLÔTURÉE\n\nLe rapport du 2026-03-02 n'a pas été généré.\nLe PC était peut-être éteint à 19h ce jour-là.\nConsultez les transactions manuellement si nécessaire.",
-            "read": false,
-            "poissonnerie": {
-                "id": 1,
-                "address": null,
-                "name": "Test Shop Modifié",
-                "phone": null,
-                "active": false,
-                "createdAt": "2026-03-04T08:19:21.395272",
-                "updatedAt": "2026-03-04T09:58:53.797754"
-            },
-            "createdAt": "2026-03-04T08:19:23.079691"
-        },
-        {
-            "id": 3,
-            "type": "RAPPORT_JOURNALIER",
-            "message": "⚠️ JOURNÉE NON CLÔTURÉE\n\nLe rapport du 2026-03-03 n'a pas été généré.\nLe PC était peut-être éteint à 19h ce jour-là.\nConsultez les transactions manuellement si nécessaire.",
-            "read": false,
-            "poissonnerie": {
-                "id": 1,
-                "address": null,
-                "name": "Test Shop Modifié",
-                "phone": null,
-                "active": false,
-                "createdAt": "2026-03-04T08:19:21.395272",
-                "updatedAt": "2026-03-04T09:58:53.797754"
-            },
-            "createdAt": "2026-03-04T08:19:23.007801"
+            "id": 2,
+            "prenom": "Marie",
+            "nom": "Dupont",
+            "poste": "Caissière",
+            "salaire": 150000.00,
+            "telephone": null,
+            "poissonnerieId": 1,
+            "userId": null,
+            "poissonnerieNom": "FISH CAM VILLE (TEST)",
+            "actif": true,
+            "createdAt": "2026-03-12T04:06:26.884202",
+            "updatedAt": "2026-03-12T04:06:26.884252"
         }
     ],
-    "message": "Notifications récupérées",
+    "message": "Liste des employés récupérée",
     "code": 200,
-    "timestamp": "2026-03-04T12:48:57.362914351",
+    "timestamp": "2026-03-12T04:07:08.018335851",
     "fieldErrors": null
 }
 
-
-        p1_0.name,
-        p1_0.phone,
-        p1_0.updated_at
-    from
-        poissonnerie p1_0
-    where
-        p1_0.id=?
-18:50:13.567 [http-nio-8080-exec-9] DEBUG c.f.i.security.JwtService - Token valide pour: 677222222
-18:50:13.568 [http-nio-8080-exec-9] DEBUG c.f.i.s.JwtAuthenticationFilter - Utilisateur authentifié: 677222222 (ID: 3)
-18:50:13.573 [http-nio-8080-exec-9] ERROR c.f.i.e.GlobalExceptionHandler - Erreur inattendue
-org.springframework.web.multipart.support.MissingServletRequestPartException: Required part 'file' is not present.
-	at org.springframework.web.method.annotation.RequestParamMethodArgumentResolver.handleMissingValueInternal(RequestParamMethodArgumentResolver.java:216)
-	at org.springframework.web.method.annotation.RequestParamMethodArgumentResolver.handleMissingValue(RequestParamMethodArgumentResolver.java:196)
-	at org.springframework.web.method.annotation.AbstractNamedValueMethodArgumentResolver.resolveArgument(AbstractNamedValueMethodArgumentResolver.java:125)
-	at org.springframework.web.method.support.HandlerMethodArgumentResolverComposite.resolveArgument(HandlerMethodArgumentResolverComposite.java:122)
-	at org.springframework.web.method.support.InvocableHandlerMethod.getMethodArgumentValues(InvocableHandlerMethod.java:224)
-	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:178)
-	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:926)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:831)
-	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
-	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
-	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
-	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
-	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
-	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:131)
-	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
-	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
-	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
-	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
-	at com.fishcam.infrastructure.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:88)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
-	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
-	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
-	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
-	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
-	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
-	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
-	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
-	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
-	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
-	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
-	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
-	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
-	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:195)
-	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
-	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
-	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:230)
-	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362)
-	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:384)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
-	at java.base/java.lang.Thread.run(Thread.java:840)
-18:50:13.583 [http-nio-8080-exec-9] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.web.multipart.support.MissingServletRequestPartException: Required part 'file' is not present.]

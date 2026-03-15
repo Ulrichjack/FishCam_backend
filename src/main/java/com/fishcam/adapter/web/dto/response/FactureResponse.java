@@ -21,6 +21,6 @@ public class FactureResponse {
     private String fournisseurNom;
     private Long enregistreParId;
     private String enregistreParNom;
-    private  Boolean cloture = false;
+    private Boolean cloture = false;
 
 }

@@ -22,10 +22,8 @@ public class Fournisseur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @Column(nullable = false)
     private String nom;
-
 
     @Column(length = 100)
     private String ville;
@@ -36,7 +34,7 @@ public class Fournisseur {
     @Column(nullable = false)
     private Boolean actif = true;
 
-    @Column(nullable = false,updatable = false)
+    @Column(nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
 

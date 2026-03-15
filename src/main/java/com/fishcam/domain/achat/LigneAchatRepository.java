@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface LigneAchatRepository  extends JpaRepository<LigneAchat,Long> {
+public interface LigneAchatRepository extends JpaRepository<LigneAchat, Long> {
 
     @Query("SELECT l FROM LigneAchat l WHERE l.produit.id = :produitId " +
             "AND l.achatJournalier.poissonnerie.id = :poissonnerieId " +

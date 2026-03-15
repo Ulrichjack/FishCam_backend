@@ -19,7 +19,7 @@ public interface UserMapper {
 
     /**
      * Convertit CreateUserRequest en User
-     *
+     * <p>
      * IMPORTANT :
      * - Le password est mappé automatiquement (même nom dans les 2 classes)
      * - defaultPoissonnerieId est ignoré (géré manuellement dans UserService)
@@ -35,7 +35,7 @@ public interface UserMapper {
 
     /**
      * Met à jour un User existant avec UpdateUserRequest
-     *
+     * <p>
      * IMPORTANT :
      * - defaultPoissonnerieId est ignoré (géré manuellement dans UserService)
      * - Les champs null dans UpdateUserRequest ne modifient pas l'entité existante

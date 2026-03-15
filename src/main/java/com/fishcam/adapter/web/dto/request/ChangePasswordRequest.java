@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class ChangePasswordRequest{
+public class ChangePasswordRequest {
 
     @NotBlank(message = "L'ancien mot de passe est obligatoire")
     private String ancienMotDePasse;

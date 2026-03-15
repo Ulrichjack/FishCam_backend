@@ -15,7 +15,7 @@ public interface TransactionEpargneRepository extends JpaRepository<TransactionE
     List<TransactionEpargne> findByEpargneOrderByTransactionDateDesc(Epargne epargne);
 
     //tous les depots ou tout les retraits
-    List<TransactionEpargne> findByType (TypeTransactionEpargne type);
+    List<TransactionEpargne> findByType(TypeTransactionEpargne type);
 
 
 }

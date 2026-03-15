@@ -17,10 +17,10 @@ import org.springframework.stereotype.Component;
  * Initialisation PRODUCTION.
  * Crée les 3 boutiques + les 4 comptes de base UNE SEULE FOIS
  * au premier lancement.
- *
+ * <p>
  * Les utilisateurs devront CHANGER leur mot de passe après la
  * première connexion.
- *
+ * <p>
  * SÉCURITÉ :
  * - Les mots de passe par défaut sont simples exprès (première connexion)
  * - Le patron DOIT les changer immédiatement

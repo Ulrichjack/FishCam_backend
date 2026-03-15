@@ -36,14 +36,13 @@ public interface AchatMapper {
     FactureDetailResponse toDetailResponse(AchatJournalier achatJournalier);
 
 
-
     @Mapping(source = "produit.id", target = "produitId")
     @Mapping(source = "produit.nom", target = "produitNom")
     @Mapping(target = "prixAchatKilo", ignore = true)
     @Mapping(target = "prixVenteTotal", ignore = true)
     @Mapping(target = "margeKilo", ignore = true)
     @Mapping(target = "margeTotal", ignore = true)
-    LigneAchatResponse toLigneResponse (LigneAchat ligneAchat);
+    LigneAchatResponse toLigneResponse(LigneAchat ligneAchat);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "cloture", ignore = true)
@@ -52,7 +51,7 @@ public interface AchatMapper {
     @Mapping(target = "enregistrePar", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    AchatJournalier toEntity (CreateFactureRequest createFactureRequest);
+    AchatJournalier toEntity(CreateFactureRequest createFactureRequest);
 
 
     @Mapping(target = "id", ignore = true)

@@ -27,7 +27,6 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     Optional<Client> findByPhoneAndPoissonnerie(String phone, Poissonnerie poissonnerie);
 
 
-
     long countByPoissonnerie(Poissonnerie poissonnerie);
 
     //Recherche par nom ou prénom (contient, insensible à la casse)

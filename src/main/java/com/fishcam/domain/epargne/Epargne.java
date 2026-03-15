@@ -31,7 +31,6 @@ public class Epargne {
     private Client client;
 
 
-
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal currentBalance;
 
@@ -50,5 +49,5 @@ public class Epargne {
     public Poissonnerie getPoissonnerie() {
         return client != null ? client.getPoissonnerie() : null;
     }
-    
+
 }

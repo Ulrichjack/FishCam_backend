@@ -18,7 +18,7 @@ public interface PoissonnerieMapper {
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    Poissonnerie toEntity (CreatePoissonnerieRequest request);
+    Poissonnerie toEntity(CreatePoissonnerieRequest request);
 
     //Met à jour une entité existante avec les données du Request
     //@MappingTarget : modifie l'objet en paramètre

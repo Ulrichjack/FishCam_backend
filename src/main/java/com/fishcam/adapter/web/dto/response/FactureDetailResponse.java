@@ -23,7 +23,7 @@ public class FactureDetailResponse {
     private String fournisseurNom;
     private Long enregistreParId;
     private String enregistreParNom;
-    private  Boolean cloture = false;
+    private Boolean cloture = false;
     private BigDecimal totalAchat;
     private BigDecimal totalVente;
     private BigDecimal margeTotal;

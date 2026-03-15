@@ -46,20 +46,20 @@ public class AchatJournalierService {
     private final AchatMapper achatMapper;
 
     @Transactional
-    public FactureResponse createFacture(CreateFactureRequest request, Long userId){
+    public FactureResponse createFacture(CreateFactureRequest request, Long userId) {
         Poissonnerie poissonnerie = poissonnerieRepository.findById(request.getPoissonnerieId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Poissonnerie non trouvée avec l'id : " + request.getPoissonnerieId()
                 ));
         Fournisseur fournisseur = fournisseurRepository.findById(request.getFournisseurId())
-                 .orElseThrow(() -> new ResourceNotFoundException(
-                "Fournisseur non trouvée avec l'id : " + request.getFournisseurId() ));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Fournisseur non trouvée avec l'id : " + request.getFournisseurId()));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "User non trouvée avec l'id : " + userId ));
+                        "User non trouvée avec l'id : " + userId));
 
-        AchatJournalier facture= achatMapper.toEntity(request);
+        AchatJournalier facture = achatMapper.toEntity(request);
         facture.setPoissonnerie(poissonnerie);
         facture.setFournisseur(fournisseur);
         facture.setEnregistrePar(user);
@@ -70,13 +70,13 @@ public class AchatJournalierService {
 
     }
 
-    public List<FactureResponse> getFacturesByPoissonnerieAndDate(Long poissonnerieId, LocalDate date){
+    public List<FactureResponse> getFacturesByPoissonnerieAndDate(Long poissonnerieId, LocalDate date) {
         Poissonnerie poissonnerie = poissonnerieRepository.findById(poissonnerieId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Poissonnerie non trouvée avec l'id : " + poissonnerieId
                 ));
 
-        return  achatJournalierRepository.findByPoissonnerieIdAndDateAchat(poissonnerieId, date)
+        return achatJournalierRepository.findByPoissonnerieIdAndDateAchat(poissonnerieId, date)
                 .stream()
                 .map(achatMapper::toResponse)
                 .toList();
@@ -126,13 +126,13 @@ public class AchatJournalierService {
     }
 
     @Transactional
-    public FactureResponse cloturerFacture (Long factureId){
+    public FactureResponse cloturerFacture(Long factureId) {
         AchatJournalier facture = achatJournalierRepository.findById(factureId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Facture non trouvée avec l'id : " + factureId
                 ));
-        if (facture.getCloture()){
-            throw  new BusinessException("Facture déjà clôturée");
+        if (facture.getCloture()) {
+            throw new BusinessException("Facture déjà clôturée");
         }
         facture.setCloture(true);
         AchatJournalier savedFacture = achatJournalierRepository.save(facture);
@@ -140,16 +140,16 @@ public class AchatJournalierService {
     }
 
     @Transactional
-    public LigneAchatResponse addLigne(Long factureId, CreateLigneRequest request){
+    public LigneAchatResponse addLigne(Long factureId, CreateLigneRequest request) {
         AchatJournalier facture = achatJournalierRepository.findById(factureId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Facture non trouvée avec l'id : " + factureId
                 ));
-        if (facture.getCloture()){
+        if (facture.getCloture()) {
             throw new BusinessException("Facture déjà clôturée, modification impossible");
         }
         Produit produit = produitRepository.findById(request.getProduitId())
-                .orElseThrow(()-> new ResourceNotFoundException(
+                .orElseThrow(() -> new ResourceNotFoundException(
                         "Produit non trouvé avec l'id : " + request.getProduitId()));
 
         LigneAchat ligne = achatMapper.toLigneEntity(request);
@@ -246,19 +246,16 @@ public class AchatJournalierService {
 
 
     public DernierPrixResponse getDernierPrix(Long produitId, Long poissonnerieId) {
-        // 1. Charger le produit pour avoir poidsParCarton
         Produit produit = produitRepository.findById(produitId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Produit non trouvé avec l'id : " + produitId));
 
-        // 2. Chercher la dernière ligne d'achat de ce produit dans cette boutique
         Optional<LigneAchat> derniereLigne = ligneAchatRepository
                 .findDernierPrix(produitId, poissonnerieId);
 
         DernierPrixResponse response = new DernierPrixResponse();
         response.setPoidsParCarton(produit.getPoidsParCarton());
 
-        // 3. Si trouvé → préremplir avec les derniers prix
         if (derniereLigne.isPresent()) {
             LigneAchat ligne = derniereLigne.get();
             response.setMontantCarton(ligne.getMontantCarton());

@@ -17,7 +17,7 @@ public class ClientResponse {
     private String phone;
     private String address;
     private String quartier;
-    private  PoissonnerieResponse poissonnerie;
+    private PoissonnerieResponse poissonnerie;
     private Boolean active;
     private LocalDateTime createdAt;
 }
