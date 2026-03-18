@@ -139,19 +139,5 @@ public class AchatJournalierController {
                 .build();
     }
 
-    @GetMapping("/dernier-prix")
-    @Operation(summary = "Récupérer le dernier prix d'un produit dans une boutique")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
-    public ApiResponse<DernierPrixResponse> getDernierPrix(
-            @RequestParam Long produitId,
-            @RequestParam Long poissonnerieId) {
-        DernierPrixResponse response = achatJournalierService.getDernierPrix(produitId, poissonnerieId);
-        return ApiResponse.<DernierPrixResponse>builder()
-                .success(true)
-                .data(response)
-                .message("Dernier prix récupéré")
-                .code(200)
-                .timestamp(LocalDateTime.now())
-                .build();
-    }
+
 }

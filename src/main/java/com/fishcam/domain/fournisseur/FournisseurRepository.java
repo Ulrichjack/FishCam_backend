@@ -10,5 +10,6 @@ public interface FournisseurRepository extends JpaRepository<Fournisseur, Long> 
 
 
     List<Fournisseur> findByActifTrue();
-    boolean existsByNom(String nom);
+
+    boolean existsByNomIgnoreCase(String nom);
 }

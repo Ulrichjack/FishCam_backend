@@ -25,7 +25,7 @@ public class FournisseurService {
 
     @Transactional
     public FournisseurResponse createFournisseur(CreateFournisseurRequest request){
-        if (fournisseurRepository.existsByNom(request.getNom())) {
+        if (fournisseurRepository.existsByNomIgnoreCase(request.getNom())) {
             throw new BusinessException("Un fournisseur avec ce nom existe déjà");
         }
         Fournisseur fournisseur = fournisseurMapper.toEntity(request);

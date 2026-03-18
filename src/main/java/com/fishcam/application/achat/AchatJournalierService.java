@@ -23,14 +23,16 @@ import com.fishcam.domain.user.UserRepository;
 import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Pageable;
+
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -250,14 +252,15 @@ public class AchatJournalierService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Produit non trouvé avec l'id : " + produitId));
 
-        Optional<LigneAchat> derniereLigne = ligneAchatRepository
-                .findDernierPrix(produitId, poissonnerieId);
+        Pageable pageable = PageRequest.of(0, 1); // 1 résultat seulement
+        List<LigneAchat> results = ligneAchatRepository
+                .findLatestPricesByProduitAndPoissonnerie(produitId, poissonnerieId, pageable);
 
         DernierPrixResponse response = new DernierPrixResponse();
         response.setPoidsParCarton(produit.getPoidsParCarton());
 
-        if (derniereLigne.isPresent()) {
-            LigneAchat ligne = derniereLigne.get();
+        if (!results.isEmpty()) {
+            LigneAchat ligne = results.get(0);
             response.setMontantCarton(ligne.getMontantCarton());
             response.setPrixVenteKilo(ligne.getPrixVenteKilo());
         }

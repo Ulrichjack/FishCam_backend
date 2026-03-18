@@ -49,7 +49,7 @@ public class Employe {
     private User user;
 
     @Column(nullable = false)
-    private Boolean actif;
+    private Boolean actif = true;
 
     @Column(nullable = false)
     @CreationTimestamp

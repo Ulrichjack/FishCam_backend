@@ -19,7 +19,7 @@ public interface AchatMapper {
     @Mapping(source = "fournisseur.id", target = "fournisseurId")
     @Mapping(source = "fournisseur.nom", target = "fournisseurNom")
     @Mapping(source = "enregistrePar.id", target = "enregistreParId")
-    @Mapping(source = "enregistrePar.username", target = "enregistreParNom")
+    @Mapping(source = "enregistrePar.firstName", target = "enregistreParNom")
     FactureResponse toResponse(AchatJournalier achatJournalier);
 
 
@@ -28,7 +28,7 @@ public interface AchatMapper {
     @Mapping(source = "fournisseur.id", target = "fournisseurId")
     @Mapping(source = "fournisseur.nom", target = "fournisseurNom")
     @Mapping(source = "enregistrePar.id", target = "enregistreParId")
-    @Mapping(source = "enregistrePar.username", target = "enregistreParNom")
+    @Mapping(source = "enregistrePar.firstName", target = "enregistreParNom")
     @Mapping(target = "ligneAchatResponses", ignore = true)
     @Mapping(target = "totalAchat", ignore = true)
     @Mapping(target = "totalVente", ignore = true)

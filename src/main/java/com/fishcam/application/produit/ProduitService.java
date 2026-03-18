@@ -28,7 +28,7 @@ public class ProduitService {
 
     @Transactional
     public ProduitResponse createProduit(CreateProduitRequest request) {
-        if (produitRepository.existsByNom(request.getNom())) {
+        if (produitRepository.existsByNomIgnoreCase(request.getNom())) {
             throw new BusinessException("Le produit ayant ce nom existe deja ");
         }
         Produit produit = produitMapper.toEntity(request);
@@ -67,7 +67,7 @@ public class ProduitService {
                         "Le produit non trouve avec l'id : " + productId));
         if (request.getNom() != null) {
             if (!request.getNom().equals(produit.getNom())
-                    && produitRepository.existsByNom(request.getNom())) {
+                    && produitRepository.existsByNomIgnoreCase(request.getNom())) {
                 throw new BusinessException("Ce nom existe déjà");
             }
             produit.setNom(request.getNom());

@@ -54,7 +54,7 @@ public class FournisseurServiceTest {
         expectedResponse.setNom("Congelcam");
 
         //when these methods are called, return this
-        when(fournisseurRepository.existsByNom("Congelcam")).thenReturn(false);
+        when(fournisseurRepository.existsByNomIgnoreCase("Congelcam")).thenReturn(false);
         when(fournisseurMapper.toEntity(request)).thenReturn(fournisseur);
         when(fournisseurRepository.save(fournisseur)).thenReturn(fournisseur);
         when(fournisseurMapper.toResponse(fournisseur)).thenReturn(expectedResponse);
@@ -75,7 +75,7 @@ public class FournisseurServiceTest {
         request.setNom("Congelcam");
 
         //simulate that the name already exists
-        when(fournisseurRepository.existsByNom("Congelcam")).thenReturn(true);
+        when(fournisseurRepository.existsByNomIgnoreCase("Congelcam")).thenReturn(true);
 
         //verify that BusinessException is thrown
         assertThrows(BusinessException.class,

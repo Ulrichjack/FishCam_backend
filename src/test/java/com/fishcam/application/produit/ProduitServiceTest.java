@@ -50,7 +50,7 @@ public class ProduitServiceTest {
         expectedResponse.setId(1L);
         expectedResponse.setNom("JAX 23+");
 
-        when(produitRepository.existsByNom("JAX 23+")).thenReturn(false);
+        when(produitRepository.existsByNomIgnoreCase("JAX 23+")).thenReturn(false);
         when(produitMapper.toEntity(request)).thenReturn(produit);
         when(produitRepository.save(produit)).thenReturn(produit);
         when(produitMapper.toReponse(produit)).thenReturn(expectedResponse);
@@ -69,7 +69,7 @@ public class ProduitServiceTest {
         CreateProduitRequest request = new CreateProduitRequest();
         request.setNom("JAX 23+");
 
-        when(produitRepository.existsByNom("JAX 23+")).thenReturn(true);
+        when(produitRepository.existsByNomIgnoreCase("JAX 23+")).thenReturn(true);
 
         // ACT + ASSERT
         assertThrows(BusinessException.class,
