@@ -26,7 +26,7 @@ public class FournisseurController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Créer un nouvel employé")
+    @Operation(summary = "Créer un nouveau fournisseur")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
     public ApiResponse<FournisseurResponse> createFournisseur(
             @Valid @RequestBody CreateFournisseurRequest request){
@@ -55,7 +55,7 @@ public class FournisseurController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Récupérer un employé par ID")
+    @Operation(summary = "Récupérer un fournisseur par ID")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
     public ApiResponse<FournisseurResponse> getFournisseur (@PathVariable Long id) {
         FournisseurResponse response = fournisseurService.getFournisseurById(id);

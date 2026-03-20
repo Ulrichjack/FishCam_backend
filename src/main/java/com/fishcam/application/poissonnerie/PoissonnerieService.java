@@ -68,7 +68,7 @@ public class PoissonnerieService {
                         "La Poissonnerie non trouve avec l'id : " + poissonerieId
                 ));
         poissonnerie.setActive(false);
-
+        poissonnerieRepository.save(poissonnerie);
     }
 
 

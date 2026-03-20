@@ -130,6 +130,7 @@ public class ClientService {
                         "Le client non trouvé avec l'id : " + clientId));
 
         client.setActive(false);
+        clientRepository.save(client);
     }
 
     public boolean existsByPhoneAndPoissonnerie(String phone, Long poissonnerieId) {
@@ -147,7 +148,7 @@ public class ClientService {
         if (!client.getActive()) {
             client.setActive(true);
         }
-
+        clientRepository.save(client);
         return clientMapper.toResponse(client);
     }
 
