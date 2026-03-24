@@ -22,6 +22,7 @@ public class ClotureJournaliereRequest {
     @Positive(message = "L'argent en caisse doit être positif")
     private BigDecimal argentCaisse;
 
+    @NotNull
     @PositiveOrZero(message = "Le fond de caisse ne peut pas être négatif")
     private BigDecimal fondDeCaisse;
 
