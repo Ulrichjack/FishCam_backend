@@ -2,6 +2,8 @@ package com.fishcam.domain.cloture;
 
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,4 +23,16 @@ public interface ClotureJournaliereRepository
     // Get history for a boutique ordered by most recent first
     List<ClotureJournaliere> findByPoissonnerieOrderByDateDesc(
             Poissonnerie poissonnerie);
+
+    @Query("SELECT c FROM ClotureJournaliere c " +
+            "WHERE c.poissonnerie = :poissonnerie " +
+            "AND EXTRACT(MONTH FROM c.date) = :mois " +
+            "AND EXTRACT(YEAR  FROM c.date) = :annee " +
+            "ORDER BY c.date ASC")
+    List<ClotureJournaliere> findByPoissonnerieAndMoisAndAnnee(
+            @Param("poissonnerie") Poissonnerie poissonnerie,
+            @Param("mois") Integer mois,
+            @Param("annee") Integer annee
+    );
+
 }
