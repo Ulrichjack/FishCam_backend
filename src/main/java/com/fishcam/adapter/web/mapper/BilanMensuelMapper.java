@@ -12,7 +12,9 @@ import java.util.List;
 public interface BilanMensuelMapper {
 
     @Mapping(target = "poissonnerieNom", source = "poissonnerie.name")
-    @Mapping(target = "genereParNom",    source = "generePar.firstName") // which field ?
+    @Mapping(target = "genereParNom", source = "generePar.firstName")
+    @Mapping(target = "poissonnerieId", source = "poissonnerie.id")
+    @Mapping(target = "genereParId", source = "generePar.id")
     BilanMensuelResponse toResponse(BilanMensuel bilan);
 
     List<BilanMensuelResponse> toResponseList(List<BilanMensuel> bilans);

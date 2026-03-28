@@ -100,7 +100,7 @@ public class BilanMensuelService {
                         "Poissonnerie non trouvée avec l'id : " + poissonnerieId));
 
         BilanMensuel bilanMensuel =  bilanRepository.findByPoissonnerieAndMoisAndAnnee(poissonnerie, mois, annee)
-                .orElseThrow(()-> new BusinessException("Aucun bilan trouvée pour cette date"));
+                .orElseThrow(()-> new ResourceNotFoundException("Aucun bilan trouvée pour cette date"));
         return  bilanMensuelMapper.toResponse(bilanMensuel);
     }
 

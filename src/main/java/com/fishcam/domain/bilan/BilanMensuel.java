@@ -3,12 +3,10 @@ package com.fishcam.domain.bilan;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,7 +16,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "bilan_mensuel", uniqueConstraints = @UniqueConstraint(columnNames = {"poissonnerie_id", "mois", "annee"}))
 public class BilanMensuel {
 

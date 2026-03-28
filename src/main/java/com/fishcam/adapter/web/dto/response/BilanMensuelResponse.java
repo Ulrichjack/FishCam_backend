@@ -16,6 +16,8 @@ public class BilanMensuelResponse {
     private Long id;
     private Integer mois;
     private Integer annee;
+    private Long poissonnerieId;
+    private Long genereParId;
     private  String poissonnerieNom;
     private String genereParNom;
     private BigDecimal totalAchatMois;

@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,8 @@ public class BilanMensuelController {
     private final BilanMensuelService bilanMensuelService;
 
     @PostMapping
-    @Operation(summary = "Générer les donnees")
+    @Operation(summary = "Générer les bilans")
+    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
     public ApiResponse<BilanMensuelResponse> generateBilan(
             @RequestBody @Valid GenererBilanRequest request,
