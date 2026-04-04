@@ -1,48 +1,42 @@
 package com.fishcam.application.bilan;
 
 
-import com.fishcam.adapter.web.dto.request.GenererBilanRequest;
 import com.fishcam.adapter.web.dto.response.BilanMensuelResponse;
-import com.fishcam.adapter.web.mapper.BilanMensuelMapper;
-import com.fishcam.domain.bilan.BilanMensuel;
-import com.fishcam.domain.bilan.BilanMensuelRepository;
+import com.fishcam.adapter.web.dto.response.ComparaisonBoutiquesResponse;
 import com.fishcam.domain.cloture.ClotureJournaliere;
 import com.fishcam.domain.cloture.ClotureJournaliereRepository;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.poissonnerie.PoissonnerieRepository;
-import com.fishcam.domain.user.User;
 import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class BilanMensuelService {
 
-    private final BilanMensuelRepository bilanRepository;
     private final ClotureJournaliereRepository clotureRepository;
     private final PoissonnerieRepository poissonnerieRepository;
-    private final BilanMensuelMapper bilanMensuelMapper;
 
-    @Transactional
-    public BilanMensuelResponse generateBilan(GenererBilanRequest request, User currentUser){
+    public BilanMensuelResponse getBilanMensuel(Long poissonnerieId, Integer mois, Integer annee) {
 
-        Poissonnerie poissonnerie = poissonnerieRepository.findById(request.getPoissonnerieId())
+        Poissonnerie poissonnerie = poissonnerieRepository.findById(poissonnerieId)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Poissonnerie non trouvée avec l'id : " + request.getPoissonnerieId()));
+                        "Poissonnerie non trouvée avec l'id : " + poissonnerieId));
 
-        if (bilanRepository.existsByPoissonnerieAndMoisAndAnnee(poissonnerie, request.getMois(), request.getAnnee())){
-            throw new BusinessException("Bilan existant déjà pour cette boutique");
-        }
 
-        List<ClotureJournaliere> clotures = clotureRepository.findByPoissonnerieAndMoisAndAnnee(poissonnerie, request.getMois(), request.getAnnee());
+
+        List<ClotureJournaliere> clotures = clotureRepository.findByPoissonnerieAndMoisAndAnnee(poissonnerie, mois, annee);
         if (clotures.isEmpty()) {
             throw new BusinessException("Aucune clôture trouvée pour ce mois");
         }
@@ -74,11 +68,10 @@ public class BilanMensuelService {
                 .get(clotures.size() - 1)
                 .getMontantDettesJour();
 
-        BilanMensuel bilan = new BilanMensuel();
-        bilan.setPoissonnerie(poissonnerie);
-        bilan.setGenerePar(currentUser);
-        bilan.setMois(request.getMois());
-        bilan.setAnnee(request.getAnnee());
+        BilanMensuelResponse bilan = new BilanMensuelResponse();
+        bilan.setPoissonnerieNom(poissonnerie.getName());
+        bilan.setMois(mois);
+        bilan.setAnnee(annee);
         bilan.setTotalAchatMois(totalAchatMois);
         bilan.setTotalVenteRealisee(totalVenteRealisee);
         bilan.setTotalDepensesMois(totalDepensesMois);
@@ -90,28 +83,42 @@ public class BilanMensuelService {
 
         bilan.setNombreJoursTravailles(clotures.size());
 
-        BilanMensuel saved = bilanRepository.save(bilan);
-        return bilanMensuelMapper.toResponse(saved);
+
+        return  bilan;
     }
 
-    public BilanMensuelResponse getBilan(    Long poissonnerieId, Integer mois, Integer annee){
-        Poissonnerie poissonnerie = poissonnerieRepository.findById(poissonnerieId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Poissonnerie non trouvée avec l'id : " + poissonnerieId));
+    public ComparaisonBoutiquesResponse compareBoutiques(Integer mois, Integer annee) {
+        BigDecimal totalAchatGlobal = BigDecimal.ZERO;
+        BigDecimal totalVenteGlobal = BigDecimal.ZERO;
+        BigDecimal totalDepensesGlobal = BigDecimal.ZERO;
+        BigDecimal beneficeNetGlobal = BigDecimal.ZERO;
 
-        BilanMensuel bilanMensuel =  bilanRepository.findByPoissonnerieAndMoisAndAnnee(poissonnerie, mois, annee)
-                .orElseThrow(()-> new ResourceNotFoundException("Aucun bilan trouvée pour cette date"));
-        return  bilanMensuelMapper.toResponse(bilanMensuel);
+        List<BilanMensuelResponse> bilans = new ArrayList<>();
+        List<Poissonnerie> poissonneries = poissonnerieRepository.findByActiveTrue();
+
+        for (Poissonnerie poissonnerie : poissonneries) {
+            try {
+                BilanMensuelResponse bilan = getBilanMensuel(poissonnerie.getId(), mois, annee);
+                bilans.add(bilan);
+                totalAchatGlobal = totalAchatGlobal.add(bilan.getTotalAchatMois());
+                totalVenteGlobal = totalVenteGlobal.add(bilan.getTotalVenteRealisee());
+                totalDepensesGlobal = totalDepensesGlobal.add(bilan.getTotalDepensesMois());
+                beneficeNetGlobal = beneficeNetGlobal.add(bilan.getBeneficeNetMois());
+
+            } catch (BusinessException e) {
+                log.warn("Pas de bilan trouvé pour la boutique {} sur la période {}-{} : {}",
+                        poissonnerie.getName(), mois, annee, e.getMessage());
+            }
+        }
+        return new ComparaisonBoutiquesResponse(
+                bilans,
+                totalVenteGlobal,
+                totalAchatGlobal,
+                totalDepensesGlobal,
+                beneficeNetGlobal,
+                mois,
+                annee
+        );
     }
 
-    public List<BilanMensuelResponse> getHistorique(
-            Long poissonnerieId){
-        Poissonnerie poissonnerie = poissonnerieRepository.findById(poissonnerieId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Poissonnerie non trouvée avec l'id : " + poissonnerieId));
-        return bilanRepository.findByPoissonnerieOrderByAnneeDescMoisDesc(poissonnerie)
-                .stream()
-                .map(bilanMensuelMapper::toResponse)
-                .toList();
-    }
 }

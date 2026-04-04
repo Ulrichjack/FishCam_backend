@@ -35,4 +35,10 @@ public interface ClotureJournaliereRepository
             @Param("annee") Integer annee
     );
 
+    List<ClotureJournaliere> findByPoissonnerieAndDateBetweenOrderByDateAsc(
+            Poissonnerie poissonnerie,
+            LocalDate start,
+            LocalDate end
+    );
+
 }
