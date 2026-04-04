@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @Table(name = "employe")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class Employe {
 

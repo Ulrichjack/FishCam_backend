@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @Table(name = "poissonnerie")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class Poissonnerie {
 
