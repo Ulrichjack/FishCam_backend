@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 @Service
 @Slf4j
@@ -30,12 +33,12 @@ public class EmailBackupService {
             MimeMessage message =  mailSender.createMimeMessage();
             try{
 
+                String moisAnnee = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM yyyy", Locale.FRENCH));
                 MimeMessageHelper helper = new MimeMessageHelper(message, true);
                 helper.setFrom(fromEmail);
                 helper.setTo(targetEmail);
-                helper.setSubject("🐟 Fish-Cam: Sauvegarde Mensuelle");
-                helper.setText("Bonjour Patron, voici la sauvegarde de la base de données pour ce mois.");
-
+                helper.setSubject("🐟 Fish-Cam: Sauvegarde Mensuelle - " + moisAnnee.toUpperCase());
+                helper.setText("Bonjour Patron,\n\nVoici la sauvegarde de sécurité de la base de données pour le mois de " + moisAnnee + ".\n\nCordialement,\nL'équipe Fish-Cam.");
                 ByteArrayResource resource = new ByteArrayResource(jsonDatabase.getBytes(StandardCharsets.UTF_8));
 
                 helper.addAttachment(sqlFile.getName(), sqlFile);

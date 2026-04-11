@@ -158,6 +158,13 @@ public class AchatJournalierService {
         LigneAchat ligne = achatMapper.toLigneEntity(request);
         ligne.setAchatJournalier(facture);
         ligne.setProduit(produit);
+        ligne.setPrixUnitaireCarton(request.getPrixUnitaireCarton());
+
+        BigDecimal totalLigne = request.getPrixUnitaireCarton()
+                .multiply(BigDecimal.valueOf(request.getQuantiteCartons()));
+        ligne.setMontantCarton(totalLigne);
+
+
 
         LigneAchat savedLigne = ligneAchatRepository.save(ligne);
         LigneAchatResponse response = achatMapper.toLigneResponse(savedLigne);
@@ -203,12 +210,16 @@ public class AchatJournalierService {
         if (request.getPoidsKg() != null) {
             ligne.setPoidsKg(request.getPoidsKg());
         }
-        if (request.getMontantCarton() != null) {
-            ligne.setMontantCarton(request.getMontantCarton());
+        if (request.getPrixUnitaireCarton() != null) {
+            ligne.setPrixUnitaireCarton(request.getPrixUnitaireCarton());
         }
         if (request.getPrixVenteKilo() != null) {
             ligne.setPrixVenteKilo(request.getPrixVenteKilo());
         }
+
+        BigDecimal nouveauTotal = ligne.getPrixUnitaireCarton()
+                .multiply(BigDecimal.valueOf(ligne.getQuantiteCartons()));
+        ligne.setMontantCarton(nouveauTotal);
 
         LigneAchat savedLigne = ligneAchatRepository.save(ligne);
         LigneAchatResponse response = achatMapper.toLigneResponse(savedLigne);

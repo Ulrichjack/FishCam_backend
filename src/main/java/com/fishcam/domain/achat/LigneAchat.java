@@ -41,6 +41,9 @@ public class LigneAchat {
     private BigDecimal montantCarton;
 
     @Column(nullable = false)
+    private BigDecimal prixUnitaireCarton;
+
+    @Column(nullable = false)
     private BigDecimal prixVenteKilo;
 
     @Column(nullable = false, updatable = false)

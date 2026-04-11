@@ -37,6 +37,7 @@ public class TelegramBackupService {
 
         String url = "https://api.telegram.org/bot" + botToken + "/sendDocument";
         String filename = "fishcam_backup_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".json";
+        String nomMois = LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMMM yyyy", java.util.Locale.FRENCH)).toUpperCase();
 
         // 1. Convert the JSON String to a ByteArrayResource so Telegram sees it as a file
         ByteArrayResource fileAsResource = new ByteArrayResource(jsonDatabase.getBytes(StandardCharsets.UTF_8)) {
@@ -50,8 +51,10 @@ public class TelegramBackupService {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("chat_id", chatId);
         body.add("document", fileAsResource);
-        body.add("caption", " Fish-Cam DB Backup - " + LocalDateTime.now().toLocalDate());
-
+        body.add("caption", "📦 Fish-Cam DB Backup (JSON)\n" +
+                "📅 Période : " + nomMois + "\n" +
+                "⏱️ Généré le : " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm")) + "\n" +
+                "ℹ️ Format complet brut (Toutes les tables).");
         // 3. Prepare headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -75,6 +78,7 @@ public class TelegramBackupService {
 
         String url = "https://api.telegram.org/bot" + botToken + "/sendDocument";
         String filename = "fishcam_sql_backup_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".json";
+        String nomMois = LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMMM yyyy", java.util.Locale.FRENCH)).toUpperCase();
 
         // 1. Convert the JSON String to a ByteArrayResource so Telegram sees it as a file
         FileSystemResource fileAsResource = new FileSystemResource(sqlFile);
@@ -83,8 +87,10 @@ public class TelegramBackupService {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("chat_id", chatId);
         body.add("document", fileAsResource);
-        body.add("caption", "  Fish-Cam SQL Database Backup - " + LocalDateTime.now().toLocalDate());
-
+        body.add("caption", "🗄️ Fish-Cam DB Backup (SQL Postgres)\n" +
+                "📅 Période : " + nomMois + "\n" +
+                "⏱️ Généré le : " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm")) + "\n" +
+                "ℹ️ Format SQL prêt à être restauré sur le serveur.");
         // 3. Prepare headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
