@@ -1,6 +1,5 @@
 package com.fishcam.domain.employe;
 
-import com.fishcam.domain.client.Client;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

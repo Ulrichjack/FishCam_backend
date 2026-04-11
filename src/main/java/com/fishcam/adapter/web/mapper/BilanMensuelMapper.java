@@ -1,6 +1,5 @@
 package com.fishcam.adapter.web.mapper;
 
-import com.fishcam.adapter.web.dto.request.GenererBilanRequest;
 import com.fishcam.adapter.web.dto.response.BilanMensuelResponse;
 import com.fishcam.domain.bilan.BilanMensuel;
 import org.mapstruct.Mapper;

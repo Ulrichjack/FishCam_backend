@@ -2,7 +2,6 @@ package com.fishcam.domain.user;
 
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

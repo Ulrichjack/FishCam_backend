@@ -18,6 +18,7 @@ public class PoissonnerieResponse {
     private String phone;
     private BigDecimal loyer;
     private BigDecimal fondDeCaisseDefaut;
+    private Boolean pretActif;
     private Boolean active;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

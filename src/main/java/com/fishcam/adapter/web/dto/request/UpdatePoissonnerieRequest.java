@@ -14,4 +14,7 @@ public class UpdatePoissonnerieRequest {
 
     @Size(max = 20, message = "Le téléphone ne peut pas dépasser 20 caractères")
     private String phone;
+
+    private Boolean pretActif;
+
 }

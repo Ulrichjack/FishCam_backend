@@ -2,7 +2,6 @@ package com.fishcam.application.livreur;
 
 import com.fishcam.adapter.web.dto.request.CreateEvaluationRequest;
 import com.fishcam.adapter.web.dto.response.EvaluationLivreurResponse;
-import com.fishcam.adapter.web.dto.response.LivreurResponse;
 import com.fishcam.adapter.web.mapper.EvaluationLivreurMapper;
 import com.fishcam.domain.achat.AchatJournalier;
 import com.fishcam.domain.achat.AchatJournalierRepository;

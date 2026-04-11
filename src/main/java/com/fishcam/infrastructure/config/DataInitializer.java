@@ -39,10 +39,11 @@ public class DataInitializer implements CommandLineRunner {
             Poissonnerie poissonnerie = new Poissonnerie();
             poissonnerie.setName("FISH CAM VILLE (TEST)");
             poissonnerie.setAddress("La Petite mosquée");
-            poissonnerie.setPhone("677112233");
+            poissonnerie.setPhone("676028800");
             poissonnerie.setActive(true);
+            poissonnerie.setPretActif(true);
             poissonnerieRepository.save(poissonnerie);
-            log.info("✅ Poissonnerie TEST créée (ID: {})", poissonnerie.getId());
+            log.info(" Poissonnerie TEST créée (ID: {})", poissonnerie.getId());
 
             createTestUsers(poissonnerie);
         }
@@ -62,8 +63,8 @@ public class DataInitializer implements CommandLineRunner {
         log.info("═══════════════════════════════════════════════════");
         log.info("SUPER_ADMIN → Phone: 692087724 | Password: admin123");
         log.info("PATRON      → Phone: 676028800 | Password: patron123");
-        log.info("CAISSIERE   → Phone: 677222222 | Password: caissier123");
-        log.info("ENREGISTREUR→ Phone: 677333333 | Password: vendeur123");
+        log.info("CAISSIÈRE   → Phone: 690950871 | Password: caissier123");
+        log.info("ENREGISTREUR→ Phone: 655032752 | Password: vendeur123");
         log.info("═══════════════════════════════════════════════════");
     }
 
@@ -80,52 +81,52 @@ public class DataInitializer implements CommandLineRunner {
             superAdmin.setDefaultPoissonnerie(poissonnerie);
             superAdmin.setActive(true);
             userRepository.save(superAdmin);
-            log.info("✅ SUPER_ADMIN créé (692087724)");
+            log.info(" SUPER_ADMIN créé (692087724)");
         }
 
         // PATRON
-        if (!userRepository.existsByPhone("677111111")) {
+        if (!userRepository.existsByPhone("676028800")) {
             User patron = new User();
-            patron.setFirstName("Jean");
-            patron.setLastName("Dupont");
-            patron.setPhone("677111111");
+            patron.setFirstName("Theophile");
+            patron.setLastName("FOSSO");
+            patron.setPhone("676028800");
             patron.setPassword(passwordEncoder.encode("patron123"));
             patron.setRole(Role.PATRON);
             patron.setScope(UserScope.SINGLE_POISSONNERIE);
             patron.setDefaultPoissonnerie(poissonnerie);
             patron.setActive(true);
             userRepository.save(patron);
-            log.info("✅ PATRON créé (677111111)");
+            log.info(" PATRON créé (676028800)");
         }
 
         // CAISSIERE
-        if (!userRepository.existsByPhone("677222222")) {
+        if (!userRepository.existsByPhone("690950871")) {
             User caissier = new User();
-            caissier.setFirstName("Marie");
-            caissier.setLastName("Kamga");
-            caissier.setPhone("677222222");
+            caissier.setFirstName("Alerte");
+            caissier.setLastName("DJOKO");
+            caissier.setPhone("690950871");
             caissier.setPassword(passwordEncoder.encode("caissier123"));
             caissier.setRole(Role.CAISSIERE);
             caissier.setScope(UserScope.SINGLE_POISSONNERIE);
             caissier.setDefaultPoissonnerie(poissonnerie);
             caissier.setActive(true);
             userRepository.save(caissier);
-            log.info("✅ CAISSIERE créée (677222222)");
+            log.info(" CAISSIERE créée (690950871)");
         }
 
         // ENREGISTREUR (Secrétaire)
-        if (!userRepository.existsByPhone("677333333")) {
+        if (!userRepository.existsByPhone("655032752")) {
             User vendeur = new User();
-            vendeur.setFirstName("Paul");
-            vendeur.setLastName("Ndongo");
-            vendeur.setPhone("677333333");
+            vendeur.setFirstName("Christine");
+            vendeur.setLastName("Inconnu");
+            vendeur.setPhone("655032752");
             vendeur.setPassword(passwordEncoder.encode("vendeur123"));
             vendeur.setRole(Role.ENREGISTREUR);
             vendeur.setScope(UserScope.SINGLE_POISSONNERIE);
             vendeur.setDefaultPoissonnerie(poissonnerie);
             vendeur.setActive(true);
             userRepository.save(vendeur);
-            log.info("✅ ENREGISTREUR créé (677333333)");
+            log.info(" ENREGISTREUR créé (655032752)");
         }
     }
 }

@@ -3,7 +3,6 @@ package com.fishcam.domain.achat;
 
 import com.fishcam.domain.produit.Produit;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

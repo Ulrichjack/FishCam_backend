@@ -1,10 +1,8 @@
 package com.fishcam.adapter.web.controller;
 
 import com.fishcam.adapter.web.dto.request.CreateEvaluationRequest;
-import com.fishcam.adapter.web.dto.request.CreateLivreurRequest;
 import com.fishcam.adapter.web.dto.response.ApiResponse;
 import com.fishcam.adapter.web.dto.response.EvaluationLivreurResponse;
-import com.fishcam.adapter.web.dto.response.LivreurResponse;
 import com.fishcam.application.livreur.EvaluationLivreurService;
 import com.fishcam.domain.user.User;
 import io.swagger.v3.oas.annotations.Operation;

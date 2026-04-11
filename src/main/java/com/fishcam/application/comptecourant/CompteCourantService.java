@@ -45,6 +45,10 @@ public class CompteCourantService {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client non trouvé"));
 
+        if (!client.getPoissonnerie().getPretActif()) {
+            throw new BusinessException("Impossible de créer un compte courant : les prêts ne sont pas autorisés dans cette poissonnerie.");
+        }
+
         if (compteCourantRepository.existsByClient(client)) {
             throw new BusinessException("Ce client a déjà un compte courant");
         }
@@ -67,6 +71,11 @@ public class CompteCourantService {
     public CompteCourantResponse enregistrerEmprunt(EmpruntRequest request, Long userId) {
         CompteCourant compte = compteCourantRepository.findById(request.getCompteCourantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Compte courant non trouvé"));
+
+        if (!compte.getPoissonnerie().getPretActif()) {
+            throw new BusinessException("La gestion des prêts/dettes n'est pas activée pour cette poissonnerie ("
+                    + compte.getPoissonnerie().getName() + "). Vente au comptant uniquement.");
+        }
 
         if (compte.getStatut() != StatutCompteCourant.ACTIF) {
             throw new BusinessException("Ce compte n'est pas actif");

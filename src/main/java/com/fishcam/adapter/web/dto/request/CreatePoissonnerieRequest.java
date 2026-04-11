@@ -19,6 +19,8 @@ public class CreatePoissonnerieRequest {
     @Size(max = 20, message = "Le téléphone ne peut pas dépasser 20 caractères")
     private String phone;
 
+    private Boolean pretActif;
+
     private BigDecimal loyer = BigDecimal.ZERO;
 
     private BigDecimal fondDeCaisseDefaut = BigDecimal.valueOf(10000);

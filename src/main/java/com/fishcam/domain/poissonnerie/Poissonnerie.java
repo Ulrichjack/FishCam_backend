@@ -1,7 +1,6 @@
 package com.fishcam.domain.poissonnerie;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -40,6 +39,9 @@ public class Poissonnerie {
 
     @Column(nullable = false)
     private BigDecimal fondDeCaisseDefaut = BigDecimal.valueOf(10000);
+
+    @Column(nullable = false)
+    private Boolean pretActif = false;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
