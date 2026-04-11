@@ -11,6 +11,7 @@ import com.fishcam.domain.livreur.Livreur;
 import com.fishcam.domain.livreur.LivreurRepository;
 import com.fishcam.domain.user.User;
 import com.fishcam.domain.user.UserRepository;
+import com.fishcam.infrastructure.aop.LogAudit;
 import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,8 @@ public class EvaluationLivreurService {
     private final LivreurRepository livreurRepository;
     private final UserRepository userRepository;
     private final EvaluationLivreurMapper evaluationLivreurMapper;
+
+    @LogAudit(action = "CREATE", entityName = "EvaluationLivreur")
     @Transactional
     public EvaluationLivreurResponse createEvaluation(CreateEvaluationRequest request, Long userId){
         User user = userRepository.findById(userId)

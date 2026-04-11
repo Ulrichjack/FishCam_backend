@@ -8,10 +8,7 @@ import com.fishcam.adapter.web.dto.response.FactureDetailResponse;
 import com.fishcam.adapter.web.dto.response.FactureResponse;
 import com.fishcam.adapter.web.dto.response.LigneAchatResponse;
 import com.fishcam.adapter.web.mapper.AchatMapper;
-import com.fishcam.domain.achat.AchatJournalier;
-import com.fishcam.domain.achat.AchatJournalierRepository;
-import com.fishcam.domain.achat.LigneAchat;
-import com.fishcam.domain.achat.LigneAchatRepository;
+import com.fishcam.domain.achat.*;
 import com.fishcam.domain.fournisseur.Fournisseur;
 import com.fishcam.domain.fournisseur.FournisseurRepository;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
@@ -20,6 +17,7 @@ import com.fishcam.domain.produit.Produit;
 import com.fishcam.domain.produit.ProduitRepository;
 import com.fishcam.domain.user.User;
 import com.fishcam.domain.user.UserRepository;
+import com.fishcam.infrastructure.aop.LogAudit;
 import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +44,8 @@ public class AchatJournalierService {
     private final UserRepository userRepository;
     private final AchatMapper achatMapper;
 
+
+    @LogAudit(action = "CREATE", entityName = "AchatJournalier")
     @Transactional
     public FactureResponse createFacture(CreateFactureRequest request, Long userId) {
         Poissonnerie poissonnerie = poissonnerieRepository.findById(request.getPoissonnerieId())
@@ -126,6 +126,7 @@ public class AchatJournalierService {
         return detail;
     }
 
+    @LogAudit(action = "CLOTURE", entityName = "AchatJournalier")
     @Transactional
     public FactureResponse cloturerFacture(Long factureId) {
         AchatJournalier facture = achatJournalierRepository.findById(factureId)
@@ -140,6 +141,7 @@ public class AchatJournalierService {
         return achatMapper.toResponse(savedFacture);
     }
 
+    @LogAudit(action = "ADD Ligne", entityName = "AchatJournalier")
     @Transactional
     public LigneAchatResponse addLigne(Long factureId, CreateLigneRequest request) {
         AchatJournalier facture = achatJournalierRepository.findById(factureId)
@@ -176,6 +178,7 @@ public class AchatJournalierService {
     }
 
 
+    @LogAudit(action = "UPDATE", entityName = "AchatJournalier")
     @Transactional
     public LigneAchatResponse updateLigne(Long factureId, Long ligneId, UpdateLigneRequest request) {
         // 1. Charger facture
@@ -223,7 +226,7 @@ public class AchatJournalierService {
         return response;
     }
 
-
+    @LogAudit(action = "DELETE", entityName = "AchatJournalier")
     @Transactional
     public void deleteLigne(Long factureId, Long ligneId) {
         AchatJournalier facture = achatJournalierRepository.findById(factureId)
@@ -251,20 +254,50 @@ public class AchatJournalierService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Produit non trouvé avec l'id : " + produitId));
 
-        Pageable pageable = PageRequest.of(0, 1); // 1 résultat seulement
+        // 1. Fetch the last TWO purchases (PageRequest.of(0, 2))
+        Pageable pageable = PageRequest.of(0, 2);
         List<LigneAchat> results = ligneAchatRepository
                 .findLatestPricesByProduitAndPoissonnerie(produitId, poissonnerieId, pageable);
 
         DernierPrixResponse response = new DernierPrixResponse();
         response.setPoidsParCarton(produit.getPoidsParCarton());
 
-        if (!results.isEmpty()) {
-            LigneAchat ligne = results.get(0);
-            response.setMontantCarton(ligne.getMontantCarton());
-            response.setPrixVenteKilo(ligne.getPrixVenteKilo());
+        // 2. If the product was NEVER bought before
+        if (results.isEmpty()) {
+            response.setFluctuation(TypeFluctuation.NOUVEAU);
+            return response;
+        }
+
+        // 3. Get the most recent purchase
+        LigneAchat lastPurchase = results.get(0);
+        response.setMontantCarton(lastPurchase.getMontantCarton());
+        response.setPrixVenteKilo(lastPurchase.getPrixVenteKilo());
+
+        // 4. Compare with the previous purchase
+        if (results.size() == 1) {
+            // It was only bought ONCE in history.
+            response.setFluctuation(TypeFluctuation.NOUVEAU);
+            response.setDifference(BigDecimal.ZERO);
+        } else {
+            // We have a previous purchase!
+            LigneAchat previousPurchase = results.get(1);
+            response.setAncienMontantCarton(previousPurchase.getMontantCarton());
+
+            // Calculate the difference: (Today's Price) - (Yesterday's Price)
+            BigDecimal difference = lastPurchase.getMontantCarton().subtract(previousPurchase.getMontantCarton());
+            response.setDifference(difference);
+
+            // Determine if it went UP, DOWN, or stayed STABLE
+            int comparison = difference.compareTo(BigDecimal.ZERO);
+            if (comparison > 0) {
+                response.setFluctuation(TypeFluctuation.HAUSSE);
+            } else if (comparison < 0) {
+                response.setFluctuation(TypeFluctuation.BAISSE);
+            } else {
+                response.setFluctuation(TypeFluctuation.STABLE);
+            }
         }
 
         return response;
     }
-
 }

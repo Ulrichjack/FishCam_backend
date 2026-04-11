@@ -13,6 +13,7 @@ import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.poissonnerie.PoissonnerieRepository;
 import com.fishcam.domain.user.User;
 import com.fishcam.domain.user.UserRepository;
+import com.fishcam.infrastructure.aop.LogAudit;
 import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class ClientService {
     private final ClientMapper clientMapper;
     private final UserRepository userRepository;
 
+    @LogAudit(action = "CREATE", entityName = "Client")
     @Transactional
     public ClientResponse createClient(CreateClientRequest request, Long userId) {
         Poissonnerie poissonnerie = poissonnerieRepository.findById(request.getPoissonnerieId())
@@ -104,6 +106,7 @@ public class ClientService {
         return result.map(clientMapper::toResponse);
     }
 
+    @LogAudit(action = "UPDATE", entityName = "Client")
     @Transactional
     public ClientResponse updateClient(Long clientId, UpdateClientRequest request) {
         Client client = clientRepository.findById(clientId)
@@ -123,6 +126,7 @@ public class ClientService {
         return clientMapper.toResponse(client);
     }
 
+    @LogAudit(action = "DELETE", entityName = "Client")
     @Transactional
     public void deleteClient(Long clientId) {
         Client client = clientRepository.findById(clientId)
@@ -139,6 +143,7 @@ public class ClientService {
                 .orElse(false);
     }
 
+    @LogAudit(action = "ACTIVE_REACTIVE", entityName = "Client")
     @Transactional
     public ClientResponse reactivateClient(Long clientId) {
         Client client = clientRepository.findById(clientId)

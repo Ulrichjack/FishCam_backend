@@ -16,6 +16,7 @@ import com.fishcam.domain.poissonnerie.PoissonnerieRepository;
 import com.fishcam.domain.user.Role;
 import com.fishcam.domain.user.User;
 import com.fishcam.domain.user.UserRepository;
+import com.fishcam.infrastructure.aop.LogAudit;
 import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class CompteCourantService {
     private final CompteCourantMapper compteCourantMapper;
     private final TransactionCCMapper transactionCCMapper;
 
+    @LogAudit(action = "CREATE", entityName = "CompteCourant")
     @Transactional
     public CompteCourantResponse createCompteCourant(Long clientId, Long userId) {
         Client client = clientRepository.findById(clientId)
@@ -67,6 +69,7 @@ public class CompteCourantService {
         return compteCourantMapper.toResponse(saved);
     }
 
+    @LogAudit(action = "EMPRUNT", entityName = "CompteCourant")
     @Transactional
     public CompteCourantResponse enregistrerEmprunt(EmpruntRequest request, Long userId) {
         CompteCourant compte = compteCourantRepository.findById(request.getCompteCourantId())
@@ -118,6 +121,7 @@ public class CompteCourantService {
         return compteCourantMapper.toResponse(compte);
     }
 
+    @LogAudit(action = "REMBOURSEMENT", entityName = "CompteCourant")
     @Transactional
     public CompteCourantResponse enregistrerRemboursement(RemboursementCCRequest request, Long userId) {
         CompteCourant compte = compteCourantRepository.findById(request.getCompteCourantId())
@@ -154,6 +158,7 @@ public class CompteCourantService {
     }
 
 
+    @LogAudit(action = "UPDATE", entityName = "CompteCourant")
     @Transactional
     public CompteCourantResponse modifierLimiteCredit(Long compteId, ModifierLimiteCreditRequest request, Long userId) {
         User user = userRepository.findById(userId)

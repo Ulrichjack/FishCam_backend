@@ -31,7 +31,7 @@ public class AchatJournalierController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Créer une nouvelle facture")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'ENREGISTREUR')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE','ENREGISTREUR')")
     public ApiResponse<FactureResponse> createFacture(
             @Valid @RequestBody CreateFactureRequest request,
             @AuthenticationPrincipal User currentUser) {

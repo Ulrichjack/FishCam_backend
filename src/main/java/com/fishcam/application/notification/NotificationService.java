@@ -11,6 +11,7 @@ import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.user.Role;
 import com.fishcam.domain.user.User;
 import com.fishcam.domain.user.UserRepository;
+import com.fishcam.infrastructure.aop.LogAudit;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,6 +85,7 @@ public class NotificationService {
         return user.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_SUPER_ADMIN"));
     }
+
 
     @Transactional
     public void createAlerteCompteCourant(CompteCourant compte, String typeAlerte) {
@@ -235,6 +237,7 @@ public class NotificationService {
             }
         }
     }
+
 
     @Transactional
     public void createAlerteModificationLimite(

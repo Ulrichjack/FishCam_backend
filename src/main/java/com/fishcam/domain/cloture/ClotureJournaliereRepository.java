@@ -41,4 +41,6 @@ public interface ClotureJournaliereRepository
             LocalDate end
     );
 
+
+
 }

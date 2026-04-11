@@ -7,6 +7,7 @@ import com.fishcam.adapter.web.mapper.PoissonnerieMapper;
 import com.fishcam.application.notification.NotificationService;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.poissonnerie.PoissonnerieRepository;
+import com.fishcam.infrastructure.aop.LogAudit;
 import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class PoissonnerieService {
     private final NotificationService notificationService;
 
 
+    @LogAudit(action = "CREATE", entityName = "Poissonnerie")
     @Transactional
     public PoissonnerieResponse createPoissonnerie(CreatePoissonnerieRequest request) {
         String nom = request.getName().trim();
@@ -48,6 +50,7 @@ public class PoissonnerieService {
         return poissonnerieMapper.toResponse(poissonnerie);
     }
 
+    @LogAudit(action = "UPDATE", entityName = "Poissonnerie")
     @Transactional
     public PoissonnerieResponse updatePoissonnerie(Long id, UpdatePoissonnerieRequest request) {
         Poissonnerie poissonnerie = getEntityById(id);
@@ -61,6 +64,7 @@ public class PoissonnerieService {
 
     }
 
+    @LogAudit(action = "DELETE", entityName = "Poissonnerie")
     @Transactional
     public void deletePoissonnerie(Long poissonerieId) {
         Poissonnerie poissonnerie = poissonnerieRepository.findById(poissonerieId)
@@ -77,6 +81,7 @@ public class PoissonnerieService {
                 .orElseThrow(() -> new ResourceNotFoundException("Poissonnerie non trouvée avec l'id : " + id));
     }
 
+    @LogAudit(action = "CLOTURE", entityName = "Poissonnerie")
     @Transactional
     public void cloturerJournee(Long poissonnerieId) {
         Poissonnerie poissonnerie = getEntityById(poissonnerieId); // privée, utilisable ici

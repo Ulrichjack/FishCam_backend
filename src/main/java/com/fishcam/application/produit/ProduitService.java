@@ -6,6 +6,7 @@ import com.fishcam.adapter.web.dto.response.ProduitResponse;
 import com.fishcam.adapter.web.mapper.ProduitMapper;
 import com.fishcam.domain.produit.Produit;
 import com.fishcam.domain.produit.ProduitRepository;
+import com.fishcam.infrastructure.aop.LogAudit;
 import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class ProduitService {
     private final ProduitRepository produitRepository;
     private final ProduitMapper produitMapper;
 
+    @LogAudit(action = "CREATE", entityName = "Produit")
     @Transactional
     public ProduitResponse createProduit(CreateProduitRequest request) {
         if (produitRepository.existsByNomIgnoreCase(request.getNom())) {
@@ -60,6 +62,7 @@ public class ProduitService {
         return produitMapper.toReponse(produit);
     }
 
+    @LogAudit(action = "UPDATE", entityName = "Produit")
     @Transactional
     public ProduitResponse updateProduit(Long productId, UpdateProduitRequest request) {
         Produit produit = produitRepository.findById(productId)
@@ -86,7 +89,7 @@ public class ProduitService {
         return produitMapper.toReponse(savedProduit);
     }
 
-
+    @LogAudit(action = "DELETE", entityName = "Produit")
     @Transactional
     public void deleteProduit(Long produitId) {
         Produit produit = produitRepository.findById(produitId)

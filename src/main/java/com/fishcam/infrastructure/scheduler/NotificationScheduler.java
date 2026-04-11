@@ -32,6 +32,9 @@ public class NotificationScheduler {
         }
     }
 
+
+
+
     // ✅ 2. Se déclenche au démarrage → vérifie les jours manquants
     @EventListener(ApplicationReadyEvent.class)
     public void checkMissedReportsOnStartup() {

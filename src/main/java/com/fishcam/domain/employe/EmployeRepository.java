@@ -12,7 +12,7 @@ public interface EmployeRepository extends JpaRepository<Employe, Long> {
 
     List<Employe> findByPoissonnerieId(Long poissonnerieId);
 
-    Optional<Employe> findByTelephoneAndPoissonnerie(String phone, Poissonnerie poissonnerie);
+    Optional<Employe> findByTelephone(String phone);
 
 
 }
