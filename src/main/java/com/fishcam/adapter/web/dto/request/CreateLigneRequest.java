@@ -23,7 +23,7 @@ public class CreateLigneRequest {
 
     @NotNull
     @Positive
-    private BigDecimal montantCarton;
+    private BigDecimal prixUnitaireCarton;
 
     @NotNull
     @Positive

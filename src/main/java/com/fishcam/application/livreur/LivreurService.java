@@ -9,6 +9,7 @@ import com.fishcam.domain.livreur.EvaluationLivreurRepository;
 import com.fishcam.domain.livreur.Livreur;
 import com.fishcam.domain.livreur.LivreurRepository;
 import com.fishcam.infrastructure.aop.LogAudit;
+import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,14 @@ public class LivreurService {
     @LogAudit(action = "CREATE", entityName = "Livreur")
     @Transactional
     public LivreurResponse createLivreur(CreateLivreurRequest request){
+
+        if (request.getTelephone() != null && livreurRepository.existsByTelephone(request.getTelephone())) {
+            throw new BusinessException("Un livreur avec ce numéro de téléphone existe déjà.");
+        }
+        if (livreurRepository.existsByNomIgnoreCaseAndPrenomIgnoreCase(request.getNom(), request.getPrenom())) {
+            throw new BusinessException("Un livreur avec ce nom et prénom existe déjà.");
+        }
+
         Fournisseur fournisseur = fournisseurRepository.findById(request.getFournisseurId())
                 .orElseThrow(()-> new ResourceNotFoundException("Fournisseur non trouvé"));
 

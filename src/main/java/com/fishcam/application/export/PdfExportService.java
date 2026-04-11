@@ -242,7 +242,7 @@ public class PdfExportService {
             document.add(new Chunk(new com.lowagie.text.pdf.draw.LineSeparator(1f, 100f, Color.BLACK, Element.ALIGN_CENTER, -5f)));
             document.add(Chunk.NEWLINE);
 
-            Paragraph inventaire = new Paragraph("INVENTAIRE MOIS DE..... " + moisAnnee, boldFont);
+            Paragraph inventaire = new Paragraph("INVENTAIRE MOIS DE " + moisAnnee, boldFont);
             inventaire.setSpacingAfter(15);
             document.add(inventaire);
 
@@ -266,7 +266,7 @@ public class PdfExportService {
             for (RecapitulatifLigneResponse ligne : recap.getLignes()) {
 
                 // Column 1: Date (Just the day of the month, like "1", "2", "3")
-                String jourStr = String.valueOf(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                String jourStr = String.valueOf(ligne.getJour().getDayOfMonth());
                 table.addCell(createCell(jourStr, normalFont));
 
                 // Column 2: Montant Achat

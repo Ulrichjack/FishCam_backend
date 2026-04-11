@@ -17,7 +17,7 @@ public class UpdateLigneRequest {
     private BigDecimal poidsKg;
 
     @Positive
-    private BigDecimal montantCarton;
+    private BigDecimal prixUnitaireCarton;
 
     @Positive
     private BigDecimal prixVenteKilo;

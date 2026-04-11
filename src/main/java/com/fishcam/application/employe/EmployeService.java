@@ -38,10 +38,8 @@ public class EmployeService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Poissonnerie non trouvée avec l'id : " + request.getPoissonnerieId()
                 ));
-        if (request.getTelephone() != null && !request.getTelephone().isBlank()) {
-            if (existsByTelephoneAndPoissonnerie(request.getTelephone(), poissonnerie.getId())) {
-                throw new BusinessException("Un employé avec ce numéro existe déjà");
-            }
+        if (request.getTelephone() != null && employeRepository.existsByTelephone(request.getTelephone())) {
+            throw new BusinessException("Un employé avec ce numéro existe déjà.");
         }
         User userLie = null;
         if (request.getUserId() != null) {
@@ -97,8 +95,10 @@ public class EmployeService {
         if (request.getSalaire() != null) {
             employe.setSalaire(request.getSalaire());
         }
-        if (request.getTelephone() != null && !request.getTelephone().trim().isBlank()) {
-            employe.setTelephone(request.getTelephone().trim());
+        if (request.getTelephone() != null && !request.getTelephone().equals(employe.getTelephone())) {
+            if (employeRepository.existsByTelephone(request.getTelephone())) {
+                throw new BusinessException("Ce numéro de téléphone est déjà utilisé par un autre employé.");
+            }
         }
         Employe savedEmploye = employeRepository.save(employe);
         return employeMapper.toResponse(savedEmploye);

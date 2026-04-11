@@ -17,6 +17,7 @@ public class LigneAchatResponse {
     private String produitNom;
     private Integer quantiteCartons;
     private BigDecimal poidsKg;
+    private BigDecimal prixUnitaireCarton;
     private BigDecimal montantCarton;
     private BigDecimal prixVenteKilo;
     private LocalDateTime createdAt;
