@@ -8,6 +8,7 @@ import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.poissonnerie.PoissonnerieRepository;
 import com.fishcam.domain.user.User;
 import com.fishcam.domain.user.UserRepository;
+import com.fishcam.infrastructure.aop.LogAudit;
 import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    @LogAudit(action = "CREATE", entityName = "User")
     @Transactional
     public UserResponse createUser(CreateUserRequest request) {
         log.info("Création utilisateur: {} {} ({})", request.getFirstName(), request.getLastName(), request.getPhone());
@@ -73,6 +75,7 @@ public class UserService {
         return userMapper.toResponse(user);
     }
 
+    @LogAudit(action = "UPDATE", entityName = "User")
     @Transactional
     public UserResponse updateUser(Long id, UpdateUserRequest request) {
         log.info("Modification utilisateur ID: {}", id);
@@ -103,6 +106,7 @@ public class UserService {
         return userMapper.toResponse(updatedUser);
     }
 
+    @LogAudit(action = "DELETE", entityName = "User")
     @Transactional
     public void deleteUser(Long id) {
         log.info("Désactivation utilisateur ID: {}", id);

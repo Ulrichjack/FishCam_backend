@@ -13,6 +13,7 @@ import com.fishcam.domain.epargne.*;
 import com.fishcam.domain.poissonnerie.PoissonnerieRepository;
 import com.fishcam.domain.user.User;
 import com.fishcam.domain.user.UserRepository;
+import com.fishcam.infrastructure.aop.LogAudit;
 import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class EpargneService {
     private final TransactionEpargneMapper transactionEpargneMapper;
 
 
+    @LogAudit(action = "CREATE", entityName = "Epargne")
     @Transactional
     public EpargneResponse createEpargne(CreateEpargneRequest request, Long userId) {
         Client client = clientRepository.findById(request.getClientId())
@@ -71,6 +73,7 @@ public class EpargneService {
         return epargneMapper.toResponse(savedEpargne);
     }
 
+    @LogAudit(action = "DEPOT", entityName = "Epargne")
     @Transactional
     public EpargneResponse deposer(DepotEpargneRequest request, Long userId) {
         Epargne epargne = epargneRepository.findById(request.getEpargneId())
@@ -94,6 +97,7 @@ public class EpargneService {
         return epargneMapper.toResponse(epargne);
     }
 
+    @LogAudit(action = "RETRAIT", entityName = "Epargne")
     @Transactional
     public EpargneResponse retirer(RetraitEpargneRequest request, Long userId) {
         Epargne epargne = epargneRepository.findById(request.getEpargneId())

@@ -6,6 +6,7 @@ import com.fishcam.adapter.web.dto.response.FournisseurResponse;
 import com.fishcam.adapter.web.mapper.FournisseurMapper;
 import com.fishcam.domain.fournisseur.Fournisseur;
 import com.fishcam.domain.fournisseur.FournisseurRepository;
+import com.fishcam.infrastructure.aop.LogAudit;
 import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class FournisseurService {
 
 
     @Transactional
+    @LogAudit(action = "CREATE", entityName = "Fournisseur")
     public FournisseurResponse createFournisseur(CreateFournisseurRequest request){
         if (fournisseurRepository.existsByNomIgnoreCase(request.getNom())) {
             throw new BusinessException("Un fournisseur avec ce nom existe déjà");
@@ -42,6 +44,8 @@ public class FournisseurService {
                 .toList();
     }
 
+
+    @LogAudit(action = "UPDATE", entityName = "Fournisseur")
     @Transactional
     public FournisseurResponse updateFournisseur(Long fournisseurId, UpdateFournisseurRequest request){
         Fournisseur fournisseur = fournisseurRepository.findById(fournisseurId)
@@ -71,6 +75,7 @@ public class FournisseurService {
         return fournisseurMapper.toResponse(fournisseur);
     }
 
+    @LogAudit(action = "DELETE", entityName = "Fournisseur")
     @Transactional
     public void deleteFournisseur(Long fournisseurId){
         Fournisseur fournisseur = fournisseurRepository.findById(fournisseurId)

@@ -8,6 +8,7 @@ import com.fishcam.domain.fournisseur.FournisseurRepository;
 import com.fishcam.domain.livreur.EvaluationLivreurRepository;
 import com.fishcam.domain.livreur.Livreur;
 import com.fishcam.domain.livreur.LivreurRepository;
+import com.fishcam.infrastructure.aop.LogAudit;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class LivreurService {
     private final EvaluationLivreurRepository evaluationLivreurRepository;
     private final LivreurMapper livreurMapper;
 
+    @LogAudit(action = "CREATE", entityName = "Livreur")
     @Transactional
     public LivreurResponse createLivreur(CreateLivreurRequest request){
         Fournisseur fournisseur = fournisseurRepository.findById(request.getFournisseurId())

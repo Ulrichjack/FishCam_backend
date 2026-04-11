@@ -10,6 +10,7 @@ import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.poissonnerie.PoissonnerieRepository;
 import com.fishcam.domain.user.User;
 import com.fishcam.domain.user.UserRepository;
+import com.fishcam.infrastructure.aop.LogAudit;
 import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class EmployeService {
     private final UserRepository userRepository;
 
 
+    @LogAudit(action = "CREATE", entityName = "Employe")
     @Transactional
     public EmployeResponse createEmploye(CreateEmployeRequest request) {
 
@@ -76,6 +78,7 @@ public class EmployeService {
         return employeMapper.toResponse(employe);
     }
 
+    @LogAudit(action = "UPDATE", entityName = "Employe")
     @Transactional
     public EmployeResponse updateEmploye(Long employeId, UpdateEmployeRequest request) {
         Employe employe = employeRepository.findById(employeId)
@@ -102,6 +105,7 @@ public class EmployeService {
 
     }
 
+    @LogAudit(action = "DELETE", entityName = "Employe")
     @Transactional
     public void deleteEmploye(Long employeId) {
         Employe employe = employeRepository.findById(employeId)
@@ -114,7 +118,7 @@ public class EmployeService {
 
     public boolean existsByTelephoneAndPoissonnerie(String phone, Long poissonnerieId) {
         return poissonnerieRepository.findById(poissonnerieId)
-                .map(p -> employeRepository.findByTelephoneAndPoissonnerie(phone, p).isPresent())
+                .map(p -> employeRepository.findByTelephone(phone).isPresent())
                 .orElse(false);
     }
 

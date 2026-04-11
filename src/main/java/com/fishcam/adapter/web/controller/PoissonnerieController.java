@@ -4,7 +4,9 @@ import com.fishcam.adapter.web.dto.request.CreatePoissonnerieRequest;
 import com.fishcam.adapter.web.dto.request.UpdatePoissonnerieRequest;
 import com.fishcam.adapter.web.dto.response.ApiResponse;
 import com.fishcam.adapter.web.dto.response.PoissonnerieResponse;
+import com.fishcam.adapter.web.dto.response.StatistiquesPoissonnerieResponse;
 import com.fishcam.application.poissonnerie.PoissonnerieService;
+import com.fishcam.application.statistique.StatistiquesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -24,6 +26,7 @@ import java.time.LocalDateTime;
 public class PoissonnerieController {
 
     private final PoissonnerieService poissonnerieService;
+    private final StatistiquesService statistiquesService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -110,4 +113,21 @@ public class PoissonnerieController {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+
+
+    @GetMapping("/{id}/dashboard")
+    @Operation(summary = "Get complete dashboard statistics")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
+    public ApiResponse<StatistiquesPoissonnerieResponse> getDashboardStats(@PathVariable Long id) {
+        StatistiquesPoissonnerieResponse response = statistiquesService.getDashboardStats(id);
+        return ApiResponse.<StatistiquesPoissonnerieResponse>builder()
+                .success(true)
+                .data(response)
+                .message("Dashboard statistics retrieved successfully")
+                .code(200)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+
 }

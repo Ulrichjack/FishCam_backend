@@ -38,3 +38,6 @@ build/
 !README.txt
 .bashrc
 fishcam-data-dev/
+
+# env
+.env

@@ -17,6 +17,7 @@ import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.poissonnerie.PoissonnerieRepository;
 import com.fishcam.domain.user.User;
 import com.fishcam.domain.user.UserRepository;
+import com.fishcam.infrastructure.aop.LogAudit;
 import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -100,6 +101,7 @@ public class ClotureJournaliereService {
         return response;
     }
 
+    @LogAudit(action = "CLOTURE", entityName = "ClotureJournaliere")
     @Transactional
     public ClotureJournaliereResponse cloturer(ClotureJournaliereRequest request, Long userId){
 
