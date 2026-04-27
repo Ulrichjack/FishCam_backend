@@ -9,7 +9,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring", uses = {PoissonnerieMapper.class, UserMapper.class})
+@Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface ClientMapper {
 
     ClientResponse toResponse(Client entity);
@@ -18,7 +18,15 @@ public interface ClientMapper {
     @Mapping(target = "soldeEpargne", ignore = true)
     ClientDetailResponse toDetailResponse(Client entity);
 
-    @Mapping(source = "poissonnerieId", target = "poissonnerie", ignore = true)
+
+    @Mapping(target = "poissonnerie", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "notes", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "active", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "compteCourant", ignore = true)
     Client toEntity(CreateClientRequest request);
 
     void updateEntityFromRequest(UpdateClientRequest request, @MappingTarget Client entity);

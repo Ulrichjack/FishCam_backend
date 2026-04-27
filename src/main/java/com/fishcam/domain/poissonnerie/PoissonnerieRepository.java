@@ -13,8 +13,9 @@ public interface PoissonnerieRepository extends JpaRepository<Poissonnerie, Long
     List<Poissonnerie> findByActiveTrue();
 
 
-    Optional<Poissonnerie> findByNameIgnoreCase(String name);
+    Optional<com.fishcam.domain.poissonnerie.Poissonnerie> findByNameIgnoreCase(String name);
 
     boolean existsByNameIgnoreCase(String name);
 
 }
+

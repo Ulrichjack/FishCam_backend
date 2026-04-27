@@ -13,11 +13,20 @@ public interface TransactionEpargneMapper {
 
 
     @Mapping(source = "epargneId", target = "epargne", ignore = true)
-    @Mapping(constant = "DEPOT",target = "type")
+    @Mapping(constant = "DEPOT", target = "type")
+    @Mapping(target = "id", ignore = true)              // ← AJOUTER
+    @Mapping(target = "poissonnerie", ignore = true)    // ← AJOUTER
+    @Mapping(target = "effectuePar", ignore = true)     // ← AJOUTER
+    @Mapping(target = "transactionDate", ignore = true)
     TransactionEpargne toEntity(DepotEpargneRequest request);
 
 
     @Mapping(constant = "RETRAIT", target = "type")
+    @Mapping(target = "id", ignore = true)              // ← AJOUTER
+    @Mapping(target = "epargne", ignore = true)         // ← AJOUTER
+    @Mapping(target = "poissonnerie", ignore = true)    // ← AJOUTER
+    @Mapping(target = "effectuePar", ignore = true)     // ← AJOUTER
+    @Mapping(target = "transactionDate", ignore = true)
     TransactionEpargne toEntity(RetraitEpargneRequest request);
 
 

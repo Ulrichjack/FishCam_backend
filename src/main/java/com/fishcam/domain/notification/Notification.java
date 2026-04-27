@@ -3,18 +3,20 @@ package com.fishcam.domain.notification;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.user.User;
 import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
-
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notification")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Notification {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,7 +28,7 @@ public class Notification {
     @ManyToOne
     private Poissonnerie poissonnerie;
 
-    @Column(nullable = false, length = 500)
+    @Column(nullable = false, length = 2500)
     private String message;
 
     @Column(nullable = false)

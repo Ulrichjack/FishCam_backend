@@ -19,7 +19,7 @@ public class EpargneDetailResponse {
     private BigDecimal currentBalance;
     private LocalDateTime createdAt;
 
-    private List <TransactionEpargneResponse> transactions;
+    private List<TransactionEpargneResponse> transactions;
     private UserResponse createdBy;
     private Integer nombreTransactions;
     private BigDecimal totalDepots;

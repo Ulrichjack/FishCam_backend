@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,6 +16,9 @@ public class PoissonnerieResponse {
     private String address;
     private String name;
     private String phone;
+    private BigDecimal loyer;
+    private BigDecimal fondDeCaisseDefaut;
+    private Boolean pretActif;
     private Boolean active;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

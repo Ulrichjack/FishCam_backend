@@ -1,0 +1,148 @@
+reponse :
+{
+    "success": true,
+    "data": [
+        {
+            "id": 2,
+            "nom": "SYLVER ",
+            "unite": "KG",
+            "poidsParCarton": 10.00,
+            "actif": true,
+            "createdAt": "2026-03-12T03:58:21.141449",
+            "updatedAt": "2026-03-12T03:58:21.141579"
+        }
+    ],
+    "message": "",
+    "code": 200,
+    "timestamp": "2026-03-12T03:59:43.82139312",
+    "fieldErrors": null
+}
+{
+    "success": true,
+    "data": {
+        "content": [
+            {
+                "id": 1,
+                "nom": "JAX 23+",
+                "unite": "KG",
+                "poidsParCarton": 21.00,
+                "actif": true,
+                "createdAt": "2026-03-12T03:56:36.076929",
+                "updatedAt": "2026-03-12T03:56:36.076986"
+            },
+            {
+                "id": 2,
+                "nom": "SYLVER ",
+                "unite": "KG",
+                "poidsParCarton": 10.00,
+                "actif": true,
+                "createdAt": "2026-03-12T03:58:21.141449",
+                "updatedAt": "2026-03-12T03:58:21.141579"
+            }
+        ],
+        "page": {
+            "size": 20,
+            "number": 0,
+            "totalElements": 2,
+            "totalPages": 1
+        }
+    },
+    "message": "Liste des produits récupérée",
+    "code": 200,
+    "timestamp": "2026-03-12T03:58:28.275371626",
+    "fieldErrors": null
+}
+{
+    "success": true,
+    "data": {
+        "id": 2,
+        "nom": "SYLVER ",
+        "unite": "KG",
+        "poidsParCarton": 10,
+        "actif": true,
+        "createdAt": "2026-03-12T03:58:21.141449",
+        "updatedAt": "2026-03-12T03:58:21.141579"
+    },
+    "message": "Produit créée avec succès",
+    "code": 201,
+    "timestamp": "2026-03-12T03:58:21.15904824",
+    "fieldErrors": null
+}
+
+{
+    "success": true,
+    "data": {
+        "id": 1,
+        "nom": "JAX 23+",
+        "unite": "KG",
+        "poidsParCarton": 20,
+        "actif": true,
+        "createdAt": "2026-03-12T03:56:36.076929",
+        "updatedAt": "2026-03-12T03:56:36.076986"
+    },
+    "message": "Produit modifié avec succès",
+    "code": 200,
+    "timestamp": "2026-03-12T04:01:37.743230738",
+    "fieldErrors": null
+}
+
+{
+    "success": true,
+    "data": {
+        "id": 1,
+        "prenom": "Marie",
+        "nom": "Dupont",
+        "poste": "Caissière",
+        "salaire": 150000,
+        "telephone": null,
+        "poissonnerieId": 1,
+        "userId": null,
+        "poissonnerieNom": "FISH CAM VILLE (TEST)",
+        "actif": true,
+        "createdAt": "2026-03-12T04:05:23.351292",
+        "updatedAt": "2026-03-12T04:05:23.351331"
+    },
+    "message": "Employé créé avec succès",
+    "code": 201,
+    "timestamp": "2026-03-12T04:05:23.380476163",
+    "fieldErrors": null
+} il ya un soucis on peut cree deux employe avec le meme nom et prenom donc cest une erreur ou non ?
+
+{
+    "success": true,
+    "data": [
+        {
+            "id": 1,
+            "prenom": "Marie",
+            "nom": "Dupont",
+            "poste": "Caissière",
+            "salaire": 150000.00,
+            "telephone": null,
+            "poissonnerieId": 1,
+            "userId": null,
+            "poissonnerieNom": "FISH CAM VILLE (TEST)",
+            "actif": true,
+            "createdAt": "2026-03-12T04:05:23.351292",
+            "updatedAt": "2026-03-12T04:05:23.351331"
+        },
+        {
+            "id": 2,
+            "prenom": "Marie",
+            "nom": "Dupont",
+            "poste": "Caissière",
+            "salaire": 150000.00,
+            "telephone": null,
+            "poissonnerieId": 1,
+            "userId": null,
+            "poissonnerieNom": "FISH CAM VILLE (TEST)",
+            "actif": true,
+            "createdAt": "2026-03-12T04:06:26.884202",
+            "updatedAt": "2026-03-12T04:06:26.884252"
+        }
+    ],
+    "message": "Liste des employés récupérée",
+    "code": 200,
+    "timestamp": "2026-03-12T04:07:08.018335851",
+    "fieldErrors": null
+}
+

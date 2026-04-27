@@ -16,6 +16,7 @@ import com.fishcam.domain.poissonnerie.PoissonnerieRepository;
 import com.fishcam.domain.user.Role;
 import com.fishcam.domain.user.User;
 import com.fishcam.domain.user.UserRepository;
+import com.fishcam.infrastructure.aop.LogAudit;
 import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -40,10 +41,15 @@ public class CompteCourantService {
     private final CompteCourantMapper compteCourantMapper;
     private final TransactionCCMapper transactionCCMapper;
 
+    @LogAudit(action = "CREATE", entityName = "CompteCourant")
     @Transactional
     public CompteCourantResponse createCompteCourant(Long clientId, Long userId) {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client non trouvé"));
+
+        if (!client.getPoissonnerie().getPretActif()) {
+            throw new BusinessException("Impossible de créer un compte courant : les prêts ne sont pas autorisés dans cette poissonnerie.");
+        }
 
         if (compteCourantRepository.existsByClient(client)) {
             throw new BusinessException("Ce client a déjà un compte courant");
@@ -54,7 +60,6 @@ public class CompteCourantService {
 
         CompteCourant compte = new CompteCourant();
         compte.setClient(client);
-        compte.setPoissonnerie(client.getPoissonnerie());
         compte.setCreatedBy(createdBy);
         compte.setSolde(BigDecimal.ZERO);
         compte.setLimiteCreditMax(new BigDecimal("50000"));
@@ -64,10 +69,16 @@ public class CompteCourantService {
         return compteCourantMapper.toResponse(saved);
     }
 
+    @LogAudit(action = "EMPRUNT", entityName = "CompteCourant")
     @Transactional
     public CompteCourantResponse enregistrerEmprunt(EmpruntRequest request, Long userId) {
         CompteCourant compte = compteCourantRepository.findById(request.getCompteCourantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Compte courant non trouvé"));
+
+        if (!compte.getPoissonnerie().getPretActif()) {
+            throw new BusinessException("La gestion des prêts/dettes n'est pas activée pour cette poissonnerie ("
+                    + compte.getPoissonnerie().getName() + "). Vente au comptant uniquement.");
+        }
 
         if (compte.getStatut() != StatutCompteCourant.ACTIF) {
             throw new BusinessException("Ce compte n'est pas actif");
@@ -110,6 +121,7 @@ public class CompteCourantService {
         return compteCourantMapper.toResponse(compte);
     }
 
+    @LogAudit(action = "REMBOURSEMENT", entityName = "CompteCourant")
     @Transactional
     public CompteCourantResponse enregistrerRemboursement(RemboursementCCRequest request, Long userId) {
         CompteCourant compte = compteCourantRepository.findById(request.getCompteCourantId())
@@ -146,7 +158,7 @@ public class CompteCourantService {
     }
 
 
-
+    @LogAudit(action = "UPDATE", entityName = "CompteCourant")
     @Transactional
     public CompteCourantResponse modifierLimiteCredit(Long compteId, ModifierLimiteCreditRequest request, Long userId) {
         User user = userRepository.findById(userId)

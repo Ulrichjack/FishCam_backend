@@ -11,8 +11,6 @@ public class CreateEpargneRequest {
 
     @NotNull
     private Long clientId;
-    @NotNull
-    private Long poissonnerieId;
 
     @NotNull
     @DecimalMin("0.01")

@@ -3,7 +3,9 @@ package com.fishcam.domain.comptecourant;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.user.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
@@ -11,19 +13,19 @@ import java.time.LocalDateTime;
 
 /**
  * Transaction sur un compte courant.
- *
+ * <p>
  * Chaque mouvement (emprunt ou remboursement) est enregistré.
  * On garde l'historique complet avec le solde avant/après.
- *
+ * <p>
  * Exemples :
- *
+ * <p>
  * Transaction 1 - EMPRUNT
  * - Type : EMPRUNT
  * - Montant : 3000 FCFA
  * - Solde avant : -2000 FCFA
  * - Solde après : -5000 FCFA
  * - Description : "Achat de carpes"
- *
+ * <p>
  * Transaction 2 - REMBOURSEMENT
  * - Type : REMBOURSEMENT
  * - Montant : 2000 FCFA
@@ -33,9 +35,9 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "transaction_compte_courant")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class TransactionCompteCourant {
 
     @Id

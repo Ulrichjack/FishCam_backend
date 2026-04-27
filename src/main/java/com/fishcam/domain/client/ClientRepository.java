@@ -1,7 +1,6 @@
 package com.fishcam.domain.client;
 
 import com.fishcam.domain.poissonnerie.Poissonnerie;
-import com.fishcam.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,7 +25,6 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
 
 
     Optional<Client> findByPhoneAndPoissonnerie(String phone, Poissonnerie poissonnerie);
-
 
 
     long countByPoissonnerie(Poissonnerie poissonnerie);

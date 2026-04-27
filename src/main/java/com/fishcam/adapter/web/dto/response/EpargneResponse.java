@@ -14,7 +14,7 @@ public class EpargneResponse {
 
     private Long id;
     private ClientResponse client;
-   // private PoissonnerieResponse poissonnerie;
+    // private PoissonnerieResponse poissonnerie;
     private BigDecimal currentBalance;
     private LocalDateTime createdAt;
 }

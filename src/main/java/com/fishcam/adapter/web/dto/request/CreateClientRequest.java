@@ -12,11 +12,11 @@ import java.time.LocalDate;
 public class CreateClientRequest {
 
     @NotBlank(message = "Le prénom est obligatoire")
-    @Size (max = 50, message = "Le prénom ne peut pas dépasser 50 caractères")
+    @Size(max = 50, message = "Le prénom ne peut pas dépasser 50 caractères")
     private String firstName;
 
     @NotBlank(message = "Le nom est obligatoire")
-    @Size (max = 50, message = "Le nom ne peut pas dépasser 50 caractères")
+    @Size(max = 50, message = "Le nom ne peut pas dépasser 50 caractères")
     private String lastName;
 
     @Size(max = 20, message = "Le téléphone ne peut pas dépasser 20 caractères")

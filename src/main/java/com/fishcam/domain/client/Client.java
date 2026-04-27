@@ -1,24 +1,25 @@
 package com.fishcam.domain.client;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import com.fishcam.domain.comptecourant.CompteCourant;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.user.User;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import jakarta.persistence.*;
-import lombok.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "client")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Client {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,7 +45,7 @@ public class Client {
 
     private LocalDate dateOfBirth;
 
-    @Column(length = 20)
+    @Column(length = 1000)
     private String notes;
 
     @ManyToOne

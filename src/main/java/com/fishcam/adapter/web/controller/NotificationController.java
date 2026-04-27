@@ -3,10 +3,12 @@ package com.fishcam.adapter.web.controller;
 import com.fishcam.adapter.web.dto.response.ApiResponse;
 import com.fishcam.adapter.web.dto.response.NotificationResponse;
 import com.fishcam.application.notification.NotificationService;
+import com.fishcam.domain.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -23,26 +25,35 @@ public class NotificationController {
 
     @GetMapping("/user/{userId}")
     @Operation(summary = "Récupérer toutes les notifications d'un utilisateur")
-    public ApiResponse<List<NotificationResponse>> getNotificationsByUser(@PathVariable Long userId) {
-        List<NotificationResponse> data = notificationService.getNotificationsByUser(userId);
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
+    public ApiResponse<List<NotificationResponse>> getNotificationsByUser(
+            @PathVariable Long userId,
+            Authentication authentication) {
+
+        User currentUser = (User) authentication.getPrincipal();
+        List<NotificationResponse> data = notificationService.getNotificationsByUser(userId, currentUser);
+
         return ApiResponse.<List<NotificationResponse>>builder()
-                .success(true)
-                .data(data)
+                .success(true).data(data)
                 .message("Notifications récupérées")
-                .code(200)
-                .timestamp(LocalDateTime.now())
+                .code(200).timestamp(LocalDateTime.now())
                 .build();
     }
 
     @PutMapping("/{id}/mark-as-read")
     @Operation(summary = "Marquer une notification comme lue")
-    public ApiResponse<Void> markAsRead(@PathVariable Long id) {
-        notificationService.markAsRead(id);
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
+    public ApiResponse<Void> markAsRead(
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        User currentUser = (User) authentication.getPrincipal();
+        notificationService.markAsRead(id, currentUser);
+
         return ApiResponse.<Void>builder()
                 .success(true)
                 .message("Notification marquée comme lue")
-                .code(200)
-                .timestamp(LocalDateTime.now())
+                .code(200).timestamp(LocalDateTime.now())
                 .build();
     }
 
@@ -51,15 +62,19 @@ public class NotificationController {
             summary = "Compter les notifications non lues",
             description = "Retourne le nombre de notifications non lues pour afficher le badge rouge"
     )
-    public ApiResponse<Map<String, Long>> countUnreadNotifications(@PathVariable Long userId) {
-        long count = notificationService.countUnreadNotifications(userId);
-        Map<String, Long> data = Map.of("count", count);
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
+    public ApiResponse<Map<String, Long>> countUnreadNotifications(
+            @PathVariable Long userId,
+            Authentication authentication) {
+
+        User currentUser = (User) authentication.getPrincipal();
+        long count = notificationService.countUnreadNotifications(userId, currentUser);
+
         return ApiResponse.<Map<String, Long>>builder()
                 .success(true)
-                .data(data)
+                .data(Map.of("count", count))
                 .message("Nombre de notifications non lues récupéré")
-                .code(200)
-                .timestamp(LocalDateTime.now())
+                .code(200).timestamp(LocalDateTime.now())
                 .build();
     }
 }

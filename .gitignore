@@ -31,3 +31,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Personal files
+*.odt
+*.txt
+!README.txt
+.bashrc
+fishcam-data-dev/
+
+# env
+.env

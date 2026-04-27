@@ -26,4 +26,5 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     Page<Notification> findByUserOrderByCreatedAtDesc(User user, Pageable pageable);
 
+    boolean existsByUserAndMessageContainingAndType(User user, String message, TypeNotification type);
 }

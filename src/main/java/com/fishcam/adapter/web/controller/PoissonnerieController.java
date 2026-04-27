@@ -4,7 +4,9 @@ import com.fishcam.adapter.web.dto.request.CreatePoissonnerieRequest;
 import com.fishcam.adapter.web.dto.request.UpdatePoissonnerieRequest;
 import com.fishcam.adapter.web.dto.response.ApiResponse;
 import com.fishcam.adapter.web.dto.response.PoissonnerieResponse;
+import com.fishcam.adapter.web.dto.response.StatistiquesPoissonnerieResponse;
 import com.fishcam.application.poissonnerie.PoissonnerieService;
+import com.fishcam.application.statistique.StatistiquesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -12,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -23,10 +26,12 @@ import java.time.LocalDateTime;
 public class PoissonnerieController {
 
     private final PoissonnerieService poissonnerieService;
+    private final StatistiquesService statistiquesService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Créer une nouvelle poissonnerie")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
     public ApiResponse<PoissonnerieResponse> createPoissonnerie(@Valid @RequestBody CreatePoissonnerieRequest request) {
         PoissonnerieResponse response = poissonnerieService.createPoissonnerie(request);
         return ApiResponse.<PoissonnerieResponse>builder()
@@ -40,6 +45,7 @@ public class PoissonnerieController {
 
     @GetMapping
     @Operation(summary = "Lister les poissonneries actives (paginated)")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
     public ApiResponse<Page<PoissonnerieResponse>> getAllPoissonneries(Pageable pageable) {
         Page<PoissonnerieResponse> page = poissonnerieService.getAllPoissonneries(pageable);
         return ApiResponse.<Page<PoissonnerieResponse>>builder()
@@ -53,6 +59,7 @@ public class PoissonnerieController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Récupérer une poissonnerie par ID")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
     public ApiResponse<PoissonnerieResponse> getPoissonnerieById(@PathVariable Long id) {
         PoissonnerieResponse response = poissonnerieService.getPoissonnerieById(id);
         return ApiResponse.<PoissonnerieResponse>builder()
@@ -66,6 +73,7 @@ public class PoissonnerieController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Modifier une poissonnerie")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
     public ApiResponse<PoissonnerieResponse> updatePoissonnerie(
             @PathVariable Long id,
             @Valid @RequestBody UpdatePoissonnerieRequest request) {
@@ -82,6 +90,7 @@ public class PoissonnerieController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Désactiver une poissonnerie")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ApiResponse<Void> deletePoissonnerie(@PathVariable Long id) {
         poissonnerieService.deletePoissonnerie(id);
         return ApiResponse.<Void>builder()
@@ -91,4 +100,34 @@ public class PoissonnerieController {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+
+    @PostMapping("/{id}/cloturer-journee")
+    @Operation(summary = "Clôturer manuellement la journée et générer le rapport")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
+    public ApiResponse<Void> cloturerJournee(@PathVariable Long id) {
+        poissonnerieService.cloturerJournee(id); // ← tout dans le service
+        return ApiResponse.<Void>builder()
+                .success(true)
+                .message("Journée clôturée, rapport généré avec succès")
+                .code(200)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+
+    @GetMapping("/{id}/dashboard")
+    @Operation(summary = "Get complete dashboard statistics")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
+    public ApiResponse<StatistiquesPoissonnerieResponse> getDashboardStats(@PathVariable Long id) {
+        StatistiquesPoissonnerieResponse response = statistiquesService.getDashboardStats(id);
+        return ApiResponse.<StatistiquesPoissonnerieResponse>builder()
+                .success(true)
+                .data(response)
+                .message("Dashboard statistics retrieved successfully")
+                .code(200)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+
 }

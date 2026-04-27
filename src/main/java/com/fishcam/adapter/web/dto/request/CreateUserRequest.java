@@ -1,6 +1,5 @@
 package com.fishcam.adapter.web.dto.request;
 
-import com.fishcam.adapter.web.dto.response.PoissonnerieResponse;
 import com.fishcam.domain.user.Role;
 import com.fishcam.domain.user.UserScope;
 import jakarta.validation.constraints.NotBlank;

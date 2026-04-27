@@ -1,20 +1,23 @@
 package com.fishcam.domain.poissonnerie;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import jakarta.persistence.*;
-import lombok.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
 @Entity
 @Table(name = "poissonnerie")
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
 public class Poissonnerie {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,6 +34,15 @@ public class Poissonnerie {
     @Column(nullable = false)
     private Boolean active;
 
+    @Column(nullable = false)
+    private BigDecimal loyer = BigDecimal.ZERO;
+
+    @Column(nullable = false)
+    private BigDecimal fondDeCaisseDefaut = BigDecimal.valueOf(10000);
+
+    @Column(nullable = false)
+    private Boolean pretActif = false;
+
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -38,8 +50,6 @@ public class Poissonnerie {
     @Column(nullable = false)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-    
-   
 
 
 }

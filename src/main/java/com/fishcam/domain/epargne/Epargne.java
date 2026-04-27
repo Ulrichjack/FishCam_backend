@@ -1,22 +1,23 @@
 package com.fishcam.domain.epargne;
 
-import java.time.LocalDateTime;
-
 import com.fishcam.domain.client.Client;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.user.User;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import jakarta.persistence.*;
 import java.math.BigDecimal;
-import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "epargne_saving")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Epargne {
 
     @Id
@@ -27,8 +28,6 @@ public class Epargne {
     @JoinColumn(name = "client_id", nullable = false, unique = true)
     private Client client;
 
-    @ManyToOne
-    private Poissonnerie poissonnerie;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal currentBalance;
@@ -43,5 +42,10 @@ public class Epargne {
     @Column(nullable = false)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-    
+
+
+    public Poissonnerie getPoissonnerie() {
+        return client != null ? client.getPoissonnerie() : null;
+    }
+
 }
