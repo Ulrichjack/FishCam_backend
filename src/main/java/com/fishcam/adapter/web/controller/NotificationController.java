@@ -7,6 +7,7 @@ import com.fishcam.domain.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -23,22 +24,65 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    @GetMapping("/user/{userId}")
-    @Operation(summary = "Récupérer toutes les notifications d'un utilisateur")
+    @GetMapping("/user/{userId}/page")
+    @Operation(summary = "Récupérer les notifications paginées d'un utilisateur")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
-    public ApiResponse<List<NotificationResponse>> getNotificationsByUser(
+    public ApiResponse<Page<NotificationResponse>> getNotificationsPageByUser(
             @PathVariable Long userId,
-            Authentication authentication) {
-
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            Authentication authentication
+    ) {
         User currentUser = (User) authentication.getPrincipal();
-        List<NotificationResponse> data = notificationService.getNotificationsByUser(userId, currentUser);
+        Page<NotificationResponse> data =
+                notificationService.getNotificationsPageByUser(userId, page, size, currentUser);
 
-        return ApiResponse.<List<NotificationResponse>>builder()
+        return ApiResponse.<Page<NotificationResponse>>builder()
                 .success(true).data(data)
-                .message("Notifications récupérées")
+                .message("Notifications paginées récupérées")
                 .code(200).timestamp(LocalDateTime.now())
                 .build();
     }
+
+    @GetMapping("/user/{userId}/recent")
+    @Operation(summary = "Récupérer les notifications récentes (dashboard)")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
+    public ApiResponse<List<NotificationResponse>> getRecent(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "5") int limit,
+            Authentication authentication
+    ) {
+        User currentUser = (User) authentication.getPrincipal();
+        List<NotificationResponse> data =
+                notificationService.getRecentNotifications(userId, limit, currentUser);
+
+        return ApiResponse.<List<NotificationResponse>>builder()
+                .success(true).data(data)
+                .message("Notifications récentes récupérées")
+                .code(200).timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @PutMapping("/user/{userId}/mark-all-as-read")
+    @Operation(summary = "Marquer toutes les notifications comme lues")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
+    public ApiResponse<Map<String, Integer>> markAllAsRead(
+            @PathVariable Long userId,
+            Authentication authentication
+    ) {
+        User currentUser = (User) authentication.getPrincipal();
+        int updated = notificationService.markAllAsRead(userId, currentUser);
+
+        return ApiResponse.<Map<String, Integer>>builder()
+                .success(true)
+                .data(Map.of("updated", updated))
+                .message("Notifications marquées comme lues")
+                .code(200).timestamp(LocalDateTime.now())
+                .build();
+    }
+
+
+
 
     @PutMapping("/{id}/mark-as-read")
     @Operation(summary = "Marquer une notification comme lue")
