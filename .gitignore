@@ -38,6 +38,7 @@ build/
 !README.txt
 .bashrc
 fishcam-data-dev/
+src/main/resources/data.sql
 
 # env
 .env
