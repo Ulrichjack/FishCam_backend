@@ -55,6 +55,8 @@ public class CompteCourantService {
             throw new BusinessException("Ce client a déjà un compte courant");
         }
 
+
+
         User createdBy = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
 
@@ -64,6 +66,7 @@ public class CompteCourantService {
         compte.setSolde(BigDecimal.ZERO);
         compte.setLimiteCreditMax(new BigDecimal("50000"));
         compte.setStatut(StatutCompteCourant.ACTIF);
+
 
         CompteCourant saved = compteCourantRepository.save(compte);
         return compteCourantMapper.toResponse(saved);
@@ -151,7 +154,7 @@ public class CompteCourantService {
         compteCourantRepository.save(compte);
 
         if (nouveauSolde.compareTo(BigDecimal.ZERO) == 0) {
-            notificationService.createNotificationCompteSolde(compte, user);
+            notificationService.createNotificationCompteSolde(compte);
         }
 
         return compteCourantMapper.toResponse(compte);

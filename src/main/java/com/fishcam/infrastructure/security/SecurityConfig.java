@@ -44,6 +44,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
                                 "/api-docs/**"
+
                         ).permitAll()
 
                         // Toutes les autres URLs nécessitent une authentification
