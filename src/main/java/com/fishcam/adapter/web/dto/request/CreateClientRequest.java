@@ -21,7 +21,6 @@ public class CreateClientRequest {
 
     @Size(max = 20, message = "Le téléphone ne peut pas dépasser 20 caractères")
     @Pattern(regexp = "^[0-9+\\-\\s()]+$", message = "Le numéro de téléphone n'est pas valide")
-
     private String phone;
     private String address;
     private String quartier;

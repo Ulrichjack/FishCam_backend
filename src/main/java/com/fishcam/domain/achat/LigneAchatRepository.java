@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,9 @@ public interface LigneAchatRepository extends JpaRepository<LigneAchat, Long> {
 
     List<LigneAchat> findByAchatJournalier(AchatJournalier achatJournalier);
 
+
+    @Query("SELECT SUM(la.montantCarton) FROM LigneAchat la WHERE la.achatJournalier.id = :factureId")
+    BigDecimal calculateTotalAchatByFactureId(@Param("factureId") Long factureId);
 
     @Query("SELECT l FROM LigneAchat l WHERE l.produit.id = :produitId " +
             "AND l.achatJournalier.poissonnerie.id = :poissonnerieId " +
@@ -41,4 +45,9 @@ public interface LigneAchatRepository extends JpaRepository<LigneAchat, Long> {
             "GROUP BY p.id, p.nom " +
             "ORDER BY SUM((l.prixVenteKilo * l.poidsKg) - l.montantCarton) DESC")
     List<TopProduitRentableResponse> findTopProduitsRentablesByPoissonnerie(@Param("poissonnerieId") Long poissonnerieId, Pageable pageable);
+
+
+
+
+
 }

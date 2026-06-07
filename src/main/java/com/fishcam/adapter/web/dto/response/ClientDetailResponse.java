@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 public class ClientDetailResponse {
 
     private Long id;
+    private Long compteCourantId;
+    private Long epargneId;
     private String firstName;
     private String lastName;
     private String phone;
@@ -21,11 +23,12 @@ public class ClientDetailResponse {
     private String address;
     private String quartier;
     private LocalDate dateOfBirth;
-    private String notes;
     private PoissonnerieResponse poissonnerie;
     private Boolean active;
     private BigDecimal soldeCompteCourant;
     private BigDecimal soldeEpargne;
+    private BigDecimal limiteCredit;
+    private String statutCompteCourant;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

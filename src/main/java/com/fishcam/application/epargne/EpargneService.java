@@ -79,6 +79,11 @@ public class EpargneService {
         Epargne epargne = epargneRepository.findById(request.getEpargneId())
                 .orElseThrow(() -> new ResourceNotFoundException("Compte épargne non trouvé"));
 
+        // 🔴 NOUVEAU : Vérifier si le client est actif
+        if (!epargne.getClient().getActive()) {
+            throw new BusinessException("Impossible de faire un dépôt : le client est inactif.");
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException("Utilisateur non trouvé"));
 
@@ -97,11 +102,17 @@ public class EpargneService {
         return epargneMapper.toResponse(epargne);
     }
 
+
     @LogAudit(action = "RETRAIT", entityName = "Epargne")
     @Transactional
     public EpargneResponse retirer(RetraitEpargneRequest request, Long userId) {
         Epargne epargne = epargneRepository.findById(request.getEpargneId())
                 .orElseThrow(() -> new ResourceNotFoundException("Compte épargne non trouvé"));
+
+        // 🔴 NOUVEAU : Vérifier si le client est actif
+        if (!epargne.getClient().getActive()) {
+            throw new BusinessException("Impossible de faire un retrait : le client est inactif.");
+        }
 
         if (epargne.getCurrentBalance().compareTo(request.getAmount()) < 0) {
             throw new BusinessException("Solde insuffisant. Solde actuel : " + epargne.getCurrentBalance());
@@ -124,6 +135,7 @@ public class EpargneService {
 
         return epargneMapper.toResponse(epargne);
     }
+
 
     public EpargneDetailResponse getEpargneDetail(Long epargneId) {
         Epargne epargne = epargneRepository.findById(epargneId)

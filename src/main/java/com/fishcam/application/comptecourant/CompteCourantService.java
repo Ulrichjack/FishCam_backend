@@ -78,6 +78,11 @@ public class CompteCourantService {
         CompteCourant compte = compteCourantRepository.findById(request.getCompteCourantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Compte courant non trouvé"));
 
+        // 🔴 NOUVEAU : Vérifier si le client est actif
+        if (!compte.getClient().getActive()) {
+            throw new BusinessException("Impossible d'enregistrer un emprunt : le client est inactif.");
+        }
+
         if (!compte.getPoissonnerie().getPretActif()) {
             throw new BusinessException("La gestion des prêts/dettes n'est pas activée pour cette poissonnerie ("
                     + compte.getPoissonnerie().getName() + "). Vente au comptant uniquement.");
@@ -92,6 +97,13 @@ public class CompteCourantService {
 
         BigDecimal soldePrecedent = compte.getSolde();
         BigDecimal nouveauSolde = soldePrecedent.subtract(request.getMontant());
+
+        // 🔴 NOUVEAU : Vérifier si le nouveau solde dépasse la limite autorisée
+        // La limite est stockée en positif (ex: 50000), on la passe en négatif (-50000) pour comparer avec le solde
+        BigDecimal limiteNegative = compte.getLimiteCreditMax().negate();
+        if (nouveauSolde.compareTo(limiteNegative) < 0) {
+            throw new BusinessException("Limite de crédit dépassée. Le client ne peut plus emprunter.");
+        }
 
         boolean depassaitSeuilAvant = soldePrecedent.compareTo(new BigDecimal("-5000")) < 0;
         boolean depasseSeuilApres = nouveauSolde.compareTo(new BigDecimal("-5000")) < 0;
@@ -130,6 +142,11 @@ public class CompteCourantService {
         CompteCourant compte = compteCourantRepository.findById(request.getCompteCourantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Compte courant non trouvé"));
 
+        // 🔴 NOUVEAU : Vérifier si le client est actif
+        if (!compte.getClient().getActive()) {
+            throw new BusinessException("Impossible d'enregistrer un remboursement : le client est inactif.");
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
 
@@ -159,7 +176,6 @@ public class CompteCourantService {
 
         return compteCourantMapper.toResponse(compte);
     }
-
 
     @LogAudit(action = "UPDATE", entityName = "CompteCourant")
     @Transactional

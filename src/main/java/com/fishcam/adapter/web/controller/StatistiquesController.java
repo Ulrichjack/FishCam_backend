@@ -26,7 +26,7 @@ public class StatistiquesController {
 
     @GetMapping("/poissonneries/{poissonnerieId}/dashboard")
     @Operation(summary = "Dashboard spécifiques")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE')")
     public ApiResponse<StatistiquesPoissonnerieResponse> getDashboardStats(
             @PathVariable Long poissonnerieId){
         StatistiquesPoissonnerieResponse response = statistiquesService.getDashboardStats(poissonnerieId);

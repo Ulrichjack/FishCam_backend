@@ -12,13 +12,10 @@ import java.util.Optional;
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long> {
 
-    //Tous les clients d'une poissonnerie
-    List<Client> findByPoissonnerie(Poissonnerie poissonnerie);
+    boolean existsByCni(String cni);
 
-    List<Client> findByActiveTrue();
-
-    // Liste simple (utile pour les petits cas ou les tests)
-    List<Client> findByPoissonnerieAndActiveTrue(Poissonnerie poissonnerie);
+    // Pour l'update : vérifier si la CNI existe pour un AUTRE client
+    boolean existsByCniAndIdNot(String cni, Long id);
 
     // Version paginée – LA PLUS IMPORTANTE pour ton API
     Page<Client> findByPoissonnerieAndActiveTrue(Poissonnerie poissonnerie, Pageable pageable);

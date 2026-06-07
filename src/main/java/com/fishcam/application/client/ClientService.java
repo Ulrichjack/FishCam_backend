@@ -48,6 +48,12 @@ public class ClientService {
                     "Un client avec ce numéro '" + request.getPhone() + "' existe déjà dans cette poissonnerie");
         }
 
+        if (request.getCni() != null && !request.getCni().trim().isEmpty()) {
+            if (clientRepository.existsByCni(request.getCni().trim())) {
+                throw new BusinessException("Un client avec ce numéro de CNI existe déjà.");
+            }
+        }
+
         User createdBy = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException("Utilisateur non trouvé"));
 
@@ -66,7 +72,7 @@ public class ClientService {
                         "Poissonnerie non trouvée avec l'id : " + poissonnerieId));
 
         Page<Client> clientsPage = clientRepository.findByPoissonnerieAndActiveTrue(poissonnerie, pageable);
-        return clientsPage.map(clientMapper::toResponse);
+        return clientsPage.map(this::mapClientToResponseWithBalance);
     }
 
     public ClientDetailResponse getClientDetail(Long clientId) {
@@ -76,20 +82,36 @@ public class ClientService {
 
         ClientDetailResponse detail = clientMapper.toDetailResponse(client);
 
-        BigDecimal soldeCompteCourant = compteCourantRepository.findByClient(client)
-                .map(compte -> compte.getSolde())
-                .orElse(BigDecimal.ZERO);
+        // Fetch Compte Courant info
+        compteCourantRepository.findByClient(client).ifPresentOrElse(
+                compte -> {
+                    detail.setSoldeCompteCourant(compte.getSolde());
+                    detail.setCompteCourantId(compte.getId());
+                    detail.setLimiteCredit(compte.getLimiteCreditMax()); // NOUVEAU
+                    detail.setStatutCompteCourant(compte.getStatut().name());
+                },
+                () -> {
+                    detail.setSoldeCompteCourant(null);
+                    detail.setCompteCourantId(null);
+                    detail.setLimiteCredit(null); // NOUVEAU
+                    detail.setStatutCompteCourant(null);
+                }
+        );
 
-        BigDecimal soldeEpargne = epargneRepository.findByClient(client)
-                .map(epargne -> epargne.getCurrentBalance())
-                .orElse(BigDecimal.ZERO);
-
-        detail.setSoldeCompteCourant(soldeCompteCourant);
-        detail.setSoldeEpargne(soldeEpargne);
+        // Fetch Epargne info
+        epargneRepository.findByClient(client).ifPresentOrElse(
+                epargne -> {
+                    detail.setSoldeEpargne(epargne.getCurrentBalance());
+                    detail.setEpargneId(epargne.getId()); // <-- Set the ID
+                },
+                () -> {
+                    detail.setSoldeEpargne(null);
+                    detail.setEpargneId(null);
+                }
+        );
 
         return detail;
     }
-
     public Page<ClientResponse> searchClients(Long poissonnerieId, String searchTerm, Pageable pageable) {
         Poissonnerie poissonnerie = poissonnerieRepository.findById(poissonnerieId)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -103,7 +125,19 @@ public class ClientService {
             result = clientRepository.findByPoissonnerieAndActiveTrueAndFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
                     poissonnerie, term, term, pageable);
         }
-        return result.map(clientMapper::toResponse);
+        return result.map(this::mapClientToResponseWithBalance); // MODIFIÉ
+    }
+
+    /**
+     * Méthode privée pour convertir un Client en ClientResponse en ajoutant le solde.
+     */
+    private ClientResponse mapClientToResponseWithBalance(Client client) {
+        ClientResponse response = clientMapper.toResponse(client);
+        BigDecimal solde = compteCourantRepository.findByClient(client)
+                .map(compte -> compte.getSolde())
+                .orElse(null);
+        response.setSoldeCompteCourant(solde);
+        return response;
     }
 
     @LogAudit(action = "UPDATE", entityName = "Client")
@@ -122,6 +156,14 @@ public class ClientService {
                                 "' existe déjà dans cette poissonnerie");
             }
         }
+
+        if (request.getCni() != null && !request.getCni().trim().isEmpty()) {
+            if (clientRepository.existsByCniAndIdNot(request.getCni().trim(), clientId)) {
+                throw new BusinessException("Ce numéro de CNI est déjà utilisé par un autre client.");
+            }
+        }
+
+
         clientMapper.updateEntityFromRequest(request, client);
         return clientMapper.toResponse(client);
     }

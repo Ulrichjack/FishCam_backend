@@ -12,6 +12,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface ClientMapper {
 
+    @Mapping(target = "soldeCompteCourant", ignore = true)
     ClientResponse toResponse(Client entity);
 
     @Mapping(target = "soldeCompteCourant", ignore = true)
