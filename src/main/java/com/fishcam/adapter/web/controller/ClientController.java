@@ -84,7 +84,7 @@ public class ClientController {
     }
 
     @GetMapping("/search")
-    @Operation(summary = "Rechercher des clients par nom/téléphone")
+    @Operation(summary = "Rechercher des clients par nom")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
     public ApiResponse<Page<ClientResponse>> searchClients(
             @RequestParam Long poissonnerieId,
@@ -152,7 +152,7 @@ public class ClientController {
 
     @GetMapping("/inactive/poissonnerie/{poissonnerieId}")
     @Operation(summary = "Lister les clients désactivés d'une poissonnerie")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON','CAISSIERE', 'ENREGISTREUR')")
     public ApiResponse<Page<ClientResponse>> getInactiveClients(
             @PathVariable Long poissonnerieId,
             Pageable pageable) {

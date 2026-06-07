@@ -38,6 +38,14 @@ public class TransfertEpargneVersCCUseCase {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
 
+        if (!compte.getClient().getActive()) {
+            throw new BusinessException("Impossible de faire un transfert : le client est inactif.");
+        }
+
+        if (!compte.getClient().getId().equals(epargne.getClient().getId())) {
+            throw new BusinessException("Le compte courant et l'épargne ne sont pas du même client");
+        }
+
         if (!compte.getClient().getId().equals(epargne.getClient().getId())) {
             throw new BusinessException("Le compte courant et l'épargne ne sont pas du même client");
         }

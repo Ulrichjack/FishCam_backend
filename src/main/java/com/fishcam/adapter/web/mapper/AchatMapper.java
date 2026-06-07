@@ -20,6 +20,7 @@ public interface AchatMapper {
     @Mapping(source = "fournisseur.nom", target = "fournisseurNom")
     @Mapping(source = "enregistrePar.id", target = "enregistreParId")
     @Mapping(source = "enregistrePar.firstName", target = "enregistreParNom")
+    @Mapping(target = "totalAchat", ignore = true)
     FactureResponse toResponse(AchatJournalier achatJournalier);
 
 

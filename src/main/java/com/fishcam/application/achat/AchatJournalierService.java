@@ -67,7 +67,7 @@ public class AchatJournalierService {
         facture.setCloture(false);
 
         AchatJournalier savedAchat = achatJournalierRepository.save(facture);
-        return achatMapper.toResponse(savedAchat);
+        return mapFactureToResponseWithTotal(savedAchat);
 
     }
 
@@ -79,7 +79,7 @@ public class AchatJournalierService {
 
         return achatJournalierRepository.findByPoissonnerieIdAndDateAchat(poissonnerieId, date)
                 .stream()
-                .map(achatMapper::toResponse)
+                .map(this::mapFactureToResponseWithTotal)
                 .toList();
     }
 
@@ -138,7 +138,7 @@ public class AchatJournalierService {
         }
         facture.setCloture(true);
         AchatJournalier savedFacture = achatJournalierRepository.save(facture);
-        return achatMapper.toResponse(savedFacture);
+        return mapFactureToResponseWithTotal(savedFacture);
     }
 
     @LogAudit(action = "ADD Ligne", entityName = "AchatJournalier")
@@ -309,6 +309,18 @@ public class AchatJournalierService {
             }
         }
 
+        return response;
+    }
+
+    /**
+     * Convertit une entité AchatJournalier en FactureResponse et calcule le total des achats.
+     * @param facture L'entité AchatJournalier
+     * @return Le DTO FactureResponse avec le total calculé.
+     */
+    private FactureResponse mapFactureToResponseWithTotal(AchatJournalier facture) {
+        FactureResponse response = achatMapper.toResponse(facture);
+        BigDecimal total = ligneAchatRepository.calculateTotalAchatByFactureId(facture.getId());
+        response.setTotalAchat(total != null ? total : BigDecimal.ZERO);
         return response;
     }
 }
