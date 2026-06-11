@@ -1,6 +1,7 @@
 package com.fishcam.adapter.web.dto.response;
 
 import com.fishcam.domain.user.Role;
+import com.fishcam.domain.user.UserScope;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class AuthResponse {
         private String firstName;
         private String lastName;
         private Role role;
+        private UserScope scope;
         private Long poissonnerieId;
         private String poissonnerieName;
     }

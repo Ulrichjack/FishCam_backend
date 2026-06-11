@@ -170,7 +170,7 @@ public class DataInitializer implements CommandLineRunner {
         patron.setPhone("676028800");
         patron.setPassword(passwordEncoder.encode("patron123"));
         patron.setRole(Role.PATRON);
-        patron.setScope(UserScope.SINGLE_POISSONNERIE);
+        patron.setScope(UserScope.MULTI_POISSONNERIE);
         patron.setDefaultPoissonnerie(poissonnerie);
         patron.setActive(true);
         userRepository.save(patron);
@@ -182,7 +182,7 @@ public class DataInitializer implements CommandLineRunner {
         caissier.setPhone("690950871");
         caissier.setPassword(passwordEncoder.encode("caissier123"));
         caissier.setRole(Role.CAISSIERE);
-        caissier.setScope(UserScope.SINGLE_POISSONNERIE);
+        caissier.setScope(UserScope.MULTI_POISSONNERIE);
         caissier.setDefaultPoissonnerie(poissonnerie);
         caissier.setActive(true);
         userRepository.save(caissier);
@@ -194,7 +194,7 @@ public class DataInitializer implements CommandLineRunner {
         vendeur.setPhone("655032752");
         vendeur.setPassword(passwordEncoder.encode("vendeur123"));
         vendeur.setRole(Role.ENREGISTREUR);
-        vendeur.setScope(UserScope.SINGLE_POISSONNERIE);
+        vendeur.setScope(UserScope.MULTI_POISSONNERIE);
         vendeur.setDefaultPoissonnerie(poissonnerie);
         vendeur.setActive(true);
         userRepository.save(vendeur);

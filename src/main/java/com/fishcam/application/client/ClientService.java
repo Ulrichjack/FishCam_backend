@@ -122,8 +122,7 @@ public class ClientService {
             result = clientRepository.findByPoissonnerieAndActiveTrue(poissonnerie, pageable);
         } else {
             String term = searchTerm.trim();
-            result = clientRepository.findByPoissonnerieAndActiveTrueAndFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-                    poissonnerie, term, term, pageable);
+            result = clientRepository.searchByTerm(poissonnerie, term, pageable);
         }
         return result.map(this::mapClientToResponseWithBalance); // MODIFIÉ
     }

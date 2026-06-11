@@ -18,7 +18,6 @@ public class FactureDetailResponse {
     private LocalDate dateAchat;
     private Long poissonnerieId;
     private String poissonnerieNom;
-    private LocalDateTime createdAt;
     private Long fournisseurId;
     private String fournisseurNom;
     private Long enregistreParId;
@@ -28,5 +27,6 @@ public class FactureDetailResponse {
     private BigDecimal totalVente;
     private BigDecimal margeTotal;
     private List<LigneAchatResponse> ligneAchatResponses;
+    private LocalDateTime createdAt;
 
 }

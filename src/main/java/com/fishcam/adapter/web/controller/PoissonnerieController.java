@@ -45,7 +45,7 @@ public class PoissonnerieController {
 
     @GetMapping
     @Operation(summary = "Lister les poissonneries actives (paginated)")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON','CAISSIERE','ENREGISTREUR')")
     public ApiResponse<Page<PoissonnerieResponse>> getAllPoissonneries(Pageable pageable) {
         Page<PoissonnerieResponse> page = poissonnerieService.getAllPoissonneries(pageable);
         return ApiResponse.<Page<PoissonnerieResponse>>builder()

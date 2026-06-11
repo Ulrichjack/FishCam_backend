@@ -141,7 +141,7 @@ public class ProductionInitializer implements CommandLineRunner {
             caissiere.setPhone("677YYYYYY");     // ← VRAI NUMÉRO ICI
             caissiere.setPassword(passwordEncoder.encode("changermoi3"));
             caissiere.setRole(Role.CAISSIERE);
-            caissiere.setScope(UserScope.SINGLE_POISSONNERIE);
+            caissiere.setScope(UserScope.MULTI_POISSONNERIE);
             caissiere.setDefaultPoissonnerie(boutiqueCentrale);
             caissiere.setActive(true);
             userRepository.save(caissiere);
