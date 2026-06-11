@@ -66,6 +66,7 @@ public class AuthService {
                             .firstName(user.getFirstName())
                             .lastName(user.getLastName())
                             .role(user.getRole())
+                            .scope(user.getScope())
                             .poissonnerieId(user.getDefaultPoissonnerie() != null
                                     ? user.getDefaultPoissonnerie().getId()
                                     : null)
@@ -94,6 +95,7 @@ public class AuthService {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .role(user.getRole())
+                .scope(user.getScope())
                 .poissonnerieId(user.getDefaultPoissonnerie() != null
                         ? user.getDefaultPoissonnerie().getId()
                         : null)

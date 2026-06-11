@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,25 +68,25 @@ public class PdfExportService {
                 table.addCell(createCell(String.valueOf(ligne.getQuantiteCartons()), normalFont));
                 table.addCell(createCell(ligne.getProduitNom(), normalFont));
                 table.addCell(createCell(ligne.getPoidsKg() + " kg", normalFont));
-                table.addCell(createCell(ligne.getMontantCarton() + " F", normalFont));
-                table.addCell(createCell(ligne.getPrixVenteKilo() + " F", normalFont));
-                table.addCell(createCell(ligne.getPrixVenteTotal() + " F", normalFont));
-                table.addCell(createCell(ligne.getMargeTotal() + " F", normalFont));
+                table.addCell(createCell(ligne.getMontantCarton().setScale(0, RoundingMode.HALF_UP) + " F", normalFont));
+                table.addCell(createCell(ligne.getPrixVenteKilo().setScale(0, RoundingMode.HALF_UP) + " F", normalFont));
+                table.addCell(createCell(ligne.getPrixVenteTotal().setScale(0, RoundingMode.HALF_UP) + " F", normalFont));
+                table.addCell(createCell(ligne.getMargeTotal().setScale(0, RoundingMode.HALF_UP) + " F", normalFont));
             }
 
             document.add(table);
             document.add(Chunk.NEWLINE);
 
             // 4. Résumé financier
-            Paragraph totalAchat = new Paragraph("Total Achat : " + facture.getTotalAchat() + " FCFA", boldFont);
+            Paragraph totalAchat = new Paragraph("Total Achat : " + facture.getTotalAchat().setScale(0, RoundingMode.HALF_UP) + " FCFA", boldFont);
             totalAchat.setAlignment(Element.ALIGN_RIGHT);
             document.add(totalAchat);
 
-            Paragraph totalVente = new Paragraph("Vente Prévisible : " + facture.getTotalVente() + " FCFA", boldFont);
+            Paragraph totalVente = new Paragraph("Vente Prévisible : " + facture.getTotalVente().setScale(0, RoundingMode.HALF_UP) + " FCFA", boldFont);
             totalVente.setAlignment(Element.ALIGN_RIGHT);
             document.add(totalVente);
 
-            Paragraph marge = new Paragraph("Marge Totale : " + facture.getMargeTotal() + " FCFA",
+            Paragraph marge = new Paragraph("Marge Totale : " + facture.getMargeTotal().setScale(0, RoundingMode.HALF_UP) + " FCFA",
                     FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Color.BLUE));
             marge.setAlignment(Element.ALIGN_RIGHT);
             document.add(marge);
