@@ -15,19 +15,13 @@ public interface TransactionCompteCourantRepository extends JpaRepository<Transa
 
     List<TransactionCompteCourant> findByCompteCourantOrderByTransactionDateDesc(CompteCourant compteCourant);
 
-    List<TransactionCompteCourant> findByTransactionDateBetween(LocalDateTime start, LocalDateTime end);
+    List<TransactionCompteCourant> findByPoissonnerieOrderByTransactionDateDesc(Poissonnerie poissonnerie);
 
-    List<TransactionCompteCourant> findByPoissonnerieAndTransactionDateBetween(
-            Poissonnerie poissonnerie,
-            LocalDateTime start,
-            LocalDateTime end
-    );
-
-    @Query("SELECT SUM(t.montant) FROM TransactionCompteCourant t WHERE t.compteCourant = :compte AND t.type = :type")
-    BigDecimal sumMontantByCompteCourantAndType(
-            @Param("compte") CompteCourant compte,
-            @Param("type") TypeTransactionCC type
-    );
+//    @Query("SELECT SUM(t.montant) FROM TransactionCompteCourant t WHERE t.compteCourant = :compte AND t.type = :type")
+//    BigDecimal sumMontantByCompteCourantAndType(
+//            @Param("compte") CompteCourant compte,
+//            @Param("type") TypeTransactionCC type
+//    );
 
     @Query("SELECT COUNT(t) FROM TransactionCompteCourant t WHERE t.poissonnerie = :poissonnerie AND t.type = :type AND t.transactionDate BETWEEN :start AND :end")
     Long countByPoissonnerieAndTypeAndPeriod(
