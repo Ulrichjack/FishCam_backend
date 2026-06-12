@@ -5,12 +5,15 @@ import com.fishcam.adapter.web.dto.request.ModifierLimiteCreditRequest;
 import com.fishcam.adapter.web.dto.request.RemboursementCCRequest;
 import com.fishcam.adapter.web.dto.response.CompteCourantDetailResponse;
 import com.fishcam.adapter.web.dto.response.CompteCourantResponse;
+import com.fishcam.adapter.web.dto.response.TransactionGlobalResponse;
 import com.fishcam.adapter.web.mapper.CompteCourantMapper;
 import com.fishcam.adapter.web.mapper.TransactionCCMapper;
 import com.fishcam.application.notification.NotificationService;
 import com.fishcam.domain.client.Client;
 import com.fishcam.domain.client.ClientRepository;
 import com.fishcam.domain.comptecourant.*;
+import com.fishcam.domain.epargne.TransactionEpargne;
+import com.fishcam.domain.epargne.TransactionEpargneRepository;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.poissonnerie.PoissonnerieRepository;
 import com.fishcam.domain.user.Role;
@@ -19,11 +22,15 @@ import com.fishcam.domain.user.UserRepository;
 import com.fishcam.infrastructure.aop.LogAudit;
 import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,13 +40,14 @@ import java.util.List;
 public class CompteCourantService {
 
     private final CompteCourantRepository compteCourantRepository;
-    private final TransactionCompteCourantRepository transactionRepository;
+    private final TransactionCompteCourantRepository transactionCompteCourantRepository;
     private final ClientRepository clientRepository;
     private final PoissonnerieRepository poissonnerieRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final CompteCourantMapper compteCourantMapper;
     private final TransactionCCMapper transactionCCMapper;
+    private final TransactionCustomRepository transactionCustomRepository;
 
     @LogAudit(action = "CREATE", entityName = "CompteCourant")
     @Transactional
@@ -119,7 +127,7 @@ public class CompteCourantService {
         transaction.setEffectuePar(user);
         transaction.setTransactionDate(LocalDateTime.now());
 
-        transactionRepository.save(transaction);
+        transactionCompteCourantRepository.save(transaction);
 
         compte.setSolde(nouveauSolde);
         compteCourantRepository.save(compte);
@@ -165,7 +173,7 @@ public class CompteCourantService {
         transaction.setTransactionDate(LocalDateTime.now());
         transaction.setNotes(request.getNotes());
 
-        transactionRepository.save(transaction);
+        transactionCompteCourantRepository.save(transaction);
 
         compte.setSolde(nouveauSolde);
         compteCourantRepository.save(compte);
@@ -273,7 +281,7 @@ public class CompteCourantService {
                 .orElseThrow(() -> new ResourceNotFoundException("Compte courant non trouvé"));
 
         List<TransactionCompteCourant> transactions =
-                transactionRepository.findByCompteCourantOrderByTransactionDateDesc(compte);
+                transactionCompteCourantRepository.findByCompteCourantOrderByTransactionDateDesc(compte);
 
         CompteCourantDetailResponse detail = compteCourantMapper.toDetailResponse(compte);
         detail.setTransactions(transactions.stream()
@@ -307,6 +315,14 @@ public class CompteCourantService {
                 .toList();
     }
 
+    public Page<TransactionGlobalResponse> getAllTransactions(Long poissonnerieId, String type, String searchTerm, LocalDate date, Pageable pageable) {
+        // Vérifier que la poissonnerie existe
+        poissonnerieRepository.findById(poissonnerieId)
+                .orElseThrow(() -> new ResourceNotFoundException("Poissonnerie non trouvée"));
+
+        // Appeler le repository qui gère le SQL
+        return transactionCustomRepository.findAllTransactionsDynamically(poissonnerieId, type, searchTerm, date, pageable);
+    }
 
 
 }

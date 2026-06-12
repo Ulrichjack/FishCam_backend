@@ -4,10 +4,7 @@ import com.fishcam.adapter.web.dto.request.EmpruntRequest;
 import com.fishcam.adapter.web.dto.request.ModifierLimiteCreditRequest;
 import com.fishcam.adapter.web.dto.request.RemboursementCCRequest;
 import com.fishcam.adapter.web.dto.request.TransfertEpargneVersCCRequest;
-import com.fishcam.adapter.web.dto.response.ApiResponse;
-import com.fishcam.adapter.web.dto.response.CompteCourantDetailResponse;
-import com.fishcam.adapter.web.dto.response.CompteCourantResponse;
-import com.fishcam.adapter.web.dto.response.TransfertEpargneVersCCResponse;
+import com.fishcam.adapter.web.dto.response.*;
 import com.fishcam.application.comptecourant.CompteCourantService;
 import com.fishcam.application.comptecourant.TransfertEpargneVersCCUseCase;
 import com.fishcam.domain.user.User;
@@ -16,12 +13,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -208,6 +209,30 @@ public class CompteCourantController {
                         .success(true)
                         .data(data)
                         .message("Comptes en dette récupérés")
+                        .code(200)
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @GetMapping("/poissonnerie/{poissonnerieId}/transactions")
+    @Operation(summary = "Lister toutes les transactions (CC + Epargne) d'une poissonnerie")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE')")
+    public ResponseEntity<ApiResponse<Page<TransactionGlobalResponse>>> getAllTransactions(
+            @PathVariable Long poissonnerieId,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            Pageable pageable) {
+
+        log.debug("Récupération du journal des transactions pour la poissonnerie {}", poissonnerieId);
+        Page<TransactionGlobalResponse> data = compteCourantService.getAllTransactions(poissonnerieId, type, searchTerm, date, pageable);
+
+        return ResponseEntity.ok(
+                ApiResponse.<Page<TransactionGlobalResponse>>builder()
+                        .success(true)
+                        .data(data)
+                        .message("Journal des transactions récupéré")
                         .code(200)
                         .timestamp(LocalDateTime.now())
                         .build()
