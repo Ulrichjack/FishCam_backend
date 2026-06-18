@@ -1,6 +1,7 @@
 package com.fishcam.infrastructure.aop;
 
 import com.fishcam.application.audit.AuditLogService;
+import com.fishcam.domain.user.User; // <-- IMPORT TRÈS IMPORTANT
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -20,35 +21,42 @@ public class AuditAspect {
 
     private final AuditLogService auditLogService;
 
-    // This tells Spring: "Run this code AFTER any method that has @LogAudit finishes successfully"
     @AfterReturning(pointcut = "@annotation(logAudit)", returning = "result")
     public void logActivity(JoinPoint joinPoint, LogAudit logAudit, Object result) {
 
-        // 1. Get the currently logged-in user from Spring Security
-        String username = "System"; // Default fallback
+        // 1. Récupérer le VRAI nom de l'utilisateur (au lieu du téléphone)
+        String performedBy = "Système";
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         if (authentication != null && authentication.isAuthenticated() && !authentication.getPrincipal().equals("anonymousUser")) {
-            username = authentication.getName(); // Usually the email or username
+            Object principal = authentication.getPrincipal();
+            // On vérifie si le principal est bien notre entité User
+            if (principal instanceof User) {
+                User user = (User) principal;
+                // Résultat : "Theophile FOSSO"
+                performedBy = user.getFirstName() + " " + user.getLastName();
+            } else {
+                performedBy = authentication.getName();
+            }
         }
 
-        // 2. Try to guess the ID of the entity that was created/updated
+        // 2. Extraire l'ID de l'entité modifiée
         Long entityId = extractIdFromResult(result);
 
-        // 3. Create the detail message
+        // 3. Mettre les détails en Français !
         String methodName = joinPoint.getSignature().getName();
-        String details = "Action executed via method: " + methodName;
+        String details = "Opération effectuée via : " + methodName;
 
-        // 4. Save to the database using the service you just built!
+        // 4. Sauvegarder en base de données
         auditLogService.logAction(
                 logAudit.action(),
                 logAudit.entityName(),
                 entityId,
-                username,
+                performedBy,
                 details
         );
     }
 
-    // Helper method to try and find an "getId()" method on the returned object
     private Long extractIdFromResult(Object result) {
         if (result == null) return null;
         try {
@@ -58,7 +66,7 @@ public class AuditAspect {
                 return (Long) id;
             }
         } catch (Exception e) {
-            log.debug("Could not extract ID from result: {}", e.getMessage());
+            log.debug("Impossible d'extraire l'ID : {}", e.getMessage());
         }
         return null;
     }

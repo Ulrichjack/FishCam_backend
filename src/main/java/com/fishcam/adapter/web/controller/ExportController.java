@@ -44,11 +44,13 @@ public class ExportController {
         // 2. Generate the PDF byte array
         byte[] pdfBytes = pdfExportService.exportFactureToPdf(facture);
 
-        // 3. Set the headers
+         // NOM DYNAMIQUE : Facture_Congelcam_2026-04-25.pdf
+        String cleanFournisseur = facture.getFournisseurNom().replaceAll("[^a-zA-Z0-9]", "_");
+        String filename = "Facture_" + cleanFournisseur + "_" + facture.getDateAchat() + ".pdf";
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "facture_" + id + ".pdf");
-
+        headers.setContentDispositionFormData("attachment", filename);
         // 4. Return the response
         return ResponseEntity.ok()
                 .headers(headers)
@@ -66,10 +68,12 @@ public class ExportController {
         // 2. Generate the PDF byte array
         byte[] pdfBytes = pdfExportService.exportEpargneToPdf(epargne);
 
-        // 3. Set the headers
+        String cleanClient = epargne.getClient().getLastName().replaceAll("[^a-zA-Z0-9]", "_");
+        String filename = "Fiche_Epargne_" + cleanClient + "_" + LocalDate.now() + ".pdf";
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "fiche_épargne_" + id + ".pdf");
+        headers.setContentDispositionFormData("attachment", filename);
 
         // 4. Return the response
         return ResponseEntity.ok()
@@ -97,10 +101,13 @@ public class ExportController {
         // 3. Generate the PDF byte array
         byte[] pdfBytes = pdfExportService.exportRecapitulatifToPdf(recap, poissonnerieNom, periode);
 
-        // 4. Set the headers
+        // NOM DYNAMIQUE : Recapitulatif_Akwa_2026-04-01_au_2026-04-30.pdf
+        String cleanBoutique = poissonnerieNom.replaceAll("[^a-zA-Z0-9]", "_");
+        String filename = "Recapitulatif_" + cleanBoutique + "_" + start + "_au_" + end + ".pdf";
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "récapitulatif_" + start.toString() + ".pdf");
+        headers.setContentDispositionFormData("attachment", filename);
 
         // 5. Return the response
         return ResponseEntity.ok()

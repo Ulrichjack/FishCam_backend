@@ -43,45 +43,53 @@ public class ClotureJournaliereService {
     private final TransactionCompteCourantRepository transactionCompteCourantRepository;
     private final ClotureMapper clotureMapper;
 
+    public PreparationClotureResponse preparerCloture(Long poissonnerieId, LocalDate date) {
 
-    public PreparationClotureResponse preparerCloture(Long poissonnerieId, LocalDate date){
-
-        // 1. Charger la poissonnerie
         Poissonnerie poissonnerie = poissonnerieRepository.findById(poissonnerieId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Poissonnerie non trouvée avec l'id : " + poissonnerieId));
 
-        // 2. Charger toutes les factures du jour
         List<AchatJournalier> factures = achatJournalierRepository
                 .findByPoissonnerieIdAndDateAchat(poissonnerieId, date);
 
-        // 3. Charger toutes les lignes de toutes les factures
+        // 🔴 ON COMPTE LES FACTURES OUVERTES (Mais on ne bloque pas ici, on laisse le frontend afficher l'alerte)
+        long facturesOuvertesCount = factures.stream().filter(f -> !f.getCloture()).count();
+
         List<LigneAchat> toutesLesLignes = factures.stream()
                 .flatMap(f -> ligneAchatRepository.findByAchatJournalier(f).stream())
                 .toList();
 
-        // 4. Calculer totalAchat = somme des montantCarton
         BigDecimal totalAchat = toutesLesLignes.stream()
                 .map(LigneAchat::getMontantCarton)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // 5. Calculer totalVentePrevisible = somme de (prixVenteKilo × poidsKg)
         BigDecimal totalVentePrevisible = toutesLesLignes.stream()
                 .map(l -> l.getPrixVenteKilo().multiply(l.getPoidsKg()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        // ...
         // 6. Récupérer fondDeCaisseDefaut depuis Poissonnerie
         BigDecimal fondDeCaisseDefaut = poissonnerie.getFondDeCaisseDefaut();
 
-        // 7. Récupérer dettes depuis CompteCourant
-        BigDecimal montantDettes = compteCourantRepository
-                .sumTotalDettes(poissonnerie);
-        Long nombreDettes = compteCourantRepository
-                .countComptesEnDette(poissonnerie);
-
-        // 8. Récupérer remboursements du jour
+        // 7. Récupérer emprunts DU JOUR (et non pas les dettes globales !)
         LocalDateTime debutJour = date.atStartOfDay();
         LocalDateTime finJour = date.atTime(23, 59, 59);
+
+        BigDecimal montantEmpruntsJour = transactionCompteCourantRepository
+                .sumMontantByPoissonnerieAndTypeAndPeriod(
+                        poissonnerie,
+                        TypeTransactionCC.EMPRUNT,
+                        debutJour,
+                        finJour);
+
+        Long nombreEmpruntsJour = transactionCompteCourantRepository
+                .countByPoissonnerieAndTypeAndPeriod(
+                        poissonnerie,
+                        TypeTransactionCC.EMPRUNT,
+                        debutJour,
+                        finJour);
+
+        // 8. Récupérer remboursements du jour
         BigDecimal montantRembourse = transactionCompteCourantRepository
                 .sumMontantByPoissonnerieAndTypeAndPeriod(
                         poissonnerie,
@@ -94,9 +102,15 @@ public class ClotureJournaliereService {
         response.setTotalAchat(totalAchat);
         response.setTotalVentePrevisible(totalVentePrevisible);
         response.setFondDeCaisseDefaut(fondDeCaisseDefaut);
-        response.setMontantDettesJour(montantDettes != null ? montantDettes : BigDecimal.ZERO);
-        response.setNombreDettesJour(nombreDettes.intValue());
+
+        // On met les valeurs du jour (avec vérification null)
+        response.setMontantDettesJour(montantEmpruntsJour != null ? montantEmpruntsJour : BigDecimal.ZERO);
+        response.setNombreDettesJour(nombreEmpruntsJour != null ? nombreEmpruntsJour.intValue() : 0);
         response.setMontantRembourseJour(montantRembourse != null ? montantRembourse : BigDecimal.ZERO);
+
+        // N'oublie pas d'ajouter les factures non clôturées comme on a vu avant !
+        long facturesOuvertes = factures.stream().filter(f -> !f.getCloture()).count();
+        response.setFacturesNonCloturees((int) facturesOuvertes);
 
         return response;
     }
@@ -110,29 +124,37 @@ public class ClotureJournaliereService {
                         "Poissonnerie non trouvée avec l'id : " + request.getPoissonnerieId()
                 ));
 
-        if (clotureJournaliereRepository
-                .existsByPoissonnerieAndDate(poissonnerie, request.getDate())) {
+        if (clotureJournaliereRepository.existsByPoissonnerieAndDate(poissonnerie, request.getDate())) {
             throw new BusinessException("Journée déjà clôturée pour cette boutique");
         }
+
+        // 🔴 ON BLOQUE LA SAUVEGARDE SI DES FACTURES SONT OUVERTES
+        List<AchatJournalier> factures = achatJournalierRepository.findByPoissonnerieIdAndDateAchat(poissonnerie.getId(), request.getDate());
+        boolean hasFacturesOuvertes = factures.stream().anyMatch(f -> !f.getCloture());
+        if (hasFacturesOuvertes) {
+            throw new BusinessException("Impossible de clôturer : il reste des factures d'achat non clôturées pour cette date.");
+        }
+
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "User non trouvée avec l'id : " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User non trouvée avec l'id : " + userId));
 
-        PreparationClotureResponse preparer =  preparerCloture(request.getPoissonnerieId(), request.getDate());
+        PreparationClotureResponse preparer = preparerCloture(request.getPoissonnerieId(), request.getDate());
 
-        BigDecimal venteRealisee = request.getArgentCaisse().subtract(request.getFondDeCaisse());
+        BigDecimal transport = request.getTransport() != null ? request.getTransport() : BigDecimal.ZERO;
+        BigDecimal ration = request.getRation() != null ? request.getRation() : BigDecimal.ZERO;
+        BigDecimal autresFrais = request.getAutresFrais() != null ? request.getAutresFrais() : BigDecimal.ZERO;
 
-        BigDecimal transport = request.getTransport() != null
-                ? request.getTransport() : BigDecimal.ZERO;
-        BigDecimal ration = request.getRation() != null
-                ? request.getRation() : BigDecimal.ZERO;
-        BigDecimal autresFrais = request.getAutresFrais() != null
-                ? request.getAutresFrais() : BigDecimal.ZERO;
-
+        // 🔴 LES BONS CALCULS MATHÉMATIQUES
         BigDecimal totalDepenses = transport.add(ration).add(autresFrais);
 
-        BigDecimal beneficeNet = venteRealisee.subtract(totalDepenses).subtract(preparer.getTotalAchat());
-        BigDecimal ecartVente = preparer.getTotalVentePrevisible().subtract(venteRealisee);
+        // Vente Réalisée = Argent Caisse - Fond de Caisse + Dépenses
+        BigDecimal venteRealisee = request.getArgentCaisse().subtract(request.getFondDeCaisse()).add(totalDepenses);
+
+        // Écart = Vente Réalisée - Vente Prévisible
+        BigDecimal ecartVente = venteRealisee.subtract(preparer.getTotalVentePrevisible());
+
+        // Bénéfice Net = Vente Réalisée - Achats - Dépenses
+        BigDecimal beneficeNet = venteRealisee.subtract(preparer.getTotalAchat()).subtract(totalDepenses);
 
         ClotureJournaliere cloture = clotureMapper.toEntity(request);
         cloture.setPoissonnerie(poissonnerie);
@@ -150,29 +172,22 @@ public class ClotureJournaliereService {
         ClotureJournaliereResponse response = clotureMapper.toResponse(saved);
         response.setEcartVente(ecartVente);
         return response;
-
     }
 
     public ClotureJournaliereResponse getCloture(Long poissonnerieId, LocalDate date){
         Poissonnerie poissonnerie = poissonnerieRepository.findById(poissonnerieId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Poissonnerie non trouvée avec l'id : " + poissonnerieId
-                ));
+                .orElseThrow(() -> new ResourceNotFoundException("Poissonnerie non trouvée avec l'id : " + poissonnerieId));
         ClotureJournaliere clotureJournaliere = clotureJournaliereRepository.findByPoissonnerieAndDate(poissonnerie, date)
                 .orElseThrow(()-> new BusinessException("Aucune clôture trouvée pour cette date"));
-        return  clotureMapper.toResponse(clotureJournaliere);
+        return clotureMapper.toResponse(clotureJournaliere);
     }
 
     public List<ClotureJournaliereResponse> getHistorique(Long poissonnerieId){
         Poissonnerie poissonnerie = poissonnerieRepository.findById(poissonnerieId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Poissonnerie non trouvée avec l'id : " + poissonnerieId
-                ));
+                .orElseThrow(() -> new ResourceNotFoundException("Poissonnerie non trouvée avec l'id : " + poissonnerieId));
         return clotureJournaliereRepository.findByPoissonnerieOrderByDateDesc(poissonnerie)
                 .stream()
                 .map(clotureMapper::toResponse)
                 .toList();
-
     }
-
 }

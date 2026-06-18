@@ -97,5 +97,35 @@ public class FournisseurController {
                 .build();
     }
 
+    // Ajoute l'endpoint de recherche
+    @GetMapping("/search")
+    @Operation(summary = "Rechercher des fournisseurs")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
+    public ApiResponse<List<FournisseurResponse>> searchFournisseurs(@RequestParam(required = false) String term) {
+        List<FournisseurResponse> response = fournisseurService.searchFournisseurs(term);
+        return ApiResponse.<List<FournisseurResponse>>builder()
+                .success(true)
+                .data(response)
+                .message("Recherche effectuée")
+                .code(200)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    // Ajoute l'endpoint de réactivation
+    @PatchMapping("/{id}/reactivate")
+    @Operation(summary = "Réactiver un fournisseur")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
+    public ApiResponse<FournisseurResponse> reactivateFournisseur(@PathVariable Long id) {
+        FournisseurResponse response = fournisseurService.reactivateFournisseur(id);
+        return ApiResponse.<FournisseurResponse>builder()
+                .success(true)
+                .data(response)
+                .message("Fournisseur réactivé avec succès")
+                .code(200)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
 
 }

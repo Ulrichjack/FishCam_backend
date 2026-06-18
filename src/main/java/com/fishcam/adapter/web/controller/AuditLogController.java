@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +28,8 @@ public class AuditLogController {
 
     @PreAuthorize("hasAnyRole('PATRON', 'SUPER_ADMIN')")
     @GetMapping
-    public ApiResponse<Page<AuditLogResponse>> getAllAudit(Pageable pageable){
+    public ApiResponse<Page<AuditLogResponse>> getAllAudit(
+           @PageableDefault(sort = "timestamp", direction = Sort.Direction.DESC) Pageable pageable){
 
         Page <AuditLogResponse> response = auditLogService.getAllLogs(pageable);
         return ApiResponse.<Page<AuditLogResponse>>builder()

@@ -101,6 +101,17 @@ public class PoissonnerieController {
                 .build();
     }
 
+    @PatchMapping("/{id}/reactivate")
+    @Operation(summary = "Réactiver une poissonnerie")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ApiResponse<PoissonnerieResponse> reactivatePoissonnerie(@PathVariable Long id) {
+        // Assure-toi d'ajouter cette méthode dans PoissonnerieService !
+        PoissonnerieResponse response = poissonnerieService.reactivatePoissonnerie(id);
+        return ApiResponse.<PoissonnerieResponse>builder()
+                .success(true).data(response).message("Poissonnerie réactivée").code(200).timestamp(LocalDateTime.now()).build();
+    }
+
+
     @PostMapping("/{id}/cloturer-journee")
     @Operation(summary = "Clôturer manuellement la journée et générer le rapport")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")

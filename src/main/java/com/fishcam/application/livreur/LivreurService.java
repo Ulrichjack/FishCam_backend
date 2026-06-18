@@ -1,6 +1,7 @@
 package com.fishcam.application.livreur;
 
 import com.fishcam.adapter.web.dto.request.CreateLivreurRequest;
+import com.fishcam.adapter.web.dto.request.UpdateLivreurRequest;
 import com.fishcam.adapter.web.dto.response.LivreurResponse;
 import com.fishcam.adapter.web.mapper.LivreurMapper;
 import com.fishcam.domain.fournisseur.Fournisseur;
@@ -70,5 +71,32 @@ public class LivreurService {
                 .map(evaluation -> livreurMapper.toResponse(evaluation.getLivreur()))
                 .orElse(null);
     }
+
+    @LogAudit(action = "UPDATE", entityName = "Livreur")
+    @Transactional
+    public LivreurResponse updateLivreur(Long id, UpdateLivreurRequest request) {
+        Livreur livreur = livreurRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Livreur non trouvé avec l'id : " + id));
+
+        // Vérification du téléphone s'il change
+        if (request.getTelephone() != null && !request.getTelephone().equals(livreur.getTelephone())) {
+            if (livreurRepository.existsByTelephone(request.getTelephone())) {
+                throw new BusinessException("Un livreur avec ce numéro de téléphone existe déjà.");
+            }
+        }
+
+        // Mise à jour du fournisseur si fourni
+        if (request.getFournisseurId() != null &&
+                (livreur.getFournisseur() == null || !livreur.getFournisseur().getId().equals(request.getFournisseurId()))) {
+            Fournisseur fournisseur = fournisseurRepository.findById(request.getFournisseurId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Fournisseur non trouvé"));
+            livreur.setFournisseur(fournisseur);
+        }
+
+        livreurMapper.updateEntityFromRequest(request, livreur);
+        Livreur saved = livreurRepository.save(livreur);
+        return livreurMapper.toResponse(saved);
+    }
+
 
 }

@@ -57,4 +57,17 @@ public class EvaluationLivreurController {
                 .build();
     }
 
+    @GetMapping("/facture/{factureId}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
+    public ApiResponse<EvaluationLivreurResponse> getEvaluationByFacture(@PathVariable Long factureId) {
+        EvaluationLivreurResponse response = evaluationLivreurService.getEvaluationByFacture(factureId);
+        return ApiResponse.<EvaluationLivreurResponse>builder()
+                .success(true)
+                .data(response)
+                .message(response != null ? "Évaluation trouvée" : "Aucune évaluation")
+                .code(200)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
 }

@@ -15,7 +15,7 @@ public interface  EvaluationLivreurMapper {
     @Mapping(source = "livreur.id", target = "livreurId")
     @Mapping(source = "livreur.nom", target = "livreurNom")
     @Mapping(source = "livreur.prenom", target = "livreurPrenom")
-    @Mapping(source = "user.username", target = "evaluatorNom")
+    @Mapping(expression = "java(evaluationLivreur.getUser().getFirstName() + \" \" + evaluationLivreur.getUser().getLastName())", target = "evaluatorNom")
     EvaluationLivreurResponse toResponse(EvaluationLivreur evaluationLivreur);
 
 
