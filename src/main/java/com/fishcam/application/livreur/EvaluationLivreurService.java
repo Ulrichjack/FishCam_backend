@@ -64,6 +64,12 @@ public class EvaluationLivreurService {
                 .toList();
     }
 
+    public EvaluationLivreurResponse getEvaluationByFacture(Long factureId) {
+        return evaluationLivreurRepository.findByAchatJournalierId(factureId)
+                .map(evaluationLivreurMapper::toResponse)
+                .orElse(null); // Retourne null si pas d'évaluation
+    }
+
 
 
 }

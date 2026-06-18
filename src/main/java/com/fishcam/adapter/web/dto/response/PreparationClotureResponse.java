@@ -17,6 +17,6 @@ public class PreparationClotureResponse {
     private Integer nombreDettesJour;
     private BigDecimal totalAchat;
     private BigDecimal totalVentePrevisible;
-
+    private Integer facturesNonCloturees;
 
 }

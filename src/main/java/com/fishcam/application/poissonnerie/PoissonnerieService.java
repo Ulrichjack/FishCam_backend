@@ -87,4 +87,14 @@ public class PoissonnerieService {
         Poissonnerie poissonnerie = getEntityById(poissonnerieId); // privée, utilisable ici
         notificationService.createRapportJournalier(poissonnerie);
     }
+
+    @LogAudit(action = "REACTIVATE", entityName = "Poissonnerie")
+    @Transactional
+    public PoissonnerieResponse reactivatePoissonnerie (Long poissonnerieId){
+        Poissonnerie poissonnerie = poissonnerieRepository.findById(poissonnerieId)
+                .orElseThrow(() -> new ResourceNotFoundException("Poissonnerie non trouvé avec l'id : " + poissonnerieId));
+        poissonnerie.setActive(true);
+        Poissonnerie saved = poissonnerieRepository.save(poissonnerie);
+        return poissonnerieMapper.toResponse(saved);
+    }
 }

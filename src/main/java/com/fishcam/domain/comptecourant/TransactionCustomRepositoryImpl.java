@@ -42,8 +42,9 @@ public class TransactionCustomRepositoryImpl implements TransactionCustomReposit
         sql.append("SELECT 'EP_' || te.id as id, te.transaction_date as date_heure, ");
         sql.append("c.first_name || ' ' || c.last_name as client_nom, c.phone as client_telephone, ");
         sql.append("te.type as type, te.amount as montant ");
-        sql.append("FROM transaction_epargne te ");
-        sql.append("JOIN epargne e ON te.epargne_id = e.id ");
+        sql.append("FROM transaction_saving te ");
+        sql.append("JOIN epargne_saving e ON te.saving_id = e.id ");
+
         sql.append("JOIN client c ON e.client_id = c.id ");
         sql.append("WHERE te.poissonnerie_id = :poissonnerieId ");
 
@@ -59,11 +60,12 @@ public class TransactionCustomRepositoryImpl implements TransactionCustomReposit
             sql.append("AND DATE(combined.date_heure) = :date ");
         }
 
-        sql.append("ORDER BY combined.date_heure DESC ");
-
-        Query query = entityManager.createNativeQuery(sql.toString());
         String countSql = "SELECT COUNT(*) FROM (" + sql.toString() + ") as count_table";
         Query countQuery = entityManager.createNativeQuery(countSql);
+
+        // 2. ENSUITE on ajoute l'ORDER BY pour la vraie requête
+        sql.append("ORDER BY combined.date_heure DESC ");
+        Query query = entityManager.createNativeQuery(sql.toString());
 
         query.setParameter("poissonnerieId", poissonnerieId);
         countQuery.setParameter("poissonnerieId", poissonnerieId);

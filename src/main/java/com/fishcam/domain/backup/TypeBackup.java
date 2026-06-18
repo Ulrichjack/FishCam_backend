@@ -1,6 +1,6 @@
 package com.fishcam.domain.backup;
 
 public enum TypeBackup {
-    HEBDOMADAIRE,
-    MENSUEL
+    LOCAL_DAILY,
+    CLOUD_WEEKLY
 }

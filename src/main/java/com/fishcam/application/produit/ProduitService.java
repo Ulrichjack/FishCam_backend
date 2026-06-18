@@ -42,14 +42,15 @@ public class ProduitService {
 
 
     public Page<ProduitResponse> getAllProduits(Pageable pageable) {
-        Page<Produit> produitPage = produitRepository.findByActifTrue(pageable);
+        Page<Produit> produitPage = produitRepository.findAll(pageable); // <-- findAll() au lieu de findByActifTrue()
         return produitPage.map(produitMapper::toReponse);
-
     }
 
     public List<ProduitResponse> searchProduits(String q) {
-
-        return produitRepository.findByNomContainingIgnoreCaseAndActifTrue(q).stream()
+        if (q == null || q.trim().isEmpty()) {
+            return List.of(); // Ou renvoyer la première page, selon ton choix
+        }
+        return produitRepository.searchAllByNom(q.trim()).stream()
                 .map(produitMapper::toReponse).toList();
     }
 
@@ -98,6 +99,19 @@ public class ProduitService {
                 ));
         produit.setActif(false);
         produitRepository.save(produit);
+    }
+
+    @LogAudit(action = "REACTIVATE", entityName = "Produit")
+    @Transactional
+    public ProduitResponse reactivateProduit(Long produitId){
+        Produit produit = produitRepository.findById(produitId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Le produit non trouve avec l'id : " + produitId
+                ));
+        produit.setActif(true);
+        Produit saved = produitRepository.save(produit);
+        return produitMapper.toReponse(saved);
+
     }
 
 

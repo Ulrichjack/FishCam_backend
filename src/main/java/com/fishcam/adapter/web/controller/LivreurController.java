@@ -1,6 +1,7 @@
 package com.fishcam.adapter.web.controller;
 
 import com.fishcam.adapter.web.dto.request.CreateLivreurRequest;
+import com.fishcam.adapter.web.dto.request.UpdateLivreurRequest;
 import com.fishcam.adapter.web.dto.response.ApiResponse;
 import com.fishcam.adapter.web.dto.response.LivreurResponse;
 import com.fishcam.application.livreur.LivreurService;
@@ -82,4 +83,19 @@ public class LivreurController {
                 .build();
     }
 
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
+    @Operation(summary = "Modifier un livreur")
+    public ApiResponse<LivreurResponse> updateLivreur(
+            @PathVariable Long id,
+            @RequestBody @Valid UpdateLivreurRequest request) {
+        LivreurResponse response = livreurService.updateLivreur(id, request);
+        return ApiResponse.<LivreurResponse>builder()
+                .success(true)
+                .data(response)
+                .message("Livreur modifié avec succès")
+                .code(200)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 }

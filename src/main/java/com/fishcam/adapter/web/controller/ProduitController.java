@@ -11,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +46,8 @@ public class ProduitController {
     @GetMapping
     @Operation(summary = "Lister des produits (paginated)")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON','CAISSIERE', 'ENREGISTREUR')")
-    public ApiResponse<Page<ProduitResponse>> getAllProduits (Pageable pageable){
+    public ApiResponse<Page<ProduitResponse>> getAllProduits (
+            @PageableDefault(sort = "nom", direction = Sort.Direction.ASC) Pageable pageable){
         Page<ProduitResponse> page = produitService.getAllProduits(pageable);
         return ApiResponse.<Page<ProduitResponse>>builder()
                 .success(true)
@@ -113,6 +116,16 @@ public class ProduitController {
                 .code(200)
                 .timestamp(LocalDateTime.now())
                 .build();
+    }
+
+    @PatchMapping("/{id}/reactivate")
+    @Operation(summary = "Réactiver un produit")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
+    public ApiResponse<ProduitResponse> reactivateProduit(@PathVariable Long id) {
+        // Assure-toi d'ajouter cette méthode dans ProduitService !
+        ProduitResponse response = produitService.reactivateProduit(id);
+        return ApiResponse.<ProduitResponse>builder()
+                .success(true).data(response).message("Produit réactivé").code(200).timestamp(LocalDateTime.now()).build();
     }
 
 }

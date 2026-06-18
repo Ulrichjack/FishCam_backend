@@ -38,7 +38,7 @@ public class FournisseurService {
     }
 
     public List<FournisseurResponse> getAllFournisseurs() {
-        return fournisseurRepository.findByActifTrue()
+        return fournisseurRepository.findAll()
                 .stream()
                 .map(fournisseurMapper::toResponse)
                 .toList();
@@ -85,5 +85,28 @@ public class FournisseurService {
         fournisseurRepository.save(fournisseur);
 
     }
+
+    public List<FournisseurResponse> searchFournisseurs(String term) {
+        if (term == null || term.trim().isEmpty()) {
+            return getAllFournisseurs();
+        }
+        return fournisseurRepository.searchByTerm(term.trim())
+                .stream()
+                .map(fournisseurMapper::toResponse)
+                .toList();
+    }
+
+    // Ajoute la méthode de réactivation
+    @LogAudit(action = "REACTIVATE", entityName = "Fournisseur")
+    @Transactional
+    public FournisseurResponse reactivateFournisseur(Long fournisseurId) {
+        Fournisseur fournisseur = fournisseurRepository.findById(fournisseurId)
+                .orElseThrow(() -> new ResourceNotFoundException("Fournisseur non trouvé avec l'id : " + fournisseurId));
+
+        fournisseur.setActif(true);
+        Fournisseur saved = fournisseurRepository.save(fournisseur);
+        return fournisseurMapper.toResponse(saved);
+    }
+
 
 }

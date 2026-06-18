@@ -119,4 +119,21 @@ public class UserService {
 
         log.info("✅ Utilisateur désactivé: ID {}", id);
     }
+
+    @LogAudit(action = "REACTIVATE", entityName = "User")
+    @Transactional
+    public UserResponse reactivateUser(Long id) {
+        log.info("Réactivation utilisateur ID: {}", id);
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
+
+        user.setActive(true);
+        User savedUser = userRepository.save(user);
+
+        log.info("✅ Utilisateur réactivé: ID {}", id);
+        return userMapper.toResponse(savedUser);
+    }
+
+
 }
