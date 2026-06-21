@@ -3,6 +3,7 @@ package com.fishcam.adapter.web.controller;
 import com.fishcam.adapter.web.dto.request.CreateProduitRequest;
 import com.fishcam.adapter.web.dto.request.UpdateProduitRequest;
 import com.fishcam.adapter.web.dto.response.ApiResponse;
+import com.fishcam.adapter.web.dto.response.ProduitAvecPrixResponse;
 import com.fishcam.adapter.web.dto.response.ProduitResponse;
 import com.fishcam.application.produit.ProduitService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,6 +58,23 @@ public class ProduitController {
                 .timestamp(LocalDateTime.now())
                 .build();
 
+    }
+
+    @GetMapping("/avec-prix")
+    @Operation(summary = "Lister des produits avec leur dernier prix (paginated)")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON','CAISSIERE', 'ENREGISTREUR')")
+    public ApiResponse<Page<ProduitAvecPrixResponse>> getAllProduitsAvecPrix (
+            @RequestParam Long poissonnerieId,
+            @PageableDefault(sort = "nom", direction = Sort.Direction.ASC) Pageable pageable){
+
+        Page<ProduitAvecPrixResponse> page = produitService.getAllProduitsAvecPrix(poissonnerieId, pageable);
+        return ApiResponse.<Page<ProduitAvecPrixResponse>>builder()
+                .success(true)
+                .data(page)
+                .message("Liste des produits avec prix récupérée")
+                .code(200)
+                .timestamp(LocalDateTime.now())
+                .build();
     }
 
     @GetMapping("/search")

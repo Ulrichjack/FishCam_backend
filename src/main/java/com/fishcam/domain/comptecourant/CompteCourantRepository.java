@@ -3,8 +3,10 @@ package com.fishcam.domain.comptecourant;
 import com.fishcam.adapter.web.dto.response.TopDebiteurResponse;
 import com.fishcam.domain.client.Client;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -19,6 +21,11 @@ public interface CompteCourantRepository extends JpaRepository<CompteCourant, Lo
     Optional<CompteCourant> findByClient(Client client);
 
     boolean existsByClient(Client client);
+
+    // VERROUILLAGE PESSIMISTE POUR LES TRANSACTIONS FINANCIÈRES
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT c FROM CompteCourant c WHERE c.id = :id")
+    Optional<CompteCourant> findByIdWithLock(@Param("id") Long id);
 
 
     @Query("SELECT cc FROM CompteCourant cc WHERE cc.client.poissonnerie = :poissonnerie AND cc.solde < :seuil ORDER BY cc.solde ASC")

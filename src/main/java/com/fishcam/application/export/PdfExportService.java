@@ -119,7 +119,7 @@ public class PdfExportService {
             for (LigneAchatResponse ligne : facture.getLigneAchatResponses()) {
                 table.addCell(createCell(String.valueOf(ligne.getQuantiteCartons()), normalFont, Element.ALIGN_CENTER, false));
                 table.addCell(createCell(ligne.getProduitNom(), normalFont, Element.ALIGN_LEFT, false));
-                table.addCell(createCell(ligne.getPoidsKg() + " kg", normalFont, Element.ALIGN_RIGHT, false));
+                table.addCell(createCell(ligne.getPoidsKg().stripTrailingZeros().toPlainString() + " kg", normalFont, Element.ALIGN_RIGHT, false));
                 table.addCell(createCell(formatMoney(ligne.getMontantCarton()), normalFont, Element.ALIGN_RIGHT, false));
                 table.addCell(createCell(formatMoney(ligne.getPrixVenteKilo()), normalFont, Element.ALIGN_RIGHT, false));
                 table.addCell(createCell(formatMoney(ligne.getPrixVenteTotal()), normalFont, Element.ALIGN_RIGHT, false));

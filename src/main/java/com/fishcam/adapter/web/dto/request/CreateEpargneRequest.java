@@ -13,6 +13,6 @@ public class CreateEpargneRequest {
     private Long clientId;
 
     @NotNull
-    @DecimalMin("0.01")
+    @DecimalMin("0.00")
     private BigDecimal initialAmount;
 }

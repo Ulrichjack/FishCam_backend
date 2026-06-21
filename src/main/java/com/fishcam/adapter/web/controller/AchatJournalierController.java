@@ -78,7 +78,7 @@ public class AchatJournalierController {
 
     @PutMapping("/{id}/cloturer")
     @Operation(summary = "Clôturer une facture")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE')")
     public ApiResponse<FactureResponse> cloturerFacture(@PathVariable Long id) {
         FactureResponse response = achatJournalierService.cloturerFacture(id);
         return ApiResponse.<FactureResponse>builder()

@@ -119,6 +119,10 @@ public class ClotureJournaliereService {
     @Transactional
     public ClotureJournaliereResponse cloturer(ClotureJournaliereRequest request, Long userId){
 
+        if (request.getDate().isAfter(LocalDate.now())) {
+            throw new BusinessException("Impossible de clôturer une journée dans le futur.");
+        }
+
         Poissonnerie poissonnerie = poissonnerieRepository.findById(request.getPoissonnerieId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Poissonnerie non trouvée avec l'id : " + request.getPoissonnerieId()

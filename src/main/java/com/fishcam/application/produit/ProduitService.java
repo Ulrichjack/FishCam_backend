@@ -2,8 +2,11 @@ package com.fishcam.application.produit;
 
 import com.fishcam.adapter.web.dto.request.CreateProduitRequest;
 import com.fishcam.adapter.web.dto.request.UpdateProduitRequest;
+import com.fishcam.adapter.web.dto.response.ProduitAvecPrixResponse;
 import com.fishcam.adapter.web.dto.response.ProduitResponse;
 import com.fishcam.adapter.web.mapper.ProduitMapper;
+import com.fishcam.domain.achat.LigneAchat;
+import com.fishcam.domain.achat.LigneAchatRepository;
 import com.fishcam.domain.produit.Produit;
 import com.fishcam.domain.produit.ProduitRepository;
 import com.fishcam.infrastructure.aop.LogAudit;
@@ -11,6 +14,7 @@ import com.fishcam.infrastructure.exception.BusinessException;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +30,7 @@ public class ProduitService {
 
     private final ProduitRepository produitRepository;
     private final ProduitMapper produitMapper;
+    private final LigneAchatRepository ligneAchatRepository;
 
     @LogAudit(action = "CREATE", entityName = "Produit")
     @Transactional
@@ -46,6 +51,26 @@ public class ProduitService {
         return produitPage.map(produitMapper::toReponse);
     }
 
+    public Page<ProduitAvecPrixResponse> getAllProduitsAvecPrix(Long poissonnerieId, Pageable pageable) {
+        Page<Produit> produitPage = produitRepository.findAll(pageable);
+
+        return produitPage.map(produit -> {
+            // 1. Le Mapper fait le travail ennuyeux
+            ProduitAvecPrixResponse response = produitMapper.toResponseAvecPrix(produit);
+
+            // 2. Le Service fait le travail intelligent (Base de données)
+            List<LigneAchat> dernieresLignes = ligneAchatRepository
+                    .findLatestPricesByProduitAndPoissonnerie(produit.getId(), poissonnerieId, PageRequest.of(0, 1));
+
+            if (!dernieresLignes.isEmpty()) {
+                LigneAchat derniereLigne = dernieresLignes.get(0);
+                response.setPrixUnitaireCarton(derniereLigne.getPrixUnitaireCarton());
+                response.setDernierPrixVenteKilo(derniereLigne.getPrixVenteKilo());
+            }
+
+            return response;
+        });
+    }
     public List<ProduitResponse> searchProduits(String q) {
         if (q == null || q.trim().isEmpty()) {
             return List.of(); // Ou renvoyer la première page, selon ton choix
