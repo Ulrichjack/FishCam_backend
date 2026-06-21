@@ -76,10 +76,10 @@ public class EpargneService {
     @LogAudit(action = "DEPOT", entityName = "Epargne")
     @Transactional
     public EpargneResponse deposer(DepotEpargneRequest request, Long userId) {
-        Epargne epargne = epargneRepository.findById(request.getEpargneId())
+        Epargne epargne = epargneRepository.findByIdWithLock(request.getEpargneId())
                 .orElseThrow(() -> new ResourceNotFoundException("Compte épargne non trouvé"));
 
-        // 🔴 NOUVEAU : Vérifier si le client est actif
+        //  Vérifier si le client est actif
         if (!epargne.getClient().getActive()) {
             throw new BusinessException("Impossible de faire un dépôt : le client est inactif.");
         }
@@ -106,10 +106,10 @@ public class EpargneService {
     @LogAudit(action = "RETRAIT", entityName = "Epargne")
     @Transactional
     public EpargneResponse retirer(RetraitEpargneRequest request, Long userId) {
-        Epargne epargne = epargneRepository.findById(request.getEpargneId())
+        Epargne epargne = epargneRepository.findByIdWithLock(request.getEpargneId())
                 .orElseThrow(() -> new ResourceNotFoundException("Compte épargne non trouvé"));
 
-        // 🔴 NOUVEAU : Vérifier si le client est actif
+        // Vérifier si le client est actif
         if (!epargne.getClient().getActive()) {
             throw new BusinessException("Impossible de faire un retrait : le client est inactif.");
         }

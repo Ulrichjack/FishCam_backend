@@ -83,10 +83,10 @@ public class CompteCourantService {
     @LogAudit(action = "EMPRUNT", entityName = "CompteCourant")
     @Transactional
     public CompteCourantResponse enregistrerEmprunt(EmpruntRequest request, Long userId) {
-        CompteCourant compte = compteCourantRepository.findById(request.getCompteCourantId())
+        CompteCourant compte = compteCourantRepository.findByIdWithLock(request.getCompteCourantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Compte courant non trouvé"));
 
-        // 🔴 NOUVEAU : Vérifier si le client est actif
+        //  Vérifier si le client est actif
         if (!compte.getClient().getActive()) {
             throw new BusinessException("Impossible d'enregistrer un emprunt : le client est inactif.");
         }
@@ -147,10 +147,10 @@ public class CompteCourantService {
     @LogAudit(action = "REMBOURSEMENT", entityName = "CompteCourant")
     @Transactional
     public CompteCourantResponse enregistrerRemboursement(RemboursementCCRequest request, Long userId) {
-        CompteCourant compte = compteCourantRepository.findById(request.getCompteCourantId())
+        CompteCourant compte = compteCourantRepository.findByIdWithLock(request.getCompteCourantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Compte courant non trouvé"));
 
-        // 🔴 NOUVEAU : Vérifier si le client est actif
+        // Vérifier si le client est actif
         if (!compte.getClient().getActive()) {
             throw new BusinessException("Impossible d'enregistrer un remboursement : le client est inactif.");
         }

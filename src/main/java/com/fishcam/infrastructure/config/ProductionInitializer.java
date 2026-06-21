@@ -8,24 +8,14 @@ import com.fishcam.domain.user.UserRepository;
 import com.fishcam.domain.user.UserScope;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigDecimal;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-/**
- * Initialisation PRODUCTION.
- * Crée les 3 boutiques + les 4 comptes de base UNE SEULE FOIS
- * au premier lancement.
- * <p>
- * Les utilisateurs devront CHANGER leur mot de passe après la
- * première connexion.
- * <p>
- * SÉCURITÉ :
- * - Les mots de passe par défaut sont simples exprès (première connexion)
- * - Le patron DOIT les changer immédiatement
- * - Le check existsByPhone() empêche la recréation si ça existe déjà
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -38,130 +28,95 @@ public class ProductionInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        log.info("🚀 [PROD] Vérification de l'initialisation...");
-
-        // Ne crée les données que si la base est vide (premier lancement)
         if (poissonnerieRepository.count() == 0) {
             log.info("📦 Premier lancement détecté — Création des données initiales...");
-
-            // ═══════════════════════════════════════════
-            // ÉTAPE 1 : Créer les 3 boutiques
-            // ═══════════════════════════════════════════
 
             Poissonnerie boutiqueCentrale = new Poissonnerie();
             boutiqueCentrale.setName("FISH CAM - Boutique VILLE");
             boutiqueCentrale.setAddress("La Petite mosquée");
-            boutiqueCentrale.setPhone("677112233");
+            boutiqueCentrale.setPhone("676028800");
             boutiqueCentrale.setActive(true);
+            boutiqueCentrale.setPretActif(false); // NOUVEAU
+            boutiqueCentrale.setLoyer(BigDecimal.ZERO); // NOUVEAU
+            boutiqueCentrale.setFondDeCaisseDefaut(BigDecimal.valueOf(10000)); // NOUVEAU
             poissonnerieRepository.save(boutiqueCentrale);
-            log.info("✅ Boutique Centrale créée (ID: {})", boutiqueCentrale.getId());
 
             Poissonnerie boutique2 = new Poissonnerie();
             boutique2.setName("FISH CAM - Boutique LELE");
-            boutique2.setAddress("Adresse Boutique 2");  // Le patron modifiera
+            boutique2.setAddress("Adresse Boutique 2");
             boutique2.setPhone("677000002");
             boutique2.setActive(true);
+            boutique2.setPretActif(false); // NOUVEAU
+            boutique2.setLoyer(BigDecimal.ZERO); // NOUVEAU
+            boutique2.setFondDeCaisseDefaut(BigDecimal.valueOf(10000)); // NOUVEAU
             poissonnerieRepository.save(boutique2);
-            log.info("✅ Boutique 2 créée (ID: {})", boutique2.getId());
 
             Poissonnerie boutique3 = new Poissonnerie();
             boutique3.setName("FISH CAM - Boutique BARE");
-            boutique3.setAddress("Adresse Boutique 3");  // Le patron modifiera
+            boutique3.setAddress("Adresse Boutique 3");
             boutique3.setPhone("677000003");
             boutique3.setActive(true);
+            boutique3.setPretActif(false); // NOUVEAU
+            boutique3.setLoyer(BigDecimal.ZERO); // NOUVEAU
+            boutique3.setFondDeCaisseDefaut(BigDecimal.valueOf(10000)); // NOUVEAU
             poissonnerieRepository.save(boutique3);
-            log.info("✅ Boutique 3 créée (ID: {})", boutique3.getId());
-
-            // ═══════════════════════════════════════════
-            // ÉTAPE 2 : Créer les 4 comptes de base
-            // ═══════════════════════════════════════════
 
             createProductionUsers(boutiqueCentrale);
-
-            log.info("");
-            log.info("╔═══════════════════════════════════════════════════════╗");
-            log.info("║  🐟 FISH-CAM ERP — PREMIER LANCEMENT RÉUSSI !       ║");
-            log.info("╠═══════════════════════════════════════════════════════╣");
-            log.info("║                                                       ║");
-            log.info("║  4 comptes ont été créés avec des mots de passe       ║");
-            log.info("║  temporaires. CHANGEZ-LES IMMÉDIATEMENT !            ║");
-            log.info("║                                                       ║");
-            log.info("║  📱 SUPER_ADMIN  → 692087724 | mdp: changermoi1     ║");
-            log.info("║  📱 PATRON       → 677XXXXXX | mdp: changermoi2     ║");
-            log.info("║  📱 CAISSIERE    → 677XXXXXX | mdp: changermoi3     ║");
-            log.info("║  📱 ENREGISTREUR → 677XXXXXX | mdp: changermoi4     ║");
-            log.info("║                                                       ║");
-            log.info("║  ⚠️  CHANGEZ CES MOTS DE PASSE MAINTENANT !         ║");
-            log.info("║                                                       ║");
-            log.info("╚═══════════════════════════════════════════════════════╝");
-        } else {
-            log.info("✅ [PROD] Base déjà initialisée — Rien à faire.");
+            log.info("✅ Initialisation terminée !");
         }
     }
 
     private void createProductionUsers(Poissonnerie boutiqueCentrale) {
-
-        // SUPER_ADMIN — Le développeur / administrateur technique
         if (!userRepository.existsByPhone("692087724")) {
             User superAdmin = new User();
-            superAdmin.setFirstName("Admin");
-            superAdmin.setLastName("FishCam");
+            superAdmin.setFirstName("Super");
+            superAdmin.setLastName("Admin");
             superAdmin.setPhone("692087724");
-            superAdmin.setPassword(passwordEncoder.encode("changermoi1"));
+            superAdmin.setPassword(passwordEncoder.encode("admin123"));
             superAdmin.setRole(Role.SUPER_ADMIN);
             superAdmin.setScope(UserScope.MULTI_POISSONNERIE);
             superAdmin.setDefaultPoissonnerie(boutiqueCentrale);
             superAdmin.setActive(true);
             userRepository.save(superAdmin);
-            log.info("✅ SUPER_ADMIN créé (692087724) — mdp temporaire !");
         }
 
-        // PATRON — Le propriétaire des 3 boutiques
-        // ⚠️ REMPLACE 677XXXXXX par le VRAI numéro du patron !
-        if (!userRepository.existsByPhone("677XXXXXX")) {
+        if (!userRepository.existsByPhone("676028800")) {
             User patron = new User();
-            patron.setFirstName("Prénom");       // Le patron modifiera
-            patron.setLastName("Du Patron");     // Le patron modifiera
-            patron.setPhone("677XXXXXX");        // ← VRAI NUMÉRO ICI
-            patron.setPassword(passwordEncoder.encode("changermoi2"));
+            patron.setFirstName("Theophile");
+            patron.setLastName("FOSSO");
+            patron.setPhone("676028800");
+            patron.setPassword(passwordEncoder.encode("patron123"));
             patron.setRole(Role.PATRON);
-            patron.setScope(UserScope.MULTI_POISSONNERIE); // Voit les 3 boutiques
+            patron.setScope(UserScope.MULTI_POISSONNERIE);
             patron.setDefaultPoissonnerie(boutiqueCentrale);
             patron.setActive(true);
             userRepository.save(patron);
-            log.info("✅ PATRON créé — mdp temporaire !");
         }
 
-        // CAISSIERE — La vendeuse principale
-        // ⚠️ REMPLACE par le VRAI numéro de la vendeuse !
-        if (!userRepository.existsByPhone("677YYYYYY")) {
+        if (!userRepository.existsByPhone("690950871")) {
             User caissiere = new User();
-            caissiere.setFirstName("Prénom");
-            caissiere.setLastName("De la Vendeuse");
-            caissiere.setPhone("677YYYYYY");     // ← VRAI NUMÉRO ICI
-            caissiere.setPassword(passwordEncoder.encode("changermoi3"));
+            caissiere.setFirstName("Alerte");
+            caissiere.setLastName("DJOKO");
+            caissiere.setPhone("690950871");
+            caissiere.setPassword(passwordEncoder.encode("caissier123"));
             caissiere.setRole(Role.CAISSIERE);
             caissiere.setScope(UserScope.MULTI_POISSONNERIE);
             caissiere.setDefaultPoissonnerie(boutiqueCentrale);
             caissiere.setActive(true);
             userRepository.save(caissiere);
-            log.info("✅ CAISSIERE créée — mdp temporaire !");
         }
 
-        // ENREGISTREUR — La secrétaire d'achat (15h)
-        // ⚠️ REMPLACE par le VRAI numéro de la secrétaire !
-        if (!userRepository.existsByPhone("677ZZZZZZ")) {
-            User enregistreur = new User();
-            enregistreur.setFirstName("Prénom");
-            enregistreur.setLastName("De la Secrétaire");
-            enregistreur.setPhone("677ZZZZZZ");  // ← VRAI NUMÉRO ICI
-            enregistreur.setPassword(passwordEncoder.encode("changermoi4"));
-            enregistreur.setRole(Role.ENREGISTREUR);
-            enregistreur.setScope(UserScope.MULTI_POISSONNERIE); // Elle saisit pour les 3
-            enregistreur.setDefaultPoissonnerie(boutiqueCentrale);
-            enregistreur.setActive(true);
-            userRepository.save(enregistreur);
-            log.info("✅ ENREGISTREUR créée — mdp temporaire !");
+        if (!userRepository.existsByPhone("655032752")) {
+            User vendeur = new User();
+            vendeur.setFirstName("Christine");
+            vendeur.setLastName("Inconnu");
+            vendeur.setPhone("655032752");
+            vendeur.setPassword(passwordEncoder.encode("vendeur123"));
+            vendeur.setRole(Role.ENREGISTREUR);
+            vendeur.setScope(UserScope.MULTI_POISSONNERIE);
+            vendeur.setDefaultPoissonnerie(boutiqueCentrale);
+            vendeur.setActive(true);
+            userRepository.save(vendeur);
         }
     }
 }

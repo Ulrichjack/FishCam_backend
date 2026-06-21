@@ -2,301 +2,151 @@
 
 > Système de gestion complet des dettes, épargnes et opérations quotidiennes pour les poissonneries du Cameroun.
 
+> API REST robuste et sécurisée pour le système de gestion des poissonneries FishCam ERP au Cameroun.
+
+![Java](https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-6DB33F?style=for-the-badge&logo=spring)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker)
+
 ---
 
 ## 📋 Table des matières
 
-- [Description](#description)
-- [Modules](#modules)
-- [Technologies](#technologies)
-- [Architecture](#architecture)
-- [Structure du projet](#structure-du-projet)
-- [Lancer le projet](#lancer-le-projet)
-- [Configuration](#configuration)
-- [API Documentation](#api-documentation)
-- [Sécurité](#sécurité)
+- [Description](#-description)
+- [Modules Implémentés](#-modules-implémentés)
+- [Technologies](#-technologies)
+- [Architecture](#-architecture)
+- [Structure du projet](#-structure-du-projet)
+- [Installation & Lancement](#-installation--lancement)
+- [Sauvegardes Cloud (R2)](#-sauvegardes-cloud)
+- [Sécurité & Rôles](#-sécurité--rôles)
 
 ---
 
-## Description
+## 💡 Description
 
-FishCam ERP est une application Spring Boot conçue pour les poissonneries. Elle permet de gérer les dettes clients, les épargnes, les utilisateurs par rôle, et génère des rapports et notifications automatiques. Le système est **multi-poissonneries** : un SUPER_ADMIN peut gérer plusieurs établissements depuis une seule interface.
+FishCam ERP Backend est une application Spring Boot conçue spécifiquement pour les besoins des poissonneries. Elle gère la logique métier complexe liée aux dettes clients (comptes courants), aux épargnes, à la facturation des fournisseurs, et à la clôture journalière des caisses. 
 
----
-
-## Modules
-
-### ✅ Modules implémentés
-
-| # | Module | Description |
-|---|--------|-------------|
-| 0.1 | **Auth** | Login par numéro de téléphone + JWT |
-| 0.2 | **Gestion des utilisateurs** | CRUD utilisateurs, rôles, changement de mot de passe |
-| 0.3 | **Gestion des poissonneries** | CRUD multi-établissements |
-| 0.4 | **Gestion des clients** | CRUD clients rattachés à une poissonnerie |
-| 0.5 | **Comptes courants (dettes)** | Emprunts, remboursements, limite de crédit |
-| 0.6 | **Épargnes** | Dépôts, retraits, transfert épargne → compte courant |
-| 0.7 | **Notifications** | Alertes dettes, rapports journaliers, sécurité IDOR |
-| 0.8 | **Avatars utilisateurs** | Upload/download photo de profil (stockage local) |
-| 0.9 | **Rapports résilients** | Rapport journalier même si PC éteint à 19h |
-
-### 🔜 Modules à venir
-
-| # | Module | Description |
-|---|--------|-------------|
-| 1.0 | **Rapports PDF** | Export PDF des rapports journaliers et historiques |
-| 1.1 | **Dashboard statistiques** | Graphiques dettes, remboursements, épargnes |
-| 1.2 | **Export Excel** | Export des transactions par période |
-| 1.3 | **Rappels automatiques** | Notification chaque dimanche pour dettes en cours |
+Le système est **multi-poissonneries** : un `SUPER_ADMIN` ou un `PATRON` peut gérer plusieurs établissements depuis une seule interface centralisée.
 
 ---
 
-## Technologies
+## ✨ Modules Implémentés
 
-| Technologie | Version | Usage |
-|-------------|---------|-------|
-| Java | 17 | Langage principal |
-| Spring Boot | 3.5.8 | Framework applicatif |
-| Spring Security | 6.x | JWT, autorisation par rôle |
-| Spring Data JPA | 3.x | Accès base de données |
-| PostgreSQL | 15+ | Base de données |
-| Liquibase | - | Migrations de schéma |
-| MapStruct | - | Mapping entité ↔ DTO |
-| Lombok | - | Réduction boilerplate |
-| iTextPDF | - | Génération de rapports PDF |
-| Springdoc OpenAPI | - | Documentation Swagger UI |
-| JUnit 5 + Mockito | - | Tests unitaires et intégration |
+| Module | Description |
+|--------|-------------|
+| 🔐 **Auth & Sécurité** | Login par numéro de téléphone + JWT. Protection IDOR stricte. |
+| 👥 **Équipe & Rôles** | CRUD utilisateurs, gestion des rôles (Patron, Caissière, etc.). |
+| 🏪 **Poissonneries** | Gestion multi-établissements (loyer, fond de caisse, statut). |
+| 🤝 **Clients & Comptes** | CRUD clients, gestion des Comptes Courants (dettes) et Épargnes. |
+| 💸 **Transactions** | Emprunts, remboursements, dépôts, retraits, transferts Épargne → CC. |
+| 📦 **Achats & Factures** | Saisie des achats, calcul des marges, historique des prix fournisseurs. |
+| 🚚 **Livreurs** | Gestion des livreurs et système d'évaluation (qualité, poids, problèmes). |
+| 📊 **Clôture & Bilans** | Clôture de caisse journalière, calcul des écarts, bilans mensuels. |
+| 🔔 **Notifications** | Alertes de dépassement de dette, rapports journaliers automatiques (Cron). |
+| 📄 **Export PDF** | Génération de fiches d'épargne et de récapitulatifs avec iTextPDF. |
+| ☁️ **Sauvegardes** | Export automatique SQL et CSV vers Cloudflare R2 (S3-compatible). |
+| 📜 **Audit Logs** | Traçabilité complète des actions sensibles via AOP (Aspect-Oriented Programming). |
 
 ---
 
-## Architecture
+## 🛠️ Technologies
 
-Le projet suit une **architecture hexagonale (ports & adapters)** :
+| Catégorie | Technologie |
+|-----------|-------------|
+| **Cœur** | Java 17, Spring Boot 3.x |
+| **Sécurité** | Spring Security 6, JSON Web Tokens (JWT) |
+| **Base de données** | PostgreSQL 16, Spring Data JPA, Hibernate |
+| **Utilitaires** | Lombok, MapStruct (Mapping DTO) |
+| **Génération PDF** | OpenPDF / iText |
+| **Cloud Storage** | AWS SDK S3 (pour Cloudflare R2 / MinIO) |
+| **Documentation** | Springdoc OpenAPI (Swagger UI) |
 
-```
+---
+
+## 🏗️ Architecture
+
+Le projet suit les principes de l'**Architecture Hexagonale (Ports & Adapters)** et du Clean Code :
+
+```text
 ┌─────────────────────────────────────────────────────┐
-│                    ADAPTER (Web)                     │
+│                    ADAPTER (Web)                    │
 │  Controllers → DTOs (Request/Response) → Mappers    │
 └──────────────────────┬──────────────────────────────┘
                        │
 ┌──────────────────────▼──────────────────────────────┐
-│                  APPLICATION                         │
+│                  APPLICATION                        │
 │         Services → UseCases → Business Logic        │
 └──────────────────────┬──────────────────────────────┘
                        │
 ┌──────────────────────▼──────────────────────────────┐
-│                    DOMAIN                            │
+│                    DOMAIN                           │
 │         Entités JPA → Repositories (interfaces)     │
 └──────────────────────┬──────────────────────────────┘
                        │
 ┌──────────────────────▼──────────────────────────────┐
-│               INFRASTRUCTURE                         │
-│   Security (JWT) · Exceptions · Scheduler · Config  │
+│               INFRASTRUCTURE                        │
+│   Security (JWT) · Exceptions · Scheduler · Cloud   │
 └─────────────────────────────────────────────────────┘
-```
-
----
-
-## Structure du projet
 
 ```
+# 📁 Structure du projet
+
+``` text
 src/main/java/com/fishcam/
-│
-├── adapter/
-│   └── web/
-│       ├── controller/
-│       │   ├── AuthController.java
-│       │   ├── AvatarController.java
-│       │   ├── CompteCourantController.java
-│       │   ├── NotificationController.java
-│       │   ├── PoissonnerieController.java
-│       │   └── UserController.java
-│       ├── dto/
-│       │   ├── request/          # LoginRequest, CreateUserRequest, EmpruntRequest...
-│       │   └── response/         # ApiResponse, AuthResponse, UserResponse...
-│       └── mapper/               # UserMapper, PoissonnerieMapper... (MapStruct)
-│
-├── application/
-│   ├── auth/                     # AuthService
-│   ├── comptecourant/            # CompteCourantService, TransfertEpargneVersCCUseCase
-│   ├── notification/             # NotificationService
-│   ├── poissonnerie/             # PoissonnerieService
-│   └── user/                     # UserService, AvatarService
-│
-├── domain/
-│   ├── comptecourant/            # CompteCourant, TransactionCC, repositories
-│   ├── notification/             # Notification, RapportJournalierRecord, repositories
-│   ├── poissonnerie/             # Poissonnerie, repository
-│   └── user/                     # User, Role, UserScope, UserRepository
-│
-└── infrastructure/
-    ├── exception/                # GlobalExceptionHandler, BusinessException...
-    ├── scheduler/                # NotificationScheduler (@Scheduled + @EventListener)
-    └── security/                 # JwtService, JwtAuthenticationFilter,
-                                  # CustomUserDetailsService, SecurityConfig
-
-src/main/resources/
-├── application.properties        # Config commune
-├── application-dev.properties    # Config développement (BDD locale)
-└── application-prod.properties   # Config production
-
-fishcam-data/                     # Données locales (hors JAR)
-└── avatars/                      # Photos de profil utilisateurs
-    ├── 550e8400-...jpg
-    └── f47ac10b-...png
+├── adapter/web/          # Controllers REST, DTOs, Mappers (MapStruct)
+├── application/          # Services métiers (Auth, Factures, Clients, etc.)
+├── domain/               # Entités JPA et interfaces Repositories
+└── infrastructure/       # Configuration Spring, Sécurité JWT, Schedulers, AOP
 ```
 
----
+# 🚀 Installation & Lancement
+* Prérequis
+* Java 17+
+* PostgreSQL 15+
+* Maven 3.8+
 
-## Lancer le projet
-
-### Prérequis
-
-- Java 17+
-- PostgreSQL 15+
-- Maven 3.8+
-
-### 1. Cloner le projet
-
-```bash
-git clone https://github.com/ton-repo/fishcam-backend.git
-cd fishcam-backend
-```
-
-### 2. Créer la base de données
-
-```sql
+1. Base de données
+ ```sql
 CREATE DATABASE fishcam_db;
 CREATE USER fishcam_user WITH PASSWORD 'tonmotdepasse';
 GRANT ALL PRIVILEGES ON DATABASE fishcam_db TO fishcam_user;
 ```
+2. Configuration
 
-### 3. Configurer l'environnement
-
-```bash
-cp src/main/resources/application-dev.properties.example \
-   src/main/resources/application-dev.properties
-```
-
-Puis remplir :
+Créez un fichier application-dev.properties dans src/main/resources/ :
 
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/fishcam_db
-spring.datasource.username=fishcam_user
+pring.datasource.username=fishcam_user
 spring.datasource.password=tonmotdepasse
-jwt.secret=une-cle-secrete-longue-et-aleatoire
-fishcam.upload.avatar-dir=fishcam-data/avatars
+jwt.secret=une-cle-secrete-tres-longue-de-plus-de-32-caracteres
 ```
-
-### 4. Lancer en développement
-
+3. Lancement (Développement)
 ```bash
 mvn spring-boot:run -Dspring-boot.run.profiles=dev
+L'API sera accessible sur http://localhost:8080/api/v1.
+Swagger UI : http://localhost:8080/swagger-ui.html
 ```
-
-### 5. Lancer en production
-
+4. Déploiement (Production avec Docker)
+L'application est packagée dans une image Alpine légère :
 ```bash
 mvn clean package -DskipTests
-java -jar target/fishcam-backend.jar --spring.profiles.active=prod
+docker build -t fishcam-backend .
 ```
-
----
-
-## Configuration
-
-### `application.properties` (commun)
-
-```properties
-spring.application.name=fishcam
-spring.profiles.active=dev
-
-# Multipart (upload avatars)
-spring.servlet.multipart.max-file-size=5MB
-spring.servlet.multipart.max-request-size=5MB
-
-# Upload local
-fishcam.upload.avatar-dir=fishcam-data/avatars
-
-# Scheduler activé
-spring.task.scheduling.enabled=true
+# ☁️ Sauvegardes Cloud
+Le système intègre une sauvegarde automatique de la base de données (Dump SQL) et des données d'apprentissage machine (CSV) vers Cloudflare R2 (compatible S3).
+Variables d'environnement requises en production :
+```env
+CF_ENDPOINT=https://<ACCOUNT_ID>.r2.cloudflarestorage.com
+CF_ACCESS_KEY=votre_access_key
+CF_SECRET_KEY=votre_secret_key
+CF_BUCKET=fishcam-backups
 ```
-
-### Variables sensibles — ne jamais commiter
-
-```properties
-# JWT
-jwt.secret=...
-jwt.expiration=86400000
-
-# BDD
-spring.datasource.password=...
-```
-
-> ⚠️ Ajouter `application-prod.properties` et `application-dev.properties` dans `.gitignore`
-
----
-
-## API Documentation
-
-Swagger UI disponible après démarrage :
-
-```
-http://localhost:8080/swagger-ui.html
-```
-
-### Endpoints principaux
-
-| Méthode | Endpoint | Description | Rôles |
-|---------|----------|-------------|-------|
-| POST | `/api/v1/auth/login` | Connexion | Public |
-| GET | `/api/v1/auth/me` | Utilisateur connecté | Tous |
-| PUT | `/api/v1/auth/change-password` | Changer son mot de passe | Tous |
-| PUT | `/api/v1/auth/reset-password` | Réinitialiser MDP d'un employé | PATRON, SUPER_ADMIN |
-| POST | `/api/v1/users` | Créer un utilisateur | SUPER_ADMIN, PATRON |
-| POST | `/api/v1/users/{id}/avatar` | Upload photo de profil | Tous (le sien) |
-| GET | `/api/v1/users/{id}/avatar` | Voir photo de profil | Tous |
-| POST | `/api/v1/comptes-courants/emprunts` | Enregistrer un emprunt | CAISSIERE+ |
-| POST | `/api/v1/comptes-courants/remboursements` | Enregistrer un remboursement | CAISSIERE+ |
-| POST | `/api/v1/comptes-courants/transfert-epargne` | Épargne → Compte courant | CAISSIERE+ |
-| GET | `/api/v1/notifications/user/{userId}` | Mes notifications | Tous (le sien) |
-| PUT | `/api/v1/notifications/{id}/mark-as-read` | Marquer comme lue | Tous (la sienne) |
-| POST | `/api/v1/poissonneries/{id}/cloturer-journee` | Clôture manuelle journée | PATRON, SUPER_ADMIN |
-
----
-
-## Sécurité
-
-### Rôles
-
-| Rôle | Permissions |
-|------|-------------|
-| `SUPER_ADMIN` | Accès total, toutes les poissonneries |
-| `PATRON` | Gestion de sa poissonnerie, modification limites crédit |
-| `CAISSIERE` | Emprunts, remboursements, transferts, comptes courants |
-| `ENREGISTREUR` | Lecture seule + enregistrement emprunts |
-
-### JWT
-
-- Token transmis dans le header : `Authorization: Bearer <token>`
-- Identifiant = **numéro de téléphone** (pas d'email)
-- Tokens expirés ou malformés → `401 Unauthorized` propre
-
-### Protection IDOR
-
-Les endpoints sensibles vérifient que l'utilisateur connecté accède uniquement à ses propres données. Seul le `SUPER_ADMIN` peut accéder aux données d'un autre utilisateur. La logique de vérification est dans la **couche service**, pas dans le controller.
-
----
-
-## Branches Git
-
-```
-main              ← production stable
-develop           ← intégration continue
-feature/*         ← nouvelles fonctionnalités
-fix/*             ← corrections de bugs
-```
-
----
-
-*FishCam ERP — Java 17 · Spring Boot 3.5.8 · PostgreSQL · Architecture Hexagonale*
+# 🛡️ Sécurité & Rôles
+* Authentification : Basée sur le numéro de téléphone (pas d'email).
+* SUPER_ADMIN : Accès total, gestion des poissonneries, accès aux logs d'audit.
+* PATRON : Gestion de son équipe, modification des limites de crédit, accès aux * bilans.
+* CAISSIERE : Gestion des transactions (Emprunts, Remboursements, Dépôts, Retraits).
+* ENREGISTREUR : Saisie des factures d'achat fournisseurs.

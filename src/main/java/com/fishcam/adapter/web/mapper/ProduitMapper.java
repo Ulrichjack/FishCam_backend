@@ -1,6 +1,7 @@
 package com.fishcam.adapter.web.mapper;
 
 import com.fishcam.adapter.web.dto.request.CreateProduitRequest;
+import com.fishcam.adapter.web.dto.response.ProduitAvecPrixResponse;
 import com.fishcam.adapter.web.dto.response.ProduitResponse;
 import com.fishcam.domain.produit.Produit;
 import org.mapstruct.Mapper;
@@ -17,5 +18,8 @@ public interface ProduitMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     Produit toEntity(CreateProduitRequest request);
+
+
+    ProduitAvecPrixResponse toResponseAvecPrix(Produit produit);
 
 }
