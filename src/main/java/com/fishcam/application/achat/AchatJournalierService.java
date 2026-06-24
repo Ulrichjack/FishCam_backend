@@ -9,6 +9,7 @@ import com.fishcam.adapter.web.dto.response.FactureResponse;
 import com.fishcam.adapter.web.dto.response.LigneAchatResponse;
 import com.fishcam.adapter.web.mapper.AchatMapper;
 import com.fishcam.domain.achat.*;
+import com.fishcam.domain.cloture.ClotureJournaliereRepository;
 import com.fishcam.domain.fournisseur.Fournisseur;
 import com.fishcam.domain.fournisseur.FournisseurRepository;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
@@ -43,6 +44,7 @@ public class AchatJournalierService {
     private final FournisseurRepository fournisseurRepository;
     private final UserRepository userRepository;
     private final AchatMapper achatMapper;
+    private final ClotureJournaliereRepository clotureJournaliereRepository;
 
 
     @LogAudit(action = "CREATE", entityName = "AchatJournalier")
@@ -52,9 +54,14 @@ public class AchatJournalierService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Poissonnerie non trouvée avec l'id : " + request.getPoissonnerieId()
                 ));
+
         Fournisseur fournisseur = fournisseurRepository.findById(request.getFournisseurId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Fournisseur non trouvée avec l'id : " + request.getFournisseurId()));
+
+        if (clotureJournaliereRepository.existsByPoissonnerieAndDate(poissonnerie, request.getDateAchat())) {
+            throw new BusinessException("Impossible de créer une facture : la journée du " + request.getDateAchat() + " est déjà clôturée pour cette boutique.");
+        }
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -262,10 +269,8 @@ public class AchatJournalierService {
 
     public DernierPrixResponse getDernierPrix(Long produitId, Long poissonnerieId) {
         Produit produit = produitRepository.findById(produitId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Produit non trouvé avec l'id : " + produitId));
+                .orElseThrow(() -> new ResourceNotFoundException("Produit non trouvé"));
 
-        // 1. Fetch the last TWO purchases (PageRequest.of(0, 2))
         Pageable pageable = PageRequest.of(0, 2);
         List<LigneAchat> results = ligneAchatRepository
                 .findLatestPricesByProduitAndPoissonnerie(produitId, poissonnerieId, pageable);
@@ -273,32 +278,25 @@ public class AchatJournalierService {
         DernierPrixResponse response = new DernierPrixResponse();
         response.setPoidsParCarton(produit.getPoidsParCarton());
 
-        // 2. If the product was NEVER bought before
         if (results.isEmpty()) {
             response.setFluctuation(TypeFluctuation.NOUVEAU);
             return response;
         }
 
-        // 3. Get the most recent purchase
         LigneAchat lastPurchase = results.get(0);
-        response.setMontantCarton(lastPurchase.getMontantCarton());
+        response.setPrixUnitaireCarton(lastPurchase.getPrixUnitaireCarton()); // <-- LE BON GETTER
         response.setPrixVenteKilo(lastPurchase.getPrixVenteKilo());
 
-        // 4. Compare with the previous purchase
         if (results.size() == 1) {
-            // It was only bought ONCE in history.
             response.setFluctuation(TypeFluctuation.NOUVEAU);
             response.setDifference(BigDecimal.ZERO);
         } else {
-            // We have a previous purchase!
             LigneAchat previousPurchase = results.get(1);
-            response.setAncienMontantCarton(previousPurchase.getMontantCarton());
+            response.setAncienPrixUnitaireCarton(previousPurchase.getPrixUnitaireCarton()); // <-- LE BON GETTER
 
-            // Calculate the difference: (Today's Price) - (Yesterday's Price)
-            BigDecimal difference = lastPurchase.getMontantCarton().subtract(previousPurchase.getMontantCarton());
+            BigDecimal difference = lastPurchase.getPrixUnitaireCarton().subtract(previousPurchase.getPrixUnitaireCarton());
             response.setDifference(difference);
 
-            // Determine if it went UP, DOWN, or stayed STABLE
             int comparison = difference.compareTo(BigDecimal.ZERO);
             if (comparison > 0) {
                 response.setFluctuation(TypeFluctuation.HAUSSE);
@@ -308,10 +306,8 @@ public class AchatJournalierService {
                 response.setFluctuation(TypeFluctuation.STABLE);
             }
         }
-
         return response;
     }
-
     /**
      * Convertit une entité AchatJournalier en FactureResponse et calcule le total des achats.
      * @param facture L'entité AchatJournalier

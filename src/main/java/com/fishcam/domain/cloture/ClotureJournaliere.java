@@ -82,6 +82,9 @@ public class ClotureJournaliere {
     @Column(nullable = false)
     private BigDecimal beneficeNet;
 
+    @Column(nullable = false)
+    private BigDecimal ecartVente = BigDecimal.ZERO;
+
     @Column(updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;

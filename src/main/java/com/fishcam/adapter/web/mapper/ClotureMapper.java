@@ -14,7 +14,6 @@ public interface ClotureMapper {
     @Mapping(source = "cloturePar.id", target = "clotureParId")
     @Mapping(source = "poissonnerie.name", target = "poissonnerieNom")
     @Mapping(source = "poissonnerie.id", target = "poissonnerieId")
-    @Mapping(target = "ecartVente", ignore = true)
     ClotureJournaliereResponse toResponse(ClotureJournaliere clotureJournaliere);
 
     //  toEntity ignores fields set manually in service
@@ -29,6 +28,7 @@ public interface ClotureMapper {
     @Mapping(target = "venteRealisee", ignore = true)
     @Mapping(target = "totalDepenses", ignore = true)
     @Mapping(target = "beneficeNet", ignore = true)
+    @Mapping(target = "ecartVente", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     ClotureJournaliere toEntity(ClotureJournaliereRequest request);
 

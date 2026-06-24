@@ -46,9 +46,6 @@ public class TransfertEpargneVersCCUseCase {
             throw new BusinessException("Le compte courant et l'épargne ne sont pas du même client");
         }
 
-        if (!compte.getClient().getId().equals(epargne.getClient().getId())) {
-            throw new BusinessException("Le compte courant et l'épargne ne sont pas du même client");
-        }
 
         if (compte.getStatut() != StatutCompteCourant.ACTIF) {
             throw new BusinessException("Ce compte n'est pas actif");
