@@ -35,10 +35,15 @@ public class ProduitService {
     @LogAudit(action = "CREATE", entityName = "Produit")
     @Transactional
     public ProduitResponse createProduit(CreateProduitRequest request) {
-        if (produitRepository.existsByNomIgnoreCase(request.getNom())) {
-            throw new BusinessException("Le produit ayant ce nom existe deja ");
+        // 🟢 NOUVEAU : On enlève les espaces au début et à la fin
+        String nomNettoye = request.getNom().trim();
+
+        if (produitRepository.existsByNomIgnoreCase(nomNettoye)) {
+            throw new BusinessException("Le produit ayant ce nom existe déjà");
         }
+
         Produit produit = produitMapper.toEntity(request);
+        produit.setNom(nomNettoye); // 🟢 On sauvegarde le nom propre
         produit.setActif(true);
 
         Produit savedProduit = produitRepository.save(produit);
@@ -91,15 +96,20 @@ public class ProduitService {
     @LogAudit(action = "UPDATE", entityName = "Produit")
     @Transactional
     public ProduitResponse updateProduit(Long productId, UpdateProduitRequest request) {
+
+
         Produit produit = produitRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Le produit non trouve avec l'id : " + productId));
-        if (request.getNom() != null) {
-            if (!request.getNom().equals(produit.getNom())
-                    && produitRepository.existsByNomIgnoreCase(request.getNom())) {
+
+        String nomNettoye = request.getNom().trim();
+
+        if (nomNettoye != null) {
+            if (!nomNettoye.equals(produit.getNom())
+                    && produitRepository.existsByNomIgnoreCase(nomNettoye)) {
                 throw new BusinessException("Ce nom existe déjà");
             }
-            produit.setNom(request.getNom());
+            produit.setNom(nomNettoye);
         }
 
         if (request.getUnite() != null) {

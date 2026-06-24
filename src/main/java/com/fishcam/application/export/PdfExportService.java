@@ -80,7 +80,7 @@ public class PdfExportService {
     public byte[] exportFactureToPdf(FactureDetailResponse facture) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         // ATTENTION ICI : La marge du haut est à 120 pour laisser la place au logo absolu !
-        Document document = new Document(PageSize.A4, 40, 40, 120, 40);
+        Document document = new Document(PageSize.A4, 40, 40, 90, 40);
 
         try {
             PdfWriter.getInstance(document, out);
@@ -156,7 +156,7 @@ public class PdfExportService {
     public byte[] exportEpargneToPdf(EpargneDetailResponse epargne) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         // Marge haute à 120
-        Document document = new Document(PageSize.A4, 40, 40, 120, 40);
+        Document document = new Document(PageSize.A4, 40, 40, 90, 40);
 
         try {
             PdfWriter.getInstance(document, out);
@@ -248,7 +248,7 @@ public class PdfExportService {
     public byte[] exportRecapitulatifToPdf(RecapitulatifResponse recap, String poissonnerieNom, String moisAnnee) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         // Marge haute à 120
-        Document document = new Document(PageSize.A4, 40, 40, 120, 40);
+        Document document = new Document(PageSize.A4, 40, 40, 90, 40);
 
         try {
             PdfWriter.getInstance(document, out);

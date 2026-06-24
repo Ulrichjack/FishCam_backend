@@ -148,17 +148,24 @@ public class ClotureJournaliereService {
         BigDecimal ration = request.getRation() != null ? request.getRation() : BigDecimal.ZERO;
         BigDecimal autresFrais = request.getAutresFrais() != null ? request.getAutresFrais() : BigDecimal.ZERO;
 
-        // 🔴 LES BONS CALCULS MATHÉMATIQUES
         BigDecimal totalDepenses = transport.add(ration).add(autresFrais);
 
         // Vente Réalisée = Argent Caisse - Fond de Caisse + Dépenses
         BigDecimal venteRealisee = request.getArgentCaisse().subtract(request.getFondDeCaisse()).add(totalDepenses);
 
-        // Écart = Vente Réalisée - Vente Prévisible
-        BigDecimal ecartVente = venteRealisee.subtract(preparer.getTotalVentePrevisible());
+        // 🟢 CORRECTION DU BUG : Vente Prévisible Ajustée (Prend en compte les dettes et remboursements)
+        BigDecimal ventePrevisibleAjustee = preparer.getTotalVentePrevisible()
+                .subtract(preparer.getMontantDettesJour())
+                .add(preparer.getMontantRembourseJour());
+
+        // Écart = Vente Réalisée - Vente Prévisible Ajustée
+        BigDecimal ecartVente = venteRealisee.subtract(ventePrevisibleAjustee);
 
         // Bénéfice Net = Vente Réalisée - Achats - Dépenses
-        BigDecimal beneficeNet = venteRealisee.subtract(preparer.getTotalAchat()).subtract(totalDepenses);
+        BigDecimal beneficeNet = preparer.getTotalVentePrevisible()
+                .subtract(preparer.getTotalAchat())
+                .subtract(totalDepenses)
+                .add(ecartVente);
 
         ClotureJournaliere cloture = clotureMapper.toEntity(request);
         cloture.setPoissonnerie(poissonnerie);
@@ -171,11 +178,10 @@ public class ClotureJournaliereService {
         cloture.setMontantDettesJour(preparer.getMontantDettesJour());
         cloture.setMontantRembourseJour(preparer.getMontantRembourseJour());
         cloture.setNombreDettesJour(preparer.getNombreDettesJour());
+        cloture.setEcartVente(ecartVente);
 
         ClotureJournaliere saved = clotureJournaliereRepository.save(cloture);
-        ClotureJournaliereResponse response = clotureMapper.toResponse(saved);
-        response.setEcartVente(ecartVente);
-        return response;
+        return clotureMapper.toResponse(saved);
     }
 
     public ClotureJournaliereResponse getCloture(Long poissonnerieId, LocalDate date){

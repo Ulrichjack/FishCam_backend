@@ -12,9 +12,9 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class DernierPrixResponse {
     private BigDecimal poidsParCarton;
-    private BigDecimal montantCarton;
+    private BigDecimal prixUnitaireCarton;
     private BigDecimal prixVenteKilo;
-    private BigDecimal ancienMontantCarton;
+    private BigDecimal ancienPrixUnitaireCarton;
     private BigDecimal difference;
     private TypeFluctuation fluctuation;
 

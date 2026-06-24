@@ -19,7 +19,7 @@ public interface ProduitRepository extends JpaRepository<Produit, Long> {
     boolean existsByNomIgnoreCase(String nom);
 
 
-    @Query("SELECT p FROM Produit p WHERE LOWER(p.nom) LIKE LOWER(CONCAT('%', :nom, '%'))")
+    @Query("SELECT p FROM Produit p WHERE LOWER(p.nom) LIKE LOWER(CONCAT('%', :nom, '%')) AND p.actif = true")
     List<Produit> searchAllByNom(@Param("nom") String nom);
 
     Page<Produit> findByActifTrue(Pageable pageable);
