@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.net.URI;
 import java.time.LocalDate;
 
 @Slf4j
@@ -21,7 +22,12 @@ public class PostgresBackupService {
     private String dbUrl;
 
     public File generateSqlBackup() throws Exception {
-        String dbName = dbUrl.substring(dbUrl.lastIndexOf("/") + 1);
+        // dbUrl est au format jdbc:postgresql://host:port/dbname?params -> URI ne comprend
+        // pas le prefixe "jdbc:", et separe proprement le path (dbname) de la query string.
+        URI uri = URI.create(dbUrl.replaceFirst("^jdbc:", ""));
+        String host = uri.getHost();
+        int port = uri.getPort() != -1 ? uri.getPort() : 5432;
+        String dbName = uri.getPath().substring(1); // retire le "/" initial
 
         // Créer le dossier s'il n'existe pas
         File backupDir = new File("backups");
@@ -34,13 +40,18 @@ public class PostgresBackupService {
 
         ProcessBuilder pb = new ProcessBuilder(
                 "pg_dump",
+                "-h", host,
+                "-p", String.valueOf(port),
                 "-U", dbUsername,
                 "-f", filename,
                 dbName
         );
 
         pb.environment().put("PGPASSWORD", dbPassword);
+        pb.environment().put("PGSSLMODE", "require");
+        pb.redirectErrorStream(true);
         Process process = pb.start();
+        String output = new String(process.getInputStream().readAllBytes());
         int exitCode = process.waitFor();
 
         if (exitCode == 0) {
@@ -48,7 +59,8 @@ public class PostgresBackupService {
             cleanOldLocalBackups(backupDir);
             return new File(filename);
         } else {
-            throw new RuntimeException("Échec de pg_dump. Code: " + exitCode);
+            log.error("Sortie pg_dump : {}", output);
+            throw new RuntimeException("Échec de pg_dump. Code: " + exitCode + " - " + output);
         }
     }
 
