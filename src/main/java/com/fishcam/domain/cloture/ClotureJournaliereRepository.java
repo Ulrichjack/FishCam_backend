@@ -1,6 +1,8 @@
 package com.fishcam.domain.cloture;
 
 import com.fishcam.domain.poissonnerie.Poissonnerie;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,8 +23,7 @@ public interface ClotureJournaliereRepository
             Poissonnerie poissonnerie, LocalDate date);
 
     // Get history for a boutique ordered by most recent first
-    List<ClotureJournaliere> findByPoissonnerieOrderByDateDesc(
-            Poissonnerie poissonnerie);
+    Page<ClotureJournaliere> findByPoissonnerieOrderByDateDesc(Poissonnerie poissonnerie, Pageable pageable);
 
     @Query("SELECT c FROM ClotureJournaliere c " +
             "WHERE c.poissonnerie = :poissonnerie " +

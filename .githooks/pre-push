@@ -1,0 +1,18 @@
+#!/bin/bash
+# Git hook "pre-push" : bloque le push si le projet ne compile pas.
+# Active via : git config core.hooksPath .githooks  (une fois, par machine)
+
+set -e
+echo "→ pre-push: verification de la compilation Maven..."
+
+cd "$(git rev-parse --show-toplevel)"
+
+if ! ./mvnw -q -o compile; then
+  echo ""
+  echo "✗ ECHEC : le projet ne compile pas (essai hors-ligne)." >&2
+  echo "  Corrige les erreurs ci-dessus avant de pousser, ou lance './mvnw compile' (en ligne) si des dependances manquent en cache local." >&2
+  exit 1
+fi
+
+echo "✓ Compilation OK — push autorise."
+exit 0

@@ -10,6 +10,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -82,14 +85,16 @@ public class ClotureJournaliereController {
     }
 
     @GetMapping("/historique")
-    @Operation(summary = "Historique des clotures")
+    @Operation(summary = "Historique des clotures (Paginé)")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
-    public ApiResponse<List<ClotureJournaliereResponse>> getHistorique(
-            @RequestParam Long poissonnerieId){
+    public ApiResponse<Page<ClotureJournaliereResponse>> getHistorique(
+            @RequestParam Long poissonnerieId,
+            @PageableDefault(size = 10) Pageable pageable) { // <-- 10 lignes par page par défaut
 
-        List<ClotureJournaliereResponse> response = clotureJournaliereService
-                .getHistorique(poissonnerieId);
-        return ApiResponse.<List<ClotureJournaliereResponse>>builder()
+        Page<ClotureJournaliereResponse> response = clotureJournaliereService
+                .getHistorique(poissonnerieId, pageable);
+
+        return ApiResponse.<Page<ClotureJournaliereResponse>>builder()
                 .success(true)
                 .data(response)
                 .message("Historique récupéré")

@@ -43,3 +43,4 @@ src/main/resources/data.sql
 # env
 .env
 fishcam_backup.sql
+backups/
