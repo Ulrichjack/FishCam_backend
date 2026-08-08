@@ -19,10 +19,13 @@ public class BackupStatusService {
     private final BackupRecordRepository backupRecordRepository;
 
     public BackupStatusDto getBackupStatus() {
+        // Le type CLOUD_WEEKLY est un nom historique (garde pour ne pas casser la lecture
+        // des anciens enregistrements en base) : la synchronisation Cloud tourne desormais
+        // tous les jours a 19h (BackupScheduler), donc seuil de "manque" resserre a 2 jours.
         var lastCloudSync = backupRecordRepository.findTopByTypeOrderByDateExecutionDesc(TypeBackup.CLOUD_WEEKLY);
 
         boolean isCloudSyncMissed = lastCloudSync.isEmpty() ||
-                lastCloudSync.get().getDateExecution().isBefore(LocalDateTime.now().minusDays(7));
+                lastCloudSync.get().getDateExecution().isBefore(LocalDateTime.now().minusDays(2));
 
         // 1. Récupérer l'historique depuis la BDD
         List<BackupRecord> recentBackups = backupRecordRepository.findTop10ByOrderByDateExecutionDesc();
