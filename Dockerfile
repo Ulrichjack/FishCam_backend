@@ -1,24 +1,19 @@
-# ─── SKELETON: Dockerfile (Backend Spring Boot) ───────────────────────────
+# ─── Build multi-stage : Render build l'image depuis un clone git frais,     ───
+# ─── donc target/*.jar (gitignore) n'existe pas encore. Il faut le construire ───
+# ─── ici avant de le copier dans l'image finale.                            ───
 
-# DIRECTIVE: Utilise l'image de base 'eclipse-temurin:17-jre-alpine'
-# YOUR CODE HERE
-FROM eclipse-temurin:17-jre-alpine
-
-# DIRECTIVE: Définis le répertoire de travail sur '/app'
-# YOUR CODE HERE
+# Stage 1 : build du jar avec Maven (wrapper du projet)
+FROM eclipse-temurin:17-jdk-alpine AS build
 WORKDIR /app
+COPY .mvn .mvn
+COPY mvnw pom.xml ./
+RUN chmod +x mvnw && ./mvnw -B dependency:go-offline
+COPY src ./src
+RUN ./mvnw -B clean package -DskipTests
 
-# DIRECTIVE: Copie le fichier JAR généré par Maven depuis ton PC vers le container.
-# Le fichier source est 'target/*.jar' (l'étoile permet de prendre le jar peu importe sa version exacte).
-# Le fichier de destination dans le container sera 'app.jar'.
-# YOUR CODE HERE
-COPY target/*.jar app.jar
-
-# DIRECTIVE: Expose le port 8080 (le port par défaut de Spring Boot)
-# YOUR CODE HERE
+# Stage 2 : image d'exécution légère (JRE seul, pas de JDK/Maven)
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-
-# DIRECTIVE: Définis la commande de démarrage (ENTRYPOINT).
-# Elle doit exécuter un tableau JSON : ["java", "-jar", "app.jar"]
-# YOUR CODE HERE
 ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -jar app.jar"]
