@@ -3,9 +3,6 @@ package com.fishcam.adapter.web.controller;
 import com.fishcam.adapter.web.dto.response.ApiResponse;
 import com.fishcam.adapter.web.dto.response.BackupStatusDto;
 import com.fishcam.application.export.*;
-import com.fishcam.domain.backup.BackupRecord;
-import com.fishcam.domain.backup.BackupRecordRepository;
-import com.fishcam.domain.backup.TypeBackup;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -25,42 +21,15 @@ import java.time.LocalDateTime;
 @Tag(name = "Admin Backup", description = "Gestion des sauvegardes Cloud")
 public class AdminController {
 
-    private final PostgresBackupService postgresBackupService;
-    private final DataScienceExportService dataScienceExportService;
-    private final CloudflareR2StorageService cloudflareR2StorageService;
-    // private final MinioStorageService minioStorageService;
+    private final CloudBackupService cloudBackupService;
     private final BackupStatusService backupStatusService;
-    private final BackupRecordRepository backupRecordRepository;
 
     @PostMapping("/backup/sync-cloud")
-    @Operation(summary = "Pousser la sauvegarde et le CSV vers Cloudflare R2 et MinIO")
+    @Operation(summary = "Pousser la sauvegarde et le CSV vers Cloudflare R2")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
     public ResponseEntity<ApiResponse<String>> syncToCloud() {
         try {
-            // 1. Générer le SQL
-            File sqlFile = postgresBackupService.generateSqlBackup();
-            // 2. Générer le CSV pour le Machine Learning
-            File csvFile = dataScienceExportService.generateSalesCsv();
-
-            // 3. Envoyer sur Cloudflare R2
-            cloudflareR2StorageService.uploadBackup(sqlFile);
-            cloudflareR2StorageService.uploadBackup(csvFile);
-
-            // 4. Envoyer sur MinIO
-            // try {
-            //     minioStorageService.uploadBackup(sqlFile);
-            //     minioStorageService.uploadBackup(csvFile);
-            //     log.info("🐳 Sauvegarde réussie sur MinIO local !");
-            // } catch (Exception e) {
-            //     log.warn("⚠️ MinIO local n'est pas démarré ou est indisponible. Sauvegarde ignorée pour ce stockage. Erreur: {}", e.getMessage());
-            // }
-
-            // 5. Enregistrer le succès en base de données
-            BackupRecord record = new BackupRecord();
-            record.setDateExecution(LocalDateTime.now());
-            record.setType(TypeBackup.CLOUD_WEEKLY);
-            record.setSuccess(true);
-            backupRecordRepository.save(record);
+            cloudBackupService.syncToCloud();
 
             return ResponseEntity.ok(ApiResponse.<String>builder()
                     .success(true)
