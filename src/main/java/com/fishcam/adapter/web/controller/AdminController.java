@@ -7,12 +7,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 
 @Slf4j
 @RestController
@@ -23,6 +25,7 @@ public class AdminController {
 
     private final CloudBackupService cloudBackupService;
     private final BackupStatusService backupStatusService;
+    private final MonthlyArchiveService monthlyArchiveService;
 
     @PostMapping("/backup/sync-cloud")
     @Operation(summary = "Pousser la sauvegarde et le CSV vers Cloudflare R2")
@@ -44,6 +47,36 @@ public class AdminController {
                     .body(ApiResponse.<String>builder()
                             .success(false)
                             .message("Erreur de synchronisation : " + e.getMessage())
+                            .code(500)
+                            .timestamp(LocalDateTime.now())
+                            .build());
+        }
+    }
+
+    @PostMapping("/backup/monthly")
+    @Operation(summary = "Generer l'archive mensuelle (SQL + CSV + recapitulatifs PDF) sur Cloudflare R2")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
+    public ResponseEntity<ApiResponse<String>> archiveMensuelle(
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth mois) {
+        // Par defaut on archive le mois en cours
+        YearMonth cible = (mois != null) ? mois : YearMonth.now();
+        try {
+            String nomArchive = monthlyArchiveService.archiveMonth(cible);
+
+            return ResponseEntity.ok(ApiResponse.<String>builder()
+                    .success(true)
+                    .data(nomArchive)
+                    .message("Archive mensuelle envoyée avec succès sur le Cloud !")
+                    .code(200)
+                    .timestamp(LocalDateTime.now())
+                    .build());
+
+        } catch (Exception e) {
+            log.error("Erreur lors de la génération de l'archive mensuelle {}", cible, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.<String>builder()
+                            .success(false)
+                            .message("Erreur d'archivage mensuel : " + e.getMessage())
                             .code(500)
                             .timestamp(LocalDateTime.now())
                             .build());

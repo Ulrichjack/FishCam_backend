@@ -302,6 +302,27 @@ public class PdfExportService {
             table.addCell(createCell(formatMoney(recap.getTotalRealise()), boldFont, Element.ALIGN_RIGHT, true));
 
             document.add(table);
+
+            // Encadré de synthèse : dépenses puis bénéfice net de la période
+            Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, Color.BLACK);
+            Font beneficeFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 13, BRAND_GREEN);
+
+            PdfPTable synthese = new PdfPTable(2);
+            synthese.setWidthPercentage(60);
+            synthese.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            synthese.setWidths(new float[]{3f, 2f});
+            synthese.setSpacingBefore(15);
+
+            synthese.addCell(createCell("TOTAL DEPENSES (FCFA)", boldFont, Element.ALIGN_LEFT, true));
+            synthese.addCell(createCell(formatMoney(recap.getTotalDepenses()), boldFont, Element.ALIGN_RIGHT, true));
+
+            PdfPCell labelBenefice = createCell("BENEFICE DE LA PERIODE (FCFA)", labelFont, Element.ALIGN_LEFT, true);
+            PdfPCell valeurBenefice = createCell(formatMoney(recap.getTotalBenefice()), beneficeFont, Element.ALIGN_RIGHT, true);
+            synthese.addCell(labelBenefice);
+            synthese.addCell(valeurBenefice);
+
+            document.add(synthese);
+
             addFooter(document);
             document.close();
 
