@@ -2,6 +2,7 @@ package com.fishcam.application.achat;
 
 import com.fishcam.adapter.web.dto.request.CreateFactureRequest;
 import com.fishcam.adapter.web.dto.request.CreateLigneRequest;
+import com.fishcam.adapter.web.dto.request.UpdateFactureDateRequest;
 import com.fishcam.adapter.web.dto.request.UpdateLigneRequest;
 import com.fishcam.adapter.web.dto.response.DernierPrixResponse;
 import com.fishcam.adapter.web.dto.response.FactureDetailResponse;
@@ -12,6 +13,7 @@ import com.fishcam.domain.achat.*;
 import com.fishcam.domain.cloture.ClotureJournaliereRepository;
 import com.fishcam.domain.fournisseur.Fournisseur;
 import com.fishcam.domain.fournisseur.FournisseurRepository;
+import com.fishcam.domain.livreur.EvaluationLivreurRepository;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.poissonnerie.PoissonnerieRepository;
 import com.fishcam.domain.produit.Produit;
@@ -45,6 +47,7 @@ public class AchatJournalierService {
     private final UserRepository userRepository;
     private final AchatMapper achatMapper;
     private final ClotureJournaliereRepository clotureJournaliereRepository;
+    private final EvaluationLivreurRepository evaluationLivreurRepository;
 
 
     @LogAudit(action = "CREATE", entityName = "AchatJournalier")
@@ -74,6 +77,13 @@ public class AchatJournalierService {
         facture.setCloture(false);
 
         AchatJournalier savedAchat = achatJournalierRepository.save(facture);
+
+        if (request.getLignes() != null) {
+            for (CreateLigneRequest ligneRequest : request.getLignes()) {
+                addLigne(savedAchat.getId(), ligneRequest);
+            }
+        }
+
         return mapFactureToResponseWithTotal(savedAchat);
 
     }
@@ -146,6 +156,33 @@ public class AchatJournalierService {
         facture.setCloture(true);
         AchatJournalier savedFacture = achatJournalierRepository.save(facture);
         return mapFactureToResponseWithTotal(savedFacture);
+    }
+
+    @LogAudit(action = "UPDATE_DATE", entityName = "AchatJournalier")
+    @Transactional
+    public FactureResponse updateFactureDate(Long factureId, UpdateFactureDateRequest request) {
+        AchatJournalier facture = getFactureModifiable(factureId);
+
+        if (clotureJournaliereRepository.existsByPoissonnerieAndDate(
+                facture.getPoissonnerie(), request.getDateAchat())) {
+            throw new BusinessException("Impossible de déplacer la facture : la journée du "
+                    + request.getDateAchat() + " est déjà clôturée pour cette boutique.");
+        }
+
+        facture.setDateAchat(request.getDateAchat());
+        return mapFactureToResponseWithTotal(achatJournalierRepository.save(facture));
+    }
+
+    @LogAudit(action = "DELETE", entityName = "AchatJournalier")
+    @Transactional
+    public void deleteFacture(Long factureId) {
+        AchatJournalier facture = getFactureModifiable(factureId);
+
+        // Les dépendances sont supprimées explicitement : aucune cascade implicite
+        // ne doit pouvoir emporter une facture clôturée ou d'autres données métier.
+        evaluationLivreurRepository.deleteByAchatJournalier(facture);
+        ligneAchatRepository.deleteByAchatJournalier(facture);
+        achatJournalierRepository.delete(facture);
     }
 
     @LogAudit(action = "ADD Ligne", entityName = "AchatJournalier")
@@ -264,6 +301,23 @@ public class AchatJournalierService {
         }
 
         ligneAchatRepository.delete(ligne);
+    }
+
+    private AchatJournalier getFactureModifiable(Long factureId) {
+        AchatJournalier facture = achatJournalierRepository.findById(factureId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Facture non trouvée avec l'id : " + factureId));
+
+        if (facture.getCloture()) {
+            throw new BusinessException("Facture clôturée, modification impossible");
+        }
+
+        if (clotureJournaliereRepository.existsByPoissonnerieAndDate(
+                facture.getPoissonnerie(), facture.getDateAchat())) {
+            throw new BusinessException("La journée de cette facture est déjà clôturée");
+        }
+
+        return facture;
     }
 
 

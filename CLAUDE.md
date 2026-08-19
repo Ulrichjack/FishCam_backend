@@ -50,10 +50,9 @@ variables sont injectées par Render à l'exécution, jamais codées en dur.
 **Base de données prod = Supabase** (pooler "Session", port 6543, pas la connexion directe
 5432) pour éviter l'épuisement de connexions Hibernate sur un petit plan Render.
 
-**Migrations** : `spring.jpa.hibernate.ddl-auto=update` en prod (Flyway prévu mais **reporté
-volontairement** — ne pas l'introduire sans demande explicite). Toute modification de schéma
-en prod doit rester rétro-compatible avec `update` (pas de suppression de colonne/table sans
-migration manuelle coordonnée).
+**Migrations** : Flyway versionne le schéma dans `db/migration` et Hibernate reste en
+`ddl-auto=validate`. Pour une base existante, suivre `docs/FLYWAY_DEPLOYMENT.md` ; le
+baselining est désactivé par défaut et ne s'active qu'une fois, après sauvegarde vérifiée.
 
 **CORS** : origines lues depuis `app.cors.allowed-origins` (`CORS_ALLOWED_ORIGINS` en prod) —
 ne jamais remettre d'origine en dur dans `SecurityConfig.java`.

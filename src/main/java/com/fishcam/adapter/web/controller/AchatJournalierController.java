@@ -2,6 +2,7 @@ package com.fishcam.adapter.web.controller;
 
 import com.fishcam.adapter.web.dto.request.CreateFactureRequest;
 import com.fishcam.adapter.web.dto.request.CreateLigneRequest;
+import com.fishcam.adapter.web.dto.request.UpdateFactureDateRequest;
 import com.fishcam.adapter.web.dto.request.UpdateLigneRequest;
 import com.fishcam.adapter.web.dto.response.*;
 import com.fishcam.application.achat.AchatJournalierService;
@@ -85,6 +86,35 @@ public class AchatJournalierController {
                 .success(true)
                 .data(response)
                 .message("Facture clôturée avec succès")
+                .code(200)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @PatchMapping("/{id}/date")
+    @Operation(summary = "Modifier la date d'une facture ouverte")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
+    public ApiResponse<FactureResponse> updateFactureDate(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateFactureDateRequest request) {
+        FactureResponse response = achatJournalierService.updateFactureDate(id, request);
+        return ApiResponse.<FactureResponse>builder()
+                .success(true)
+                .data(response)
+                .message("Date de la facture modifiée avec succès")
+                .code(200)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Supprimer définitivement une facture ouverte")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE', 'ENREGISTREUR')")
+    public ApiResponse<Void> deleteFacture(@PathVariable Long id) {
+        achatJournalierService.deleteFacture(id);
+        return ApiResponse.<Void>builder()
+                .success(true)
+                .message("Facture supprimée avec succès")
                 .code(200)
                 .timestamp(LocalDateTime.now())
                 .build();

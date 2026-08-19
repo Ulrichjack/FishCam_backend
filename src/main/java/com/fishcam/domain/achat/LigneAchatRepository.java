@@ -20,6 +20,8 @@ public interface LigneAchatRepository extends JpaRepository<LigneAchat, Long> {
 
     List<LigneAchat> findByAchatJournalier(AchatJournalier achatJournalier);
 
+    void deleteByAchatJournalier(AchatJournalier achatJournalier);
+
 
     @Query("SELECT SUM(la.montantCarton) FROM LigneAchat la WHERE la.achatJournalier.id = :factureId")
     BigDecimal calculateTotalAchatByFactureId(@Param("factureId") Long factureId);

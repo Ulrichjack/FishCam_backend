@@ -34,22 +34,29 @@
 
 ## 🛠️ 2. Architecture & DevOps (Tech Debt)
 
-### 🗄️ Migrations de Base de Données (Flyway / Liquibase)
-- **Constat V1 :** Le projet utilise `spring.jpa.hibernate.ddl-auto=update` en production.
-- **Action V2 :** Désactiver la génération automatique d'Hibernate et intégrer **Flyway**. Créer des scripts SQL versionnés (`V1__init.sql`, `V2__add_column.sql`) pour sécuriser et tracer les modifications de la base de données en production.
-
-### 📦 Vraie Archive Mensuelle (Cloud)
-- **Constat V1 :** Le bouton "Archive Mensuelle" déclenche la même action que la sauvegarde hebdomadaire (Dump SQL + CSV).
-- **Action V2 :** Créer un endpoint dédié `/api/v1/admin/backup/monthly` qui génère un fichier `.zip` contenant le SQL, le CSV, **et tous les PDF des bilans du mois**, puis l'envoie sur Cloudflare R2.
-
-### 🔄 Refactoring `ResponseEntity`
-- **Constat V1 :** Les contrôleurs Spring Boot renvoient directement l'objet `ApiResponse` en s'appuyant sur le `GlobalExceptionHandler` et `@ResponseStatus`.
-- **Action V2 :** Envelopper tous les retours des contrôleurs dans des `ResponseEntity.ok()` ou `ResponseEntity.status(HttpStatus.CREATED)` pour respecter à 100% les standards d'entreprise RESTful.
-
----
-
 ## 🖨️ 3. Intégrations Matérielles
 
 ### 🧾 Impression de Tickets de Caisse
 - **Constat V1 :** L'application est 100% digitale (PDF).
 - **Action V2 :** Intégrer l'API Web Bluetooth ou une bibliothèque d'impression pour permettre à la caissière d'imprimer un reçu physique (ticket thermique 80mm) lors d'un remboursement ou d'un dépôt d'épargne.
+---
+
+## ✅ Fait (sorti de la roadmap)
+
+- **Bénéfice sur le récapitulatif PDF** — encadré en bas du récapitulatif affichant
+  `TOTAL DEPENSES` et `BENEFICE DE LA PERIODE` (implémenté dans `PdfExportService.exportRecapitulatifToPdf`).
+- **Vraie archive mensuelle (Cloud)** — `POST /api/v1/admin/backup/monthly` + cron le 1er du mois à 2h :
+  zip (SQL + CSV + un récapitulatif PDF par poissonnerie) envoyé sur R2, type `CLOUD_MONTHLY`
+  (`MonthlyArchiveService`). La sauvegarde quotidienne de 19h reste inchangée.
+- **Migrations Flyway** — baseline `V1` vérifiée contre la structure de production du
+  18/08/2026, Hibernate en `validate` et baselining sécurisé par variable temporaire. Voir
+  `docs/FLYWAY_DEPLOYMENT.md`.
+
+## ❌ Abandonné
+
+- **Refactoring `ResponseEntity`** — le `GlobalExceptionHandler` gère déjà les codes HTTP ;
+  envelopper les ~20 contrôleurs serait un diff massif pour zéro gain fonctionnel.
+
+
+#IMPORTANCE
+sur le frontend sur les facture dacte mette un selecteur de date un truc pour aller a  date suivate et autre precedent et sur la nav bar facture/achat en bas on met cloture journaliere en bas cote frontend et aussi avoir la possibilite de supprimer une facture temps quelle nest pas cloturer ou archiver elle saffiche pas ou suppression qui fait elle saffiche pas et le probleme sa met pas a jour les prix des produit rapidement a pres change je sais pas pouruqoiet aussi sur create facture les ronf lors de ajout produit tourne hord de leur derive genre au alentour et on peut pas modifier la date dune facture qui nest pas encore cree et aussi lors de insersion on voie pas directement le prix total de la vente previsible avant de clique sur ajout ligne et pourvoir ou si on fiat plein update sa cause des probleme? ou la update des produit se fait que sur la poissonerie principal

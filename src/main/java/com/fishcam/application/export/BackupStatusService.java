@@ -27,6 +27,13 @@ public class BackupStatusService {
         boolean isCloudSyncMissed = lastCloudSync.isEmpty() ||
                 lastCloudSync.get().getDateExecution().isBefore(LocalDateTime.now().minusDays(2));
 
+        // Archive mensuelle : consideree manquante si aucune depuis plus de 35 jours
+        // (le cron tourne le 1er de chaque mois, on laisse une marge de securite).
+        var lastMonthlyArchive = backupRecordRepository.findTopByTypeOrderByDateExecutionDesc(TypeBackup.CLOUD_MONTHLY);
+
+        boolean isMonthlyArchiveMissed = lastMonthlyArchive.isEmpty() ||
+                lastMonthlyArchive.get().getDateExecution().isBefore(LocalDateTime.now().minusDays(35));
+
         // 1. Récupérer l'historique depuis la BDD
         List<BackupRecord> recentBackups = backupRecordRepository.findTop10ByOrderByDateExecutionDesc();
 
@@ -41,7 +48,7 @@ public class BackupStatusService {
 
         return BackupStatusDto.builder()
                 .weeklyMissed(isCloudSyncMissed)
-                .monthlyMissed(false)
+                .monthlyMissed(isMonthlyArchiveMissed)
                 .history(history) // 3. Ajouter l'historique au DTO final
                 .build();
     }

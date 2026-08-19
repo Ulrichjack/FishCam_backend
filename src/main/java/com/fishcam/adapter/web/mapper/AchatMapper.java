@@ -63,5 +63,3 @@ public interface AchatMapper {
     LigneAchat toLigneEntity(CreateLigneRequest createLigneRequest);
 
 }
-
-

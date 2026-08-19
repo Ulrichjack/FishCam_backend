@@ -16,4 +16,6 @@ public interface EvaluationLivreurRepository extends JpaRepository <EvaluationLi
     Optional<EvaluationLivreur> findFirstByOrderByCreatedAtDesc();
 
     Optional<EvaluationLivreur> findByAchatJournalierId(Long achatJournalierId);
+
+    void deleteByAchatJournalier(AchatJournalier achatJournalier);
 }
