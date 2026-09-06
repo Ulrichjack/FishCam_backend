@@ -22,4 +22,5 @@ public class ChargeGestionResponse {
     private LocalDate dateDebut;
     private LocalDate dateFin;
     private Boolean active;
+    private Boolean supprimee;
 }

@@ -13,8 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,6 +65,25 @@ public class ChargeGestionController {
             @RequestParam LocalDate dateFin) {
         ChargeGestionResponse response = chargeService.terminer(id, dateFin);
         return reponse(response, "Charge terminée", HttpStatus.OK.value());
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Modifier une charge de gestion")
+    public ApiResponse<ChargeGestionResponse> modifier(
+            @PathVariable Long id,
+            @RequestBody @Valid CreateChargeGestionRequest request,
+            @AuthenticationPrincipal User currentUser) {
+        ChargeGestionResponse response = chargeService.modifier(id, request, currentUser.getId());
+        return reponse(response, "Charge modifiée", HttpStatus.OK.value());
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Supprimer logiquement une charge saisie par erreur")
+    public ApiResponse<ChargeGestionResponse> supprimer(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser) {
+        ChargeGestionResponse response = chargeService.supprimer(id, currentUser.getId());
+        return reponse(response, "Charge supprimée", HttpStatus.OK.value());
     }
 
     private <T> ApiResponse<T> reponse(T data, String message, int code) {

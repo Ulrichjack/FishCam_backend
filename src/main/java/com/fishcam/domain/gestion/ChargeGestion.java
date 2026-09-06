@@ -50,6 +50,15 @@ public class ChargeGestion {
     @Column(nullable = false)
     private Boolean active = true;
 
+    @Column(nullable = false)
+    private Boolean supprimee = false;
+
+    private LocalDateTime supprimeeLe;
+
+    @ManyToOne
+    @JoinColumn(name = "supprimee_par_id")
+    private User supprimeePar;
+
     @ManyToOne
     @JoinColumn(name = "created_by_id", nullable = false)
     private User createdBy;

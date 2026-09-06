@@ -3,6 +3,7 @@ package com.fishcam.adapter.web.controller;
 import com.fishcam.adapter.web.dto.response.ApiResponse;
 import com.fishcam.adapter.web.dto.response.ResultatMensuelBoutiqueResponse;
 import com.fishcam.adapter.web.dto.response.ResultatMensuelGlobalResponse;
+import com.fishcam.adapter.web.dto.response.ResultatAnnuelResponse;
 import com.fishcam.application.gestion.ResultatMensuelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,6 +44,12 @@ public class ResultatMensuelController {
             @RequestParam Integer annee) {
         ResultatMensuelGlobalResponse response = resultatService.calculerGlobal(mois, annee);
         return reponse(response);
+    }
+
+    @GetMapping("/annuel")
+    @Operation(summary = "Calculer le résultat annuel consolidé")
+    public ApiResponse<ResultatAnnuelResponse> calculerAnnuel(@RequestParam Integer annee) {
+        return reponse(resultatService.calculerAnnuel(annee));
     }
 
     private <T> ApiResponse<T> reponse(T data) {
