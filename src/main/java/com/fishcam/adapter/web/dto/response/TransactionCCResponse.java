@@ -23,5 +23,7 @@ public class TransactionCCResponse {
     private UserResponse effectuePar;
     private LocalDateTime transactionDate;
     private LocalDate dateDetteOrigine;
+    private Long transactionOrigineId;
+    private Boolean annulee;
     private String notes;
 }

@@ -416,6 +416,25 @@ public class PdfExportService {
 
             document.add(table);
 
+            PdfPTable creances = new PdfPTable(4);
+            creances.setWidthPercentage(68);
+            creances.setHorizontalAlignment(Element.ALIGN_LEFT);
+            creances.setSpacingBefore(10);
+            creances.setWidths(new float[]{2.2f, 1.8f, 1.8f, 1.8f});
+            for (String header : new String[]{"CRÉANCES CLIENTS", "FISHCAM", "CAHIER", "ÉCART"}) {
+                creances.addCell(createCell(header, boldFont, Element.ALIGN_CENTER, true));
+            }
+            for (ResultatMensuelBoutiqueResponse boutique : resultat.getBoutiques()) {
+                creances.addCell(createCell(
+                        boutique.getPoissonnerieNom(), boldFont, Element.ALIGN_LEFT, false));
+                creances.addCell(moneyCell(
+                        boutique.getCreancesClientsCalculees(), normalFont, false));
+                creances.addCell(moneyCell(boutique.getCreancesFinales(), normalFont, false));
+                creances.addCell(moneyCell(
+                        boutique.getEcartCreancesClients(), boldFont, false));
+            }
+            document.add(creances);
+
             Paragraph chargesGenerales = new Paragraph(
                     "Charges générales déjà retirées du résultat provisoire global : "
                             + formatMoney(resultat.getChargesGenerales()) + " FCFA.",

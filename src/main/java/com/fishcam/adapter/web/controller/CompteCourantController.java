@@ -2,6 +2,7 @@ package com.fishcam.adapter.web.controller;
 
 import com.fishcam.adapter.web.dto.request.EmpruntRequest;
 import com.fishcam.adapter.web.dto.request.DetteInitialeRequest;
+import com.fishcam.adapter.web.dto.request.CorrectionDetteInitialeRequest;
 import com.fishcam.adapter.web.dto.request.ModifierLimiteCreditRequest;
 import com.fishcam.adapter.web.dto.request.RemboursementCCRequest;
 import com.fishcam.adapter.web.dto.request.TransfertEpargneVersCCRequest;
@@ -102,6 +103,31 @@ public class CompteCourantController {
                         .success(true)
                         .data(data)
                         .message("Dette initiale enregistrée sans affecter la clôture du jour")
+                        .code(200)
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @PostMapping("/dettes-initiales/{transactionId}/correction")
+    @Operation(summary = "Corriger ou annuler une dette initiale en conservant sa trace")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'ENREGISTREUR')")
+    public ResponseEntity<ApiResponse<CompteCourantResponse>> corrigerDetteInitiale(
+            @PathVariable Long transactionId,
+            @Valid @RequestBody CorrectionDetteInitialeRequest request,
+            Authentication authentication) {
+
+        User currentUser = (User) authentication.getPrincipal();
+        CompteCourantResponse data = compteCourantService.corrigerDetteInitiale(
+                transactionId, request, currentUser.getId());
+
+        return ResponseEntity.ok(
+                ApiResponse.<CompteCourantResponse>builder()
+                        .success(true)
+                        .data(data)
+                        .message(request.getNouveauMontant().signum() == 0
+                                ? "Dette initiale annulée avec succès"
+                                : "Dette initiale corrigée avec succès")
                         .code(200)
                         .timestamp(LocalDateTime.now())
                         .build()

@@ -1,6 +1,7 @@
 package com.fishcam.application.comptecourant;
 
 import com.fishcam.adapter.web.dto.request.DetteInitialeRequest;
+import com.fishcam.adapter.web.dto.request.CorrectionDetteInitialeRequest;
 import com.fishcam.adapter.web.mapper.CompteCourantMapper;
 import com.fishcam.adapter.web.mapper.TransactionCCMapper;
 import com.fishcam.application.notification.NotificationService;
@@ -27,11 +28,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -89,5 +93,58 @@ class CompteCourantServiceTest {
         assertThat(transaction.getSoldePrecedent()).isEqualByComparingTo("-5000");
         assertThat(transaction.getSoldeApres()).isEqualByComparingTo("-80000");
         assertThat(compte.getSolde()).isEqualByComparingTo("-80000");
+    }
+
+    @Test
+    void correctionAnnuleLAncienneDetteEtCreeLaNouvelleSansEffacerLaTrace() {
+        Poissonnerie ville = new Poissonnerie();
+        ville.setId(1L);
+
+        Client client = new Client();
+        client.setActive(true);
+        client.setPoissonnerie(ville);
+
+        CompteCourant compte = new CompteCourant();
+        compte.setId(10L);
+        compte.setClient(client);
+        compte.setSolde(new BigDecimal("-90000"));
+        compte.setStatut(StatutCompteCourant.ACTIF);
+
+        TransactionCompteCourant origine = new TransactionCompteCourant();
+        origine.setId(21L);
+        origine.setCompteCourant(compte);
+        origine.setType(TypeTransactionCC.DETTE_INITIALE);
+        origine.setMontant(new BigDecimal("75000"));
+        origine.setDateDetteOrigine(LocalDate.of(2026, 8, 12));
+        origine.setTransactionDate(LocalDateTime.of(2026, 9, 6, 12, 0));
+
+        User user = new User();
+        user.setId(7L);
+
+        CorrectionDetteInitialeRequest request = new CorrectionDetteInitialeRequest();
+        request.setNouveauMontant(new BigDecimal("60000"));
+        request.setNouvelleDateDetteOrigine(LocalDate.of(2026, 8, 13));
+        request.setMotif("Montant mal recopié");
+
+        when(transactionCompteCourantRepository.findByIdWithLock(21L)).thenReturn(Optional.of(origine));
+        when(transactionCompteCourantRepository.existsByTransactionOrigineAndType(
+                origine, TypeTransactionCC.ANNULATION_DETTE_INITIALE)).thenReturn(false);
+        when(compteCourantRepository.findByIdWithLock(10L)).thenReturn(Optional.of(compte));
+        when(userRepository.findById(7L)).thenReturn(Optional.of(user));
+        when(transactionCompteCourantRepository.save(any(TransactionCompteCourant.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        service.corrigerDetteInitiale(21L, request, 7L);
+
+        ArgumentCaptor<TransactionCompteCourant> captor = ArgumentCaptor.forClass(TransactionCompteCourant.class);
+        verify(transactionCompteCourantRepository, times(2)).save(captor.capture());
+        List<TransactionCompteCourant> mouvements = captor.getAllValues();
+
+        assertThat(mouvements.get(0).getType()).isEqualTo(TypeTransactionCC.ANNULATION_DETTE_INITIALE);
+        assertThat(mouvements.get(0).getTransactionOrigine()).isSameAs(origine);
+        assertThat(mouvements.get(1).getType()).isEqualTo(TypeTransactionCC.DETTE_INITIALE);
+        assertThat(mouvements.get(1).getMontant()).isEqualByComparingTo("60000");
+        assertThat(mouvements.get(1).getDateDetteOrigine()).isEqualTo(LocalDate.of(2026, 8, 13));
+        assertThat(compte.getSolde()).isEqualByComparingTo("-75000");
     }
 }

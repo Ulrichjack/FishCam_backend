@@ -2,6 +2,7 @@ package com.fishcam.application.comptecourant;
 
 import com.fishcam.adapter.web.dto.request.EmpruntRequest;
 import com.fishcam.adapter.web.dto.request.DetteInitialeRequest;
+import com.fishcam.adapter.web.dto.request.CorrectionDetteInitialeRequest;
 import com.fishcam.adapter.web.dto.request.ModifierLimiteCreditRequest;
 import com.fishcam.adapter.web.dto.request.RemboursementCCRequest;
 import com.fishcam.adapter.web.dto.response.CompteCourantDetailResponse;
@@ -34,6 +35,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -189,6 +192,73 @@ public class CompteCourantService {
         return compteCourantMapper.toResponse(compte);
     }
 
+    /**
+     * Corrige une dette du cahier sans réécrire l'historique : un mouvement positif annule
+     * l'ancienne valeur, puis un nouveau mouvement DETTE_INITIALE porte la valeur corrigée.
+     */
+    @LogAudit(action = "CORRECTION_DETTE_INITIALE", entityName = "CompteCourant")
+    @Transactional
+    public CompteCourantResponse corrigerDetteInitiale(
+            Long transactionId, CorrectionDetteInitialeRequest request, Long userId) {
+        TransactionCompteCourant origine = transactionCompteCourantRepository.findByIdWithLock(transactionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Dette initiale non trouvée"));
+
+        if (origine.getType() != TypeTransactionCC.DETTE_INITIALE) {
+            throw new BusinessException("Seule une dette initiale provenant du cahier peut être corrigée.");
+        }
+        if (transactionCompteCourantRepository.existsByTransactionOrigineAndType(
+                origine, TypeTransactionCC.ANNULATION_DETTE_INITIALE)) {
+            throw new BusinessException("Cette dette initiale a déjà été corrigée ou annulée.");
+        }
+
+        CompteCourant compte = compteCourantRepository.findByIdWithLock(origine.getCompteCourant().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Compte courant non trouvé"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
+
+        BigDecimal soldeAvant = compte.getSolde();
+        BigDecimal soldeApresAnnulation = soldeAvant.add(origine.getMontant());
+        LocalDate dateOrigine = origine.getDateDetteOrigine() != null
+                ? origine.getDateDetteOrigine()
+                : origine.getTransactionDate().toLocalDate();
+
+        TransactionCompteCourant annulation = new TransactionCompteCourant();
+        annulation.setCompteCourant(compte);
+        annulation.setType(TypeTransactionCC.ANNULATION_DETTE_INITIALE);
+        annulation.setMontant(origine.getMontant());
+        annulation.setSoldePrecedent(soldeAvant);
+        annulation.setSoldeApres(soldeApresAnnulation);
+        annulation.setDescription("Annulation de la dette initiale #" + origine.getId());
+        annulation.setNotes(request.getMotif().trim());
+        annulation.setDateDetteOrigine(dateOrigine);
+        annulation.setTransactionOrigine(origine);
+        annulation.setPoissonnerie(compte.getPoissonnerie());
+        annulation.setEffectuePar(user);
+        transactionCompteCourantRepository.save(annulation);
+
+        BigDecimal soldeFinal = soldeApresAnnulation;
+        if (request.getNouveauMontant().signum() > 0) {
+            soldeFinal = soldeApresAnnulation.subtract(request.getNouveauMontant());
+            TransactionCompteCourant correction = new TransactionCompteCourant();
+            correction.setCompteCourant(compte);
+            correction.setType(TypeTransactionCC.DETTE_INITIALE);
+            correction.setMontant(request.getNouveauMontant());
+            correction.setSoldePrecedent(soldeApresAnnulation);
+            correction.setSoldeApres(soldeFinal);
+            correction.setDescription("Correction de la dette initiale #" + origine.getId());
+            correction.setNotes(request.getMotif().trim());
+            correction.setDateDetteOrigine(request.getNouvelleDateDetteOrigine() != null
+                    ? request.getNouvelleDateDetteOrigine() : dateOrigine);
+            correction.setPoissonnerie(compte.getPoissonnerie());
+            correction.setEffectuePar(user);
+            transactionCompteCourantRepository.save(correction);
+        }
+
+        compte.setSolde(soldeFinal);
+        compteCourantRepository.save(compte);
+        return compteCourantMapper.toResponse(compte);
+    }
+
     @LogAudit(action = "REMBOURSEMENT", entityName = "CompteCourant")
     @Transactional
     public CompteCourantResponse enregistrerRemboursement(RemboursementCCRequest request, Long userId) {
@@ -328,10 +398,20 @@ public class CompteCourantService {
         List<TransactionCompteCourant> transactions =
                 transactionCompteCourantRepository.findByCompteCourantOrderByTransactionDateDesc(compte);
 
+        Set<Long> dettesInitialesAnnulees = transactions.stream()
+                .filter(TransactionCompteCourant::estAnnulationDetteInitiale)
+                .map(TransactionCompteCourant::getTransactionOrigine)
+                .filter(java.util.Objects::nonNull)
+                .map(TransactionCompteCourant::getId)
+                .collect(Collectors.toSet());
+
         CompteCourantDetailResponse detail = compteCourantMapper.toDetailResponse(compte);
-        detail.setTransactions(transactions.stream()
-                .map(transactionCCMapper::toResponse)
-                .toList());
+        detail.setTransactions(transactions.stream().map(transaction -> {
+            var response = transactionCCMapper.toResponse(transaction);
+            response.setAnnulee(transaction.estDetteInitiale()
+                    && dettesInitialesAnnulees.contains(transaction.getId()));
+            return response;
+        }).toList());
         detail.setNombreTransactions(transactions.size());
 
         BigDecimal totalEmprunts = transactions.stream()
@@ -347,7 +427,11 @@ public class CompteCourantService {
         BigDecimal totalDettesInitiales = transactions.stream()
                 .filter(t -> t.getType() == TypeTransactionCC.DETTE_INITIALE)
                 .map(TransactionCompteCourant::getMontant)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .subtract(transactions.stream()
+                        .filter(TransactionCompteCourant::estAnnulationDetteInitiale)
+                        .map(TransactionCompteCourant::getMontant)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add));
 
         detail.setTotalEmprunts(totalEmprunts);
         detail.setTotalDettesInitiales(totalDettesInitiales);

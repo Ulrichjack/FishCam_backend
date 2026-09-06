@@ -55,9 +55,32 @@ Cette opération :
 - peut dépasser la limite de crédit pendant la reprise, mais les nouveaux emprunts restent
   ensuite soumis à cette limite.
 
+Une dette initiale mal recopiée n'est jamais modifiée ni supprimée silencieusement. La
+correction crée un mouvement `ANNULATION_DETTE_INITIALE`, puis une nouvelle dette avec la
+bonne valeur. Mettre le nouveau montant à zéro réalise une annulation complète. Le motif,
+l'utilisateur et les deux lignes restent visibles dans l'historique.
+
 La création de la fiche et du compte client précède la reprise de sa dette. Une dette déjà
 reprise dans le compte client est incluse dans le total des créances du relevé mensuel ; elle
 ne doit pas être ajoutée une seconde fois comme nouvel emprunt.
+
+## Contrôle automatique des créances
+
+Pour chaque relevé de fin de mois, FishCam reconstitue le total encore dû depuis les comptes
+clients à la date du relevé. Les dettes initiales et leurs annulations utilisent la date du
+cahier lorsqu'elle est renseignée ; les emprunts et remboursements ordinaires utilisent leur
+date réelle de saisie.
+
+L'écran et le PDF comparent :
+
+- **FishCam** : somme automatique des soldes débiteurs par client ;
+- **Cahier** : montant total déclaré par le patron dans le relevé ;
+- **Écart** : cahier moins FishCam.
+
+Le montant du cahier reste la valeur utilisée dans le résultat mensuel. Le total automatique
+est un contrôle : tant que tout le cahier n'a pas été repris, il peut être inférieur. Lorsque
+la reprise est terminée, l'écart attendu est zéro ; sinon il faut rechercher un client, une
+dette, un remboursement ou une correction manquante.
 
 ## Charges mensuelles communiquées
 

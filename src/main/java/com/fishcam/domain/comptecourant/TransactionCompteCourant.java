@@ -83,6 +83,11 @@ public class TransactionCompteCourant {
      */
     private LocalDate dateDetteOrigine;
 
+    /** Dette initiale annulée par ce mouvement, uniquement pour une correction auditée. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "transaction_origine_id")
+    private TransactionCompteCourant transactionOrigine;
+
     @Column(length = 1000)
     private String notes;
 
@@ -96,6 +101,10 @@ public class TransactionCompteCourant {
 
     public boolean estDetteInitiale() {
         return type == TypeTransactionCC.DETTE_INITIALE;
+    }
+
+    public boolean estAnnulationDetteInitiale() {
+        return type == TypeTransactionCC.ANNULATION_DETTE_INITIALE;
     }
 
     public BigDecimal getVariationSolde() {

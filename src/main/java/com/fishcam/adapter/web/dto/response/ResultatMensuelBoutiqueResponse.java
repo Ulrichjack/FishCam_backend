@@ -29,6 +29,10 @@ public class ResultatMensuelBoutiqueResponse {
     private LocalDate dateSituationFinale;
     private BigDecimal stockFinal;
     private BigDecimal creancesFinales;
+    /** Total reconstitué depuis les comptes clients à la date de clôture. */
+    private BigDecimal creancesClientsCalculees;
+    /** Créances déclarées par le patron moins créances calculées par FishCam. */
+    private BigDecimal ecartCreancesClients;
     private BigDecimal variationStock;
     private BigDecimal variationCreances;
     /** Résultat corrigé du seul stock : disponible même quand les créances sont inconnues. */
