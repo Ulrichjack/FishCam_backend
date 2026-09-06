@@ -38,6 +38,27 @@ de vente. La photo ou la feuille détaillée est conservée comme justificatif.
 Le même relevé contient le total des sommes encore dues par les clients de la boutique.
 Le détail client reste géré par les comptes courants lorsque cette fonction est utilisée.
 
+## Reprise des anciennes dettes
+
+L'opération **« Dette initiale / reprise du cahier »** est disponible lors de la régularisation
+du compte d'un client. Elle permet de reprendre progressivement le cahier sans transformer
+une ancienne dette saisie aujourd'hui en `EMPRUNT` du jour, ce qui fausserait la clôture et
+les ventes à crédit de la période courante.
+
+Cette opération :
+
+- ajuste le solde du client et conserve la date d'origine lorsqu'elle est connue ;
+- utilise le type distinct `DETTE_INITIALE` ;
+- n'entre pas dans `montantDettesJour` ni dans la clôture du jour ;
+- reste visible et auditée dans l'historique du compte ;
+- permet ensuite les remboursements ordinaires sur ce solde ;
+- peut dépasser la limite de crédit pendant la reprise, mais les nouveaux emprunts restent
+  ensuite soumis à cette limite.
+
+La création de la fiche et du compte client précède la reprise de sa dette. Une dette déjà
+reprise dans le compte client est incluse dans le total des créances du relevé mensuel ; elle
+ne doit pas être ajoutée une seconde fois comme nouvel emprunt.
+
 ## Charges mensuelles communiquées
 
 | Catégorie | Bare | Ville | Lele |

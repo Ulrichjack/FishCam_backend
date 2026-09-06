@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -21,5 +22,6 @@ public class TransactionCCResponse {
     private String description;
     private UserResponse effectuePar;
     private LocalDateTime transactionDate;
+    private LocalDate dateDetteOrigine;
     private String notes;
 }

@@ -4,6 +4,7 @@ public enum TypeTransactionCC {
 
 
     EMPRUNT,
+    DETTE_INITIALE,
     REMBOURSEMENT
 
 

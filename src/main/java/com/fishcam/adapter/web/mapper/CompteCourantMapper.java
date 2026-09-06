@@ -16,6 +16,7 @@ public interface CompteCourantMapper {
     @Mapping(target = "transactions", ignore = true)
     @Mapping(target = "nombreTransactions", ignore = true)
     @Mapping(target = "totalEmprunts", ignore = true)
+    @Mapping(target = "totalDettesInitiales", ignore = true)
     @Mapping(target = "totalRemboursements", ignore = true)
     CompteCourantDetailResponse toDetailResponse(CompteCourant entity);
 }

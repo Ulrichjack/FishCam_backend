@@ -1,6 +1,7 @@
 package com.fishcam.application.comptecourant;
 
 import com.fishcam.adapter.web.dto.request.EmpruntRequest;
+import com.fishcam.adapter.web.dto.request.DetteInitialeRequest;
 import com.fishcam.adapter.web.dto.request.ModifierLimiteCreditRequest;
 import com.fishcam.adapter.web.dto.request.RemboursementCCRequest;
 import com.fishcam.adapter.web.dto.response.CompteCourantDetailResponse;
@@ -140,6 +141,50 @@ public class CompteCourantService {
                 notificationService.createAlerteCompteCourant(compte, "AUGMENTATION_SIGNIFICATIVE");
             }
         }
+
+        return compteCourantMapper.toResponse(compte);
+    }
+
+    /**
+     * Reprend une dette déjà présente dans le cahier avant son enregistrement dans FishCam.
+     * Ce mouvement modifie le solde client mais son type distinct l'exclut des dettes/ventes
+     * à crédit du jour utilisées par les clôtures.
+     */
+    @LogAudit(action = "DETTE_INITIALE", entityName = "CompteCourant")
+    @Transactional
+    public CompteCourantResponse enregistrerDetteInitiale(DetteInitialeRequest request, Long userId) {
+        CompteCourant compte = compteCourantRepository.findByIdWithLock(request.getCompteCourantId())
+                .orElseThrow(() -> new ResourceNotFoundException("Compte courant non trouvé"));
+
+        if (!compte.getClient().getActive()) {
+            throw new BusinessException("Impossible de reprendre une dette : le client est inactif.");
+        }
+
+        if (compte.getStatut() != StatutCompteCourant.ACTIF) {
+            throw new BusinessException("Ce compte n'est pas actif");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
+
+        BigDecimal soldePrecedent = compte.getSolde();
+        BigDecimal nouveauSolde = soldePrecedent.subtract(request.getMontant());
+
+        TransactionCompteCourant transaction = new TransactionCompteCourant();
+        transaction.setCompteCourant(compte);
+        transaction.setType(TypeTransactionCC.DETTE_INITIALE);
+        transaction.setMontant(request.getMontant());
+        transaction.setSoldePrecedent(soldePrecedent);
+        transaction.setSoldeApres(nouveauSolde);
+        transaction.setDescription("Reprise du cahier des dettes");
+        transaction.setNotes(request.getNotes());
+        transaction.setDateDetteOrigine(request.getDateDetteOrigine());
+        transaction.setPoissonnerie(compte.getPoissonnerie());
+        transaction.setEffectuePar(user);
+
+        transactionCompteCourantRepository.save(transaction);
+        compte.setSolde(nouveauSolde);
+        compteCourantRepository.save(compte);
 
         return compteCourantMapper.toResponse(compte);
     }
@@ -299,7 +344,13 @@ public class CompteCourantService {
                 .map(TransactionCompteCourant::getMontant)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        BigDecimal totalDettesInitiales = transactions.stream()
+                .filter(t -> t.getType() == TypeTransactionCC.DETTE_INITIALE)
+                .map(TransactionCompteCourant::getMontant)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         detail.setTotalEmprunts(totalEmprunts);
+        detail.setTotalDettesInitiales(totalDettesInitiales);
         detail.setTotalRemboursements(totalRemboursements);
 
         return detail;
