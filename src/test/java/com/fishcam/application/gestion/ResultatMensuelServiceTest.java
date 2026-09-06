@@ -19,11 +19,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
@@ -69,6 +71,12 @@ class ResultatMensuelServiceTest {
         assertThat(resultat.getResultatCorrigeStock()).isEqualByComparingTo("380000");
         assertThat(resultat.getResultatValide()).isNull();
         assertThat(resultat.getStatut()).isEqualTo(ResultatMensuelService.STATUT_CORRIGE_STOCK);
+    }
+
+    @Test
+    void refuseUnBilanAnnuelDansLeFutur() {
+        assertThatThrownBy(() -> service.calculerAnnuel(Year.now().getValue() + 1))
+                .hasMessageContaining("année future");
     }
 
     @Test

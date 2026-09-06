@@ -2,6 +2,7 @@ package com.fishcam.application.gestion;
 
 import com.fishcam.adapter.web.dto.response.ResultatMensuelBoutiqueResponse;
 import com.fishcam.adapter.web.dto.response.ResultatMensuelGlobalResponse;
+import com.fishcam.adapter.web.dto.response.ResultatAnnuelResponse;
 import com.fishcam.domain.cloture.ClotureJournaliere;
 import com.fishcam.domain.cloture.ClotureJournaliereRepository;
 import com.fishcam.domain.gestion.CategorieCharge;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -115,6 +117,47 @@ public class ResultatMensuelService {
                 informationsManquantes,
                 alertes
         );
+    }
+
+    public ResultatAnnuelResponse calculerAnnuel(Integer annee) {
+        try {
+            Year.of(annee);
+        } catch (RuntimeException exception) {
+            throw new BusinessException("Année invalide.");
+        }
+        if (annee > Year.now().getValue()) {
+            throw new BusinessException("Impossible de calculer une année future.");
+        }
+
+        int dernierMois = annee.equals(Year.now().getValue())
+                ? YearMonth.now().getMonthValue() : 12;
+        List<ResultatMensuelGlobalResponse> mois = java.util.stream.IntStream
+                .rangeClosed(1, dernierMois)
+                .mapToObj(numero -> calculerGlobal(numero, annee))
+                .toList();
+
+        BigDecimal totalAchats = sommeGlobale(mois, ResultatMensuelGlobalResponse::getTotalAchats);
+        BigDecimal totalEncaissements = sommeGlobale(mois, ResultatMensuelGlobalResponse::getTotalEncaissements);
+        BigDecimal totalDepenses = sommeGlobale(mois, resultat -> resultat.getTotalDepensesJournalieres()
+                .add(resultat.getTotalChargesBoutiques()).add(resultat.getChargesGenerales()));
+        BigDecimal resultatProvisoire = sommeGlobale(mois, ResultatMensuelGlobalResponse::getResultatProvisoire);
+
+        boolean stocksConnus = !mois.isEmpty() && mois.stream()
+                .allMatch(resultat -> resultat.getResultatCorrigeStock() != null);
+        boolean resultatsValides = !mois.isEmpty() && mois.stream()
+                .allMatch(resultat -> resultat.getResultatValide() != null);
+        BigDecimal corrigeStock = stocksConnus
+                ? sommeGlobale(mois, ResultatMensuelGlobalResponse::getResultatCorrigeStock) : null;
+        BigDecimal valide = resultatsValides
+                ? sommeGlobale(mois, ResultatMensuelGlobalResponse::getResultatValide) : null;
+        String statut = mois.stream().map(ResultatMensuelGlobalResponse::getStatut)
+                .min(java.util.Comparator.comparingInt(STATUTS_DU_PLUS_FAIBLE_AU_PLUS_SUR::indexOf))
+                .orElse(STATUT_PROVISOIRE);
+
+        return new ResultatAnnuelResponse(annee, mois, totalAchats, totalEncaissements,
+                totalDepenses, totalDepenses.subtract(
+                        sommeGlobale(mois, ResultatMensuelGlobalResponse::getTotalDepensesJournalieres)),
+                resultatProvisoire, corrigeStock, valide, statut);
     }
 
     private ResultatMensuelBoutiqueResponse calculerBoutique(Poissonnerie poissonnerie, YearMonth periode) {
@@ -282,5 +325,11 @@ public class ResultatMensuelService {
             List<ResultatMensuelBoutiqueResponse> boutiques,
             java.util.function.Function<ResultatMensuelBoutiqueResponse, BigDecimal> extracteur) {
         return boutiques.stream().map(extracteur).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private BigDecimal sommeGlobale(
+            List<ResultatMensuelGlobalResponse> resultats,
+            java.util.function.Function<ResultatMensuelGlobalResponse, BigDecimal> extracteur) {
+        return resultats.stream().map(extracteur).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

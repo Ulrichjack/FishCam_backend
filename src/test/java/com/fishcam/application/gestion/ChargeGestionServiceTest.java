@@ -110,6 +110,50 @@ class ChargeGestionServiceTest {
                 .isInstanceOf(BusinessException.class);
     }
 
+    @Test
+    void modifieUneChargeSansLaConfondreAvecElleMeme() {
+        ChargeGestion charge = chargeExistante(true, LocalDate.of(2026, 8, 1), null);
+        when(chargeRepository.findById(1L)).thenReturn(Optional.of(charge));
+        when(chargeRepository.findByCategorieAndPerimetre(CategorieCharge.LOYER, 3L))
+                .thenReturn(List.of(charge));
+        CreateChargeGestionRequest correction = demande(true, LocalDate.of(2026, 8, 1), null);
+        correction.setMontant(new BigDecimal("17500"));
+
+        var response = service.modifier(1L, correction, 7L);
+
+        assertThat(response.getMontant()).isEqualByComparingTo("17500");
+        verify(chargeRepository).save(charge);
+    }
+
+    @Test
+    void changementFuturCreeUneNouvelleVersionSansReecrireLePasse() {
+        ChargeGestion charge = chargeExistante(true, LocalDate.of(2026, 8, 1), null);
+        when(chargeRepository.findById(1L)).thenReturn(Optional.of(charge));
+        when(chargeRepository.findByCategorieAndPerimetre(CategorieCharge.LOYER, 3L))
+                .thenReturn(List.of(charge));
+        CreateChargeGestionRequest octobre = demande(true, LocalDate.of(2026, 10, 1), null);
+        octobre.setMontant(new BigDecimal("20000"));
+
+        var response = service.modifier(1L, octobre, 7L);
+
+        assertThat(charge.getDateFin()).isEqualTo(LocalDate.of(2026, 9, 30));
+        assertThat(response.getDateDebut()).isEqualTo(LocalDate.of(2026, 10, 1));
+        assertThat(response.getMontant()).isEqualByComparingTo("20000");
+    }
+
+    @Test
+    void supprimeLogiquementUneChargeEtConserveLaTrace() {
+        ChargeGestion charge = chargeExistante(true, LocalDate.of(2026, 8, 1), null);
+        when(chargeRepository.findById(1L)).thenReturn(Optional.of(charge));
+
+        var response = service.supprimer(1L, 7L);
+
+        assertThat(response.getSupprimee()).isTrue();
+        assertThat(charge.getActive()).isFalse();
+        assertThat(charge.getSupprimeePar().getId()).isEqualTo(7L);
+        assertThat(charge.getSupprimeeLe()).isNotNull();
+    }
+
     private CreateChargeGestionRequest demande(Boolean recurrente, LocalDate debut, LocalDate fin) {
         CreateChargeGestionRequest demande = new CreateChargeGestionRequest();
         demande.setPoissonnerieId(3L);

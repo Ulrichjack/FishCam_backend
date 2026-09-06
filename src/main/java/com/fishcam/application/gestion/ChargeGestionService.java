@@ -49,7 +49,7 @@ public class ChargeGestionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
 
         String libelle = request.getLibelle().trim();
-        refuserDoublon(request, libelle);
+        refuserDoublon(request, libelle, null);
 
         ChargeGestion charge = new ChargeGestion();
         charge.setPoissonnerie(poissonnerie);
@@ -60,6 +60,7 @@ public class ChargeGestionService {
         charge.setDateDebut(request.getDateDebut());
         charge.setDateFin(request.getDateFin());
         charge.setActive(true);
+        charge.setSupprimee(false);
         charge.setCreatedBy(user);
         return toResponse(chargeRepository.save(charge));
     }
@@ -87,8 +88,7 @@ public class ChargeGestionService {
     @Transactional
     @LogAudit(action = "UPDATE", entityName = "ChargeGestion")
     public ChargeGestionResponse terminer(Long id, LocalDate dateFin) {
-        ChargeGestion charge = chargeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Charge non trouvée"));
+        ChargeGestion charge = trouverNonSupprimee(id);
         if (dateFin.isBefore(charge.getDateDebut())) {
             throw new BusinessException("La date de fin ne peut pas précéder la date de début.");
         }
@@ -97,17 +97,84 @@ public class ChargeGestionService {
         return toResponse(chargeRepository.save(charge));
     }
 
+    @Transactional
+    @LogAudit(action = "UPDATE", entityName = "ChargeGestion")
+    public ChargeGestionResponse modifier(Long id, CreateChargeGestionRequest request, Long userId) {
+        ChargeGestion charge = trouverNonSupprimee(id);
+        if (request.getDateFin() != null && request.getDateFin().isBefore(request.getDateDebut())) {
+            throw new BusinessException("La date de fin d'une charge ne peut pas précéder sa date de début.");
+        }
+
+        Poissonnerie poissonnerie = null;
+        if (request.getPoissonnerieId() != null) {
+            poissonnerie = poissonnerieRepository.findById(request.getPoissonnerieId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Poissonnerie non trouvée"));
+        }
+
+        String libelle = request.getLibelle().trim();
+        refuserDoublon(request, libelle, id);
+
+        // Une hausse future ne reecrit jamais les anciens bilans : elle termine
+        // l'ancienne version la veille et cree la nouvelle a partir du mois choisi.
+        if (Boolean.TRUE.equals(charge.getRecurrente())
+                && request.getDateDebut().isAfter(charge.getDateDebut())) {
+            charge.setDateFin(request.getDateDebut().minusDays(1));
+            charge.setActive(false);
+            chargeRepository.save(charge);
+
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
+            ChargeGestion nouvelle = new ChargeGestion();
+            nouvelle.setPoissonnerie(poissonnerie);
+            nouvelle.setCategorie(request.getCategorie());
+            nouvelle.setLibelle(libelle);
+            nouvelle.setMontant(request.getMontant());
+            nouvelle.setRecurrente(request.getRecurrente());
+            nouvelle.setDateDebut(request.getDateDebut());
+            nouvelle.setDateFin(request.getDateFin());
+            nouvelle.setActive(true);
+            nouvelle.setSupprimee(false);
+            nouvelle.setCreatedBy(user);
+            return toResponse(chargeRepository.save(nouvelle));
+        }
+
+        charge.setPoissonnerie(poissonnerie);
+        charge.setCategorie(request.getCategorie());
+        charge.setLibelle(libelle);
+        charge.setMontant(request.getMontant());
+        charge.setRecurrente(request.getRecurrente());
+        charge.setDateDebut(request.getDateDebut());
+        charge.setDateFin(request.getDateFin());
+        charge.setActive(request.getDateFin() == null || !request.getDateFin().isBefore(LocalDate.now()));
+        return toResponse(chargeRepository.save(charge));
+    }
+
+    @Transactional
+    @LogAudit(action = "DELETE", entityName = "ChargeGestion")
+    public ChargeGestionResponse supprimer(Long id, Long userId) {
+        ChargeGestion charge = trouverNonSupprimee(id);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
+        charge.setSupprimee(true);
+        charge.setActive(false);
+        charge.setSupprimeeLe(java.time.LocalDateTime.now());
+        charge.setSupprimeePar(user);
+        return toResponse(chargeRepository.save(charge));
+    }
+
     /**
      * Une charge saisie deux fois est invisible dans le résultat mais double son montant
      * chaque mois. On refuse donc un même libellé, dans la même catégorie et sur le même
      * périmètre, dès que les périodes d'application se recouvrent.
      */
-    private void refuserDoublon(CreateChargeGestionRequest request, String libelle) {
+    private void refuserDoublon(CreateChargeGestionRequest request, String libelle, Long idIgnore) {
         LocalDate[] nouvelle = periodeEffective(
                 request.getRecurrente(), request.getDateDebut(), request.getDateFin());
 
         chargeRepository.findByCategorieAndPerimetre(request.getCategorie(), request.getPoissonnerieId())
                 .stream()
+                .filter(existante -> !Boolean.TRUE.equals(existante.getSupprimee()))
+                .filter(existante -> idIgnore == null || !existante.getId().equals(idIgnore))
                 .filter(existante -> existante.getLibelle().equalsIgnoreCase(libelle))
                 .filter(existante -> seRecouvrent(nouvelle, periodeEffective(
                         existante.getRecurrente(), existante.getDateDebut(), existante.getDateFin())))
@@ -141,6 +208,7 @@ public class ChargeGestionService {
 
         // Une charge terminée reste volontairement prise en compte dans ses anciens mois.
         return chargeRepository.findAllByOrderByDateDebutAscIdAsc().stream()
+                .filter(charge -> !Boolean.TRUE.equals(charge.getSupprimee()))
                 .filter(charge -> correspondAuPerimetre(charge, poissonnerieId))
                 .filter(charge -> charge.getRecurrente()
                         ? !charge.getDateDebut().isAfter(fin)
@@ -177,7 +245,17 @@ public class ChargeGestionService {
                 charge.getRecurrente(),
                 charge.getDateDebut(),
                 charge.getDateFin(),
-                charge.getActive()
+                charge.getActive(),
+                charge.getSupprimee()
         );
+    }
+
+    private ChargeGestion trouverNonSupprimee(Long id) {
+        ChargeGestion charge = chargeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Charge non trouvée"));
+        if (Boolean.TRUE.equals(charge.getSupprimee())) {
+            throw new ResourceNotFoundException("Charge non trouvée");
+        }
+        return charge;
     }
 }
