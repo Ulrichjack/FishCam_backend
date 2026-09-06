@@ -1,6 +1,7 @@
 package com.fishcam.adapter.web.controller;
 
 import com.fishcam.adapter.web.dto.request.EmpruntRequest;
+import com.fishcam.adapter.web.dto.request.DetteInitialeRequest;
 import com.fishcam.adapter.web.dto.request.ModifierLimiteCreditRequest;
 import com.fishcam.adapter.web.dto.request.RemboursementCCRequest;
 import com.fishcam.adapter.web.dto.request.TransfertEpargneVersCCRequest;
@@ -77,6 +78,30 @@ public class CompteCourantController {
                         .success(true)
                         .data(data)
                         .message("Emprunt enregistré avec succès")
+                        .code(200)
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @PostMapping("/dettes-initiales")
+    @Operation(summary = "Reprendre une ancienne dette depuis le cahier")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'ENREGISTREUR')")
+    public ResponseEntity<ApiResponse<CompteCourantResponse>> enregistrerDetteInitiale(
+            @Valid @RequestBody DetteInitialeRequest request,
+            Authentication authentication) {
+
+        User currentUser = (User) authentication.getPrincipal();
+        log.info("Reprise d'une dette initiale de {} FCFA sur compte {} par user {}",
+                request.getMontant(), request.getCompteCourantId(), currentUser.getId());
+
+        CompteCourantResponse data = compteCourantService.enregistrerDetteInitiale(request, currentUser.getId());
+
+        return ResponseEntity.ok(
+                ApiResponse.<CompteCourantResponse>builder()
+                        .success(true)
+                        .data(data)
+                        .message("Dette initiale enregistrée sans affecter la clôture du jour")
                         .code(200)
                         .timestamp(LocalDateTime.now())
                         .build()

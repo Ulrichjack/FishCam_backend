@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -76,6 +77,12 @@ public class TransactionCompteCourant {
     @CreationTimestamp
     private LocalDateTime transactionDate;
 
+    /**
+     * Date figurant dans le cahier lors de la reprise d'une ancienne dette.
+     * La date de transaction reste la date réelle de saisie pour préserver l'audit.
+     */
+    private LocalDate dateDetteOrigine;
+
     @Column(length = 1000)
     private String notes;
 
@@ -85,6 +92,10 @@ public class TransactionCompteCourant {
 
     public boolean estRemboursement() {
         return type == TypeTransactionCC.REMBOURSEMENT;
+    }
+
+    public boolean estDetteInitiale() {
+        return type == TypeTransactionCC.DETTE_INITIALE;
     }
 
     public BigDecimal getVariationSolde() {

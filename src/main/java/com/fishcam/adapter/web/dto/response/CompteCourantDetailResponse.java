@@ -26,5 +26,6 @@ public class CompteCourantDetailResponse {
     private List<TransactionCCResponse> transactions;
     private Integer nombreTransactions;
     private BigDecimal totalEmprunts;
+    private BigDecimal totalDettesInitiales;
     private BigDecimal totalRemboursements;
 }
