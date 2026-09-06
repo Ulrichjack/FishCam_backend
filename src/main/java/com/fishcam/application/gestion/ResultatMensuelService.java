@@ -3,6 +3,7 @@ package com.fishcam.application.gestion;
 import com.fishcam.adapter.web.dto.response.ResultatMensuelBoutiqueResponse;
 import com.fishcam.adapter.web.dto.response.ResultatMensuelGlobalResponse;
 import com.fishcam.adapter.web.dto.response.ResultatAnnuelResponse;
+import com.fishcam.application.comptecourant.CreanceClientService;
 import com.fishcam.domain.cloture.ClotureJournaliere;
 import com.fishcam.domain.cloture.ClotureJournaliereRepository;
 import com.fishcam.domain.gestion.CategorieCharge;
@@ -47,6 +48,7 @@ public class ResultatMensuelService {
     private final ClotureJournaliereRepository clotureRepository;
     private final ReleveSituationMensuelleRepository releveRepository;
     private final ChargeGestionService chargeService;
+    private final CreanceClientService creanceClientService;
 
     public ResultatMensuelBoutiqueResponse calculerBoutique(Long poissonnerieId, Integer mois, Integer annee) {
         Poissonnerie poissonnerie = poissonnerieRepository.findById(poissonnerieId)
@@ -186,6 +188,18 @@ public class ResultatMensuelService {
         Optional<ReleveSituationMensuelle> finale = releveRepository
                 .findByPoissonnerieAndDateReleve(poissonnerie, fin);
 
+        BigDecimal creancesClientsCalculees = creanceClientService.totalCreancesAu(poissonnerie, fin);
+        BigDecimal ecartCreancesClients = finale
+                .map(ReleveSituationMensuelle::getTotalCreancesClients)
+                .map(declarees -> declarees.subtract(creancesClientsCalculees))
+                .orElse(null);
+        if (ecartCreancesClients != null && ecartCreancesClients.signum() != 0) {
+            alertes.add("Écart de créances clients : le cahier indique "
+                    + finale.get().getTotalCreancesClients().toPlainString()
+                    + " FCFA contre " + creancesClientsCalculees.toPlainString()
+                    + " FCFA dans FishCam.");
+        }
+
         List<String> manquantes = new ArrayList<>();
         if (initial.isEmpty()) {
             manquantes.add("relevé d'ouverture au " + debut.minusDays(1));
@@ -256,6 +270,8 @@ public class ResultatMensuelService {
                 finale.map(ReleveSituationMensuelle::getDateReleve).orElse(null),
                 finale.map(ReleveSituationMensuelle::getValeurStock).orElse(null),
                 finale.map(ReleveSituationMensuelle::getTotalCreancesClients).orElse(null),
+                creancesClientsCalculees,
+                ecartCreancesClients,
                 variationStock,
                 variationCreances,
                 resultatCorrigeStock,

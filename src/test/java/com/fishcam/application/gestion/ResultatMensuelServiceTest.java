@@ -2,6 +2,7 @@ package com.fishcam.application.gestion;
 
 import com.fishcam.adapter.web.dto.response.ResultatMensuelBoutiqueResponse;
 import com.fishcam.adapter.web.dto.response.ResultatMensuelGlobalResponse;
+import com.fishcam.application.comptecourant.CreanceClientService;
 import com.fishcam.domain.cloture.ClotureJournaliere;
 import com.fishcam.domain.cloture.ClotureJournaliereRepository;
 import com.fishcam.domain.gestion.CategorieCharge;
@@ -45,6 +46,8 @@ class ResultatMensuelServiceTest {
     private ReleveSituationMensuelleRepository releveRepository;
     @Mock
     private ChargeGestionService chargeService;
+    @Mock
+    private CreanceClientService creanceClientService;
 
     @InjectMocks
     private ResultatMensuelService service;
@@ -57,6 +60,7 @@ class ResultatMensuelServiceTest {
         lenient().when(poissonnerieRepository.findById(1L)).thenReturn(Optional.of(ville));
         lenient().when(chargeService.totauxParCategorie(any(), any())).thenReturn(Map.of());
         lenient().when(chargeService.totalApplicable(any(), eq(null))).thenReturn(BigDecimal.ZERO);
+        lenient().when(creanceClientService.totalCreancesAu(any(), any())).thenReturn(BigDecimal.ZERO);
     }
 
     @Test
@@ -90,6 +94,20 @@ class ResultatMensuelServiceTest {
         assertThat(resultat.getResultatCorrigeStock()).isEqualByComparingTo("380000");
         assertThat(resultat.getResultatValide()).isEqualByComparingTo("430000");
         assertThat(resultat.getStatut()).isEqualTo(ResultatMensuelService.STATUT_VALIDE);
+    }
+
+    @Test
+    void compareLesCreancesDuCahierAvecLesComptesClients() {
+        donneUnMoisDe(ville, "1000000", "700000");
+        donneUnReleve(ville, OUVERTURE, "200000", "100000", ModeEvaluation.COMPTAGE_PHYSIQUE);
+        donneUnReleve(ville, CLOTURE, "280000", "150000", ModeEvaluation.COMPTAGE_PHYSIQUE);
+        when(creanceClientService.totalCreancesAu(ville, CLOTURE)).thenReturn(new BigDecimal("142000"));
+
+        ResultatMensuelBoutiqueResponse resultat = service.calculerBoutique(1L, 10, 2026);
+
+        assertThat(resultat.getCreancesClientsCalculees()).isEqualByComparingTo("142000");
+        assertThat(resultat.getEcartCreancesClients()).isEqualByComparingTo("8000");
+        assertThat(resultat.getAlertes()).anyMatch(alerte -> alerte.contains("Écart de créances"));
     }
 
     @Test
