@@ -7,6 +7,7 @@ import com.fishcam.application.export.PdfExportService;
 import com.fishcam.adapter.web.dto.response.FactureDetailResponse;
 import com.fishcam.adapter.web.dto.response.EpargneDetailResponse;
 import com.fishcam.application.poissonnerie.PoissonnerieService;
+import com.fishcam.application.gestion.ResultatMensuelService;
 import com.fishcam.application.rapport.RecapitulatifService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,6 +33,7 @@ public class ExportController {
     private final EpargneService epargneService;
     private final RecapitulatifService recapitulatifService;
     private final PoissonnerieService poissonnerieService;
+    private final ResultatMensuelService resultatMensuelService;
 
     @GetMapping("/factures/{id}/pdf")
     @Operation(summary = "Télécharger la facture en PDF")
@@ -110,6 +112,26 @@ public class ExportController {
         headers.setContentDispositionFormData("attachment", filename);
 
         // 5. Return the response
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
+    }
+
+    @GetMapping("/resultat-mensuel/pdf")
+    @Operation(summary = "Télécharger le résultat mensuel de gestion des trois boutiques")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
+    public ResponseEntity<byte[]> exportResultatMensuel(
+            @RequestParam Integer mois,
+            @RequestParam Integer annee) {
+        var resultat = resultatMensuelService.calculerGlobal(mois, annee);
+        byte[] pdfBytes = pdfExportService.exportResultatMensuelGlobalToPdf(resultat);
+        String filename = "Resultat_mensuel_FishCam_" + annee + "-"
+                + String.format("%02d", mois) + ".pdf";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", filename);
+
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(pdfBytes);

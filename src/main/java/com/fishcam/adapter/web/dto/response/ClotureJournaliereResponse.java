@@ -36,6 +36,10 @@ public class ClotureJournaliereResponse {
     private BigDecimal totalDepenses;
     private BigDecimal beneficeNet;
     private LocalDateTime createdAt;
+    private String derniereCorrectionMotif;
+    private Long modifieParId;
+    private String modifieParNom;
+    private LocalDateTime modifieLe;
 
 
 }

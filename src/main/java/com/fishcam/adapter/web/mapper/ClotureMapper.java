@@ -14,6 +14,8 @@ public interface ClotureMapper {
     @Mapping(source = "cloturePar.id", target = "clotureParId")
     @Mapping(source = "poissonnerie.name", target = "poissonnerieNom")
     @Mapping(source = "poissonnerie.id", target = "poissonnerieId")
+    @Mapping(source = "modifiePar.id", target = "modifieParId")
+    @Mapping(target = "modifieParNom", expression = "java(nomComplet(clotureJournaliere.getModifiePar()))")
     ClotureJournaliereResponse toResponse(ClotureJournaliere clotureJournaliere);
 
     //  toEntity ignores fields set manually in service
@@ -30,8 +32,14 @@ public interface ClotureMapper {
     @Mapping(target = "beneficeNet", ignore = true)
     @Mapping(target = "ecartVente", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "derniereCorrectionMotif", ignore = true)
+    @Mapping(target = "modifiePar", ignore = true)
+    @Mapping(target = "modifieLe", ignore = true)
     ClotureJournaliere toEntity(ClotureJournaliereRequest request);
 
+    default String nomComplet(com.fishcam.domain.user.User user) {
+        return user == null ? null : (user.getFirstName() + " " + user.getLastName()).trim();
+    }
 
 
 }

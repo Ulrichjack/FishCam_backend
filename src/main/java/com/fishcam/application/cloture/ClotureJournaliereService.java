@@ -1,6 +1,7 @@
 package com.fishcam.application.cloture;
 
 import com.fishcam.adapter.web.dto.request.ClotureJournaliereRequest;
+import com.fishcam.adapter.web.dto.request.UpdateClotureJournaliereRequest;
 import com.fishcam.adapter.web.dto.response.ClotureJournaliereResponse;
 import com.fishcam.adapter.web.dto.response.PreparationClotureResponse;
 import com.fishcam.adapter.web.mapper.ClotureMapper;
@@ -189,6 +190,58 @@ public class ClotureJournaliereService {
         return clotureMapper.toResponse(saved);
     }
 
+    @LogAudit(action = "CORRECTION", entityName = "ClotureJournaliere")
+    @Transactional
+    public ClotureJournaliereResponse corriger(
+            Long clotureId,
+            UpdateClotureJournaliereRequest request,
+            Long userId) {
+        ClotureJournaliere cloture = clotureJournaliereRepository.findById(clotureId)
+                .orElseThrow(() -> new ResourceNotFoundException("Clôture non trouvée"));
+        User utilisateur = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
+
+        PreparationClotureResponse preparation = preparerCloture(
+                cloture.getPoissonnerie().getId(), cloture.getDate());
+
+        BigDecimal transport = valeurOuZero(request.getTransport());
+        BigDecimal ration = valeurOuZero(request.getRation());
+        BigDecimal autresFrais = valeurOuZero(request.getAutresFrais());
+        BigDecimal totalDepenses = transport.add(ration).add(autresFrais);
+        BigDecimal venteRealisee = request.getArgentCaisse()
+                .subtract(request.getFondDeCaisse())
+                .add(totalDepenses);
+        BigDecimal ventePrevisibleAjustee = preparation.getTotalVentePrevisible()
+                .subtract(preparation.getMontantDettesJour())
+                .add(preparation.getMontantRembourseJour());
+        BigDecimal ecartVente = venteRealisee.subtract(ventePrevisibleAjustee);
+        BigDecimal beneficeNet = preparation.getTotalVentePrevisible()
+                .subtract(preparation.getTotalAchat())
+                .subtract(totalDepenses)
+                .add(ecartVente);
+
+        cloture.setArgentCaisse(request.getArgentCaisse());
+        cloture.setFondDeCaisse(request.getFondDeCaisse());
+        cloture.setTransport(transport);
+        cloture.setRation(ration);
+        cloture.setAutresFrais(autresFrais);
+        cloture.setDescriptionAutres(request.getDescriptionAutres());
+        cloture.setTotalAchat(preparation.getTotalAchat());
+        cloture.setTotalVentePrevisible(preparation.getTotalVentePrevisible());
+        cloture.setMontantDettesJour(preparation.getMontantDettesJour());
+        cloture.setMontantRembourseJour(preparation.getMontantRembourseJour());
+        cloture.setNombreDettesJour(preparation.getNombreDettesJour());
+        cloture.setVenteRealisee(venteRealisee);
+        cloture.setTotalDepenses(totalDepenses);
+        cloture.setEcartVente(ecartVente);
+        cloture.setBeneficeNet(beneficeNet);
+        cloture.setDerniereCorrectionMotif(request.getMotifCorrection().trim());
+        cloture.setModifiePar(utilisateur);
+        cloture.setModifieLe(LocalDateTime.now());
+
+        return clotureMapper.toResponse(clotureJournaliereRepository.save(cloture));
+    }
+
     public ClotureJournaliereResponse getCloture(Long poissonnerieId, LocalDate date){
         Poissonnerie poissonnerie = poissonnerieRepository.findById(poissonnerieId)
                 .orElseThrow(() -> new ResourceNotFoundException("Poissonnerie non trouvée avec l'id : " + poissonnerieId));
@@ -203,5 +256,9 @@ public class ClotureJournaliereService {
 
         Page<ClotureJournaliere> page = clotureJournaliereRepository.findByPoissonnerieOrderByDateDesc(poissonnerie, pageable);
         return page.map(clotureMapper::toResponse);
+    }
+
+    private BigDecimal valeurOuZero(BigDecimal valeur) {
+        return valeur != null ? valeur : BigDecimal.ZERO;
     }
 }

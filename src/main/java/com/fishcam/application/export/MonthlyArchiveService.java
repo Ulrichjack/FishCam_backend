@@ -1,6 +1,8 @@
 package com.fishcam.application.export;
 
 import com.fishcam.adapter.web.dto.response.RecapitulatifResponse;
+import com.fishcam.adapter.web.dto.response.ResultatMensuelGlobalResponse;
+import com.fishcam.application.gestion.ResultatMensuelService;
 import com.fishcam.application.rapport.RecapitulatifService;
 import com.fishcam.domain.backup.BackupRecord;
 import com.fishcam.domain.backup.BackupRecordRepository;
@@ -41,6 +43,7 @@ public class MonthlyArchiveService {
     private final CloudflareR2StorageService cloudflareR2StorageService;
     private final RecapitulatifService recapitulatifService;
     private final PdfExportService pdfExportService;
+    private final ResultatMensuelService resultatMensuelService;
     private final PoissonnerieRepository poissonnerieRepository;
     private final BackupRecordRepository backupRecordRepository;
 
@@ -83,6 +86,12 @@ public class MonthlyArchiveService {
                         + "_" + mois + ".pdf";
                 addBytes(zip, nomFichier, pdf);
             }
+
+            ResultatMensuelGlobalResponse resultatGlobal = resultatMensuelService
+                    .calculerGlobal(mois.getMonthValue(), mois.getYear());
+            byte[] resultatPdf = pdfExportService
+                    .exportResultatMensuelGlobalToPdf(resultatGlobal);
+            addBytes(zip, "resultat/Resultat_mensuel_FishCam_" + mois + ".pdf", resultatPdf);
         }
 
         cloudflareR2StorageService.uploadBackup(zipFile);

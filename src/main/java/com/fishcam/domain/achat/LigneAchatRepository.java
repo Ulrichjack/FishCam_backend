@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +48,30 @@ public interface LigneAchatRepository extends JpaRepository<LigneAchat, Long> {
             "GROUP BY p.id, p.nom " +
             "ORDER BY SUM((l.prixVenteKilo * l.poidsKg) - l.montantCarton) DESC")
     List<TopProduitRentableResponse> findTopProduitsRentablesByPoissonnerie(@Param("poissonnerieId") Long poissonnerieId, Pageable pageable);
+
+    @Query("SELECT new com.fishcam.adapter.web.dto.response.TopProduitResponse(p.nom, SUM(l.quantiteCartons), SUM(l.montantCarton)) " +
+            "FROM LigneAchat l JOIN l.produit p " +
+            "WHERE l.achatJournalier.poissonnerie.id = :poissonnerieId " +
+            "AND l.achatJournalier.dateAchat BETWEEN :debut AND :fin " +
+            "GROUP BY p.id, p.nom ORDER BY SUM(l.quantiteCartons) DESC")
+    List<TopProduitResponse> findTopProduitsByPoissonnerieAndPeriode(
+            @Param("poissonnerieId") Long poissonnerieId,
+            @Param("debut") LocalDate debut,
+            @Param("fin") LocalDate fin,
+            Pageable pageable);
+
+    @Query("SELECT new com.fishcam.adapter.web.dto.response.TopProduitRentableResponse(p.nom, " +
+            "SUM((l.prixVenteKilo * l.poidsKg) - l.montantCarton)) " +
+            "FROM LigneAchat l JOIN l.produit p " +
+            "WHERE l.achatJournalier.poissonnerie.id = :poissonnerieId " +
+            "AND l.achatJournalier.dateAchat BETWEEN :debut AND :fin " +
+            "GROUP BY p.id, p.nom " +
+            "ORDER BY SUM((l.prixVenteKilo * l.poidsKg) - l.montantCarton) DESC")
+    List<TopProduitRentableResponse> findTopProduitsRentablesByPoissonnerieAndPeriode(
+            @Param("poissonnerieId") Long poissonnerieId,
+            @Param("debut") LocalDate debut,
+            @Param("fin") LocalDate fin,
+            Pageable pageable);
 
 
 
