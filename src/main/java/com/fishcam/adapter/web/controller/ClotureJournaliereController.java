@@ -1,6 +1,7 @@
 package com.fishcam.adapter.web.controller;
 
 import com.fishcam.adapter.web.dto.request.ClotureJournaliereRequest;
+import com.fishcam.adapter.web.dto.request.UpdateClotureJournaliereRequest;
 import com.fishcam.adapter.web.dto.response.ApiResponse;
 import com.fishcam.adapter.web.dto.response.ClotureJournaliereResponse;
 import com.fishcam.adapter.web.dto.response.PreparationClotureResponse;
@@ -79,6 +80,24 @@ public class ClotureJournaliereController {
                 .success(true)
                 .data(response)
                 .message("Clôture récupérée")
+                .code(200)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @PatchMapping("/{id}")
+    @Operation(summary = "Corriger une clôture existante avec un motif")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
+    public ApiResponse<ClotureJournaliereResponse> corriger(
+            @PathVariable Long id,
+            @RequestBody @Valid UpdateClotureJournaliereRequest request,
+            @AuthenticationPrincipal User currentUser) {
+        ClotureJournaliereResponse response = clotureJournaliereService
+                .corriger(id, request, currentUser.getId());
+        return ApiResponse.<ClotureJournaliereResponse>builder()
+                .success(true)
+                .data(response)
+                .message("Clôture corrigée avec succès")
                 .code(200)
                 .timestamp(LocalDateTime.now())
                 .build();

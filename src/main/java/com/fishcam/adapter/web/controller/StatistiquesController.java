@@ -28,8 +28,11 @@ public class StatistiquesController {
     @Operation(summary = "Dashboard spécifiques")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON', 'CAISSIERE')")
     public ApiResponse<StatistiquesPoissonnerieResponse> getDashboardStats(
-            @PathVariable Long poissonnerieId){
-        StatistiquesPoissonnerieResponse response = statistiquesService.getDashboardStats(poissonnerieId);
+            @PathVariable Long poissonnerieId,
+            @RequestParam(required = false) Integer mois,
+            @RequestParam(required = false) Integer annee){
+        StatistiquesPoissonnerieResponse response = statistiquesService
+                .getDashboardStats(poissonnerieId, mois, annee);
         return ApiResponse.<StatistiquesPoissonnerieResponse>builder()
                 .success(true)
                 .data(response)
@@ -42,8 +45,11 @@ public class StatistiquesController {
     @GetMapping("/global")
     @Operation(summary = "Dashboard Global")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PATRON')")
-    public ApiResponse<StatistiquesGlobalesResponse> getGlobalDashboardStats(){
-        StatistiquesGlobalesResponse response = statistiquesService.getGlobalDashboardStats();
+    public ApiResponse<StatistiquesGlobalesResponse> getGlobalDashboardStats(
+            @RequestParam(required = false) Integer mois,
+            @RequestParam(required = false) Integer annee){
+        StatistiquesGlobalesResponse response = statistiquesService
+                .getGlobalDashboardStats(mois, annee);
         return ApiResponse.<StatistiquesGlobalesResponse>builder()
                 .success(true)
                 .data(response)

@@ -45,7 +45,7 @@ public class BilanMensuelService {
         BigDecimal totalVenteRealisee = BigDecimal.ZERO;
         BigDecimal totalDepensesMois = BigDecimal.ZERO;
         BigDecimal beneficeNetMois = BigDecimal.ZERO;
-        BigDecimal meilleurBenefice = BigDecimal.ZERO;
+        BigDecimal meilleurBenefice = null;
         BigDecimal totalVentePrevisibleMois = BigDecimal.ZERO;
         LocalDate meilleurJour     = null;
 
@@ -58,15 +58,18 @@ public class BilanMensuelService {
             totalVentePrevisibleMois = totalVentePrevisibleMois
                     .add(cloture.getTotalVentePrevisible());
 
-            if (cloture.getBeneficeNet().compareTo(meilleurBenefice) > 0) {
+            // Comparaison contre null au premier tour : un mois entierement deficitaire
+            // doit quand meme designer son moins mauvais jour, pas laisser la date vide.
+            if (meilleurBenefice == null || cloture.getBeneficeNet().compareTo(meilleurBenefice) > 0) {
                 meilleurBenefice = cloture.getBeneficeNet();
                 meilleurJour     = cloture.getDate();
             }
 
         }
-        BigDecimal montantDettes = clotures
-                .get(clotures.size() - 1)
-                .getMontantDettesJour();
+        // Total des dettes contractees sur le mois, et non le seul montant du dernier jour.
+        BigDecimal montantDettes = clotures.stream()
+                .map(ClotureJournaliere::getMontantDettesJour)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BilanMensuelResponse bilan = new BilanMensuelResponse();
         bilan.setPoissonnerieNom(poissonnerie.getName());

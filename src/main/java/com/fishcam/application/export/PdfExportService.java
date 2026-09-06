@@ -12,10 +12,13 @@ import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 @Service
@@ -303,7 +306,8 @@ public class PdfExportService {
 
             document.add(table);
 
-            // Encadré de synthèse : dépenses puis bénéfice net de la période
+            // Ce récapitulatif reste un relevé des saisies quotidiennes. Il ne connaît
+            // ni les charges mensuelles, ni les variations de stock et de créances.
             Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, Color.BLACK);
             Font beneficeFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 13, BRAND_GREEN);
 
@@ -316,12 +320,19 @@ public class PdfExportService {
             synthese.addCell(createCell("TOTAL DEPENSES (FCFA)", boldFont, Element.ALIGN_LEFT, true));
             synthese.addCell(createCell(formatMoney(recap.getTotalDepenses()), boldFont, Element.ALIGN_RIGHT, true));
 
-            PdfPCell labelBenefice = createCell("BENEFICE DE LA PERIODE (FCFA)", labelFont, Element.ALIGN_LEFT, true);
+            PdfPCell labelBenefice = createCell("SOLDE DES SAISIES (FCFA)", labelFont, Element.ALIGN_LEFT, true);
             PdfPCell valeurBenefice = createCell(formatMoney(recap.getTotalBenefice()), beneficeFont, Element.ALIGN_RIGHT, true);
             synthese.addCell(labelBenefice);
             synthese.addCell(valeurBenefice);
 
             document.add(synthese);
+
+            Paragraph avertissement = new Paragraph(
+                    "Ce solde n'est pas le bénéfice mensuel définitif : les charges mensuelles, "
+                            + "le stock et les créances clients sont présentés dans le rapport de résultat mensuel.",
+                    FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 8, Color.DARK_GRAY));
+            avertissement.setSpacingBefore(10);
+            document.add(avertissement);
 
             addFooter(document);
             document.close();
@@ -330,6 +341,145 @@ public class PdfExportService {
             throw new RuntimeException("Erreur lors de la génération du PDF Recapitulatif", e);
         }
         return out.toByteArray();
+    }
+
+    // ==========================================
+    // 4. RÉSULTAT MENSUEL GLOBAL (3 BOUTIQUES)
+    // ==========================================
+    public byte[] exportResultatMensuelGlobalToPdf(ResultatMensuelGlobalResponse resultat) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Document document = new Document(PageSize.A4.rotate(), 30, 30, 75, 35);
+
+        try {
+            PdfWriter.getInstance(document, out);
+            document.open();
+            addLogo(document);
+
+            Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 17, BRAND_GREEN);
+            Font subtitleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, Color.DARK_GRAY);
+            Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 8, Color.BLACK);
+            Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8, Color.BLACK);
+
+            Paragraph title = new Paragraph("RÉSULTAT MENSUEL DE GESTION", titleFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            document.add(title);
+
+            Paragraph periode = new Paragraph(
+                    libelleMois(resultat.getMois(), resultat.getAnnee()) + " - " + resultat.getStatut(),
+                    subtitleFont);
+            periode.setAlignment(Element.ALIGN_CENTER);
+            periode.setSpacingAfter(14);
+            document.add(periode);
+
+            PdfPTable table = new PdfPTable(11);
+            table.setWidthPercentage(100);
+            table.setWidths(new float[]{
+                    2.2f, 1.7f, 1.9f, 1.6f, 1.7f, 1.9f,
+                    1.5f, 1.9f, 1.6f, 1.9f, 2f
+            });
+            table.setHeaderRows(1);
+
+            String[] headers = {
+                    "BOUTIQUE", "ACHATS", "ENCAISSEMENTS", "DÉP. JOUR",
+                    "CHARGES BOUT.", "RÉSULTAT PROV.", "VAR. STOCK",
+                    "RÉSULTAT STOCK", "VAR. CRÉANCES", "RÉSULTAT FINAL", "STATUT"
+            };
+            for (String header : headers) {
+                table.addCell(createCell(header, boldFont, Element.ALIGN_CENTER, true));
+            }
+
+            for (ResultatMensuelBoutiqueResponse boutique : resultat.getBoutiques()) {
+                table.addCell(createCell(boutique.getPoissonnerieNom(), boldFont, Element.ALIGN_LEFT, false));
+                table.addCell(moneyCell(boutique.getTotalAchats(), normalFont, false));
+                table.addCell(moneyCell(boutique.getTotalEncaissements(), normalFont, false));
+                table.addCell(moneyCell(boutique.getDepensesJournalieres(), normalFont, false));
+                table.addCell(moneyCell(boutique.getChargesMensuelles(), normalFont, false));
+                table.addCell(moneyCell(boutique.getResultatProvisoire(), normalFont, false));
+                table.addCell(moneyCell(boutique.getVariationStock(), normalFont, false));
+                table.addCell(moneyCell(boutique.getResultatCorrigeStock(), normalFont, false));
+                table.addCell(moneyCell(boutique.getVariationCreances(), normalFont, false));
+                table.addCell(moneyCell(boutique.getResultatValide(), boldFont, false));
+                table.addCell(createCell(boutique.getStatut(), boldFont, Element.ALIGN_CENTER, false));
+            }
+
+            table.addCell(createCell("TOTAL ENTREPRISE", boldFont, Element.ALIGN_LEFT, true));
+            table.addCell(moneyCell(resultat.getTotalAchats(), boldFont, true));
+            table.addCell(moneyCell(resultat.getTotalEncaissements(), boldFont, true));
+            table.addCell(moneyCell(resultat.getTotalDepensesJournalieres(), boldFont, true));
+            table.addCell(moneyCell(resultat.getTotalChargesBoutiques(), boldFont, true));
+            table.addCell(moneyCell(resultat.getResultatProvisoire(), boldFont, true));
+            table.addCell(moneyCell(resultat.getVariationStock(), boldFont, true));
+            table.addCell(moneyCell(resultat.getResultatCorrigeStock(), boldFont, true));
+            table.addCell(moneyCell(resultat.getVariationCreances(), boldFont, true));
+            table.addCell(moneyCell(resultat.getResultatValide(), boldFont, true));
+            table.addCell(createCell(resultat.getStatut(), boldFont, Element.ALIGN_CENTER, true));
+
+            document.add(table);
+
+            Paragraph chargesGenerales = new Paragraph(
+                    "Charges générales déjà retirées du résultat provisoire global : "
+                            + formatMoney(resultat.getChargesGenerales()) + " FCFA.",
+                    boldFont);
+            chargesGenerales.setSpacingBefore(10);
+            document.add(chargesGenerales);
+
+            Font explanationFont = FontFactory.getFont(FontFactory.HELVETICA, 8, Color.DARK_GRAY);
+            Paragraph formule = new Paragraph(
+                    "Lecture : résultat provisoire = encaissements - achats - dépenses - charges. "
+                            + "Résultat corrigé = résultat provisoire + variation du stock + variation des créances. "
+                            + "Les charges générales ne sont pas réparties dans les lignes des boutiques ; "
+                            + "elles sont retirées une seule fois dans le total entreprise.",
+                    explanationFont);
+            formule.setSpacingBefore(7);
+            document.add(formule);
+
+            Paragraph statuts = new Paragraph(
+                    "PROVISOIRE : le stock d'une borne manque. CORRIGÉ_STOCK : le stock est corrigé, "
+                            + "mais les créances manquent. ESTIMÉ : calcul complet avec au moins une estimation. "
+                            + "VALIDÉ : deux relevés physiques et les créances sont renseignées.",
+                    explanationFont);
+            statuts.setSpacingBefore(4);
+            document.add(statuts);
+
+            if (resultat.getInformationsManquantes() != null
+                    && !resultat.getInformationsManquantes().isEmpty()) {
+                Paragraph manqueTitle = new Paragraph("Informations manquantes :", boldFont);
+                manqueTitle.setSpacingBefore(8);
+                document.add(manqueTitle);
+                com.lowagie.text.List liste = new com.lowagie.text.List(false, 12f);
+                for (String information : resultat.getInformationsManquantes()) {
+                    liste.add(new ListItem(information, explanationFont));
+                }
+                document.add(liste);
+            }
+
+            if (resultat.getAlertes() != null && !resultat.getAlertes().isEmpty()) {
+                Paragraph alertesTitle = new Paragraph("Alertes à vérifier avant validation :", boldFont);
+                alertesTitle.setSpacingBefore(8);
+                document.add(alertesTitle);
+                com.lowagie.text.List liste = new com.lowagie.text.List(false, 12f);
+                for (String alerte : resultat.getAlertes()) {
+                    liste.add(new ListItem(alerte, explanationFont));
+                }
+                document.add(liste);
+            }
+
+            addFooter(document);
+            document.close();
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la génération du PDF du résultat mensuel", e);
+        }
+        return out.toByteArray();
+    }
+
+    private PdfPCell moneyCell(BigDecimal amount, Font font, boolean isHeader) {
+        String valeur = amount == null ? "-" : formatMoney(amount);
+        return createCell(valeur, font, Element.ALIGN_RIGHT, isHeader);
+    }
+
+    private String libelleMois(Integer mois, Integer annee) {
+        String nomMois = Month.of(mois).getDisplayName(TextStyle.FULL, Locale.FRENCH);
+        return nomMois.toUpperCase(Locale.FRENCH) + " " + annee;
     }
 
     private String formatMoney(BigDecimal amount) {

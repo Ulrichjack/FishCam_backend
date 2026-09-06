@@ -10,6 +10,7 @@ import com.fishcam.domain.epargne.EpargneRepository;
 import com.fishcam.domain.poissonnerie.Poissonnerie;
 import com.fishcam.domain.poissonnerie.PoissonnerieRepository;
 import com.fishcam.infrastructure.exception.ResourceNotFoundException;
+import com.fishcam.infrastructure.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class StatistiquesService {
+
+    public StatistiquesPoissonnerieResponse getDashboardStats(Long poissonnerieId) {
+        return getDashboardStats(poissonnerieId, null, null);
+    }
 
     private final PoissonnerieRepository poissonnerieRepository;
     private final ClientRepository clientRepository;
@@ -37,8 +43,13 @@ public class StatistiquesService {
 
 
     @Transactional(readOnly = true)
-    public StatistiquesPoissonnerieResponse getDashboardStats(Long poissonnerieId) {
+    public StatistiquesPoissonnerieResponse getDashboardStats(
+            Long poissonnerieId, Integer mois, Integer annee) {
         log.info("Fetching dashboard statistics for poissonnerie ID: {}", poissonnerieId);
+
+        YearMonth periode = periodeOuMoisCourant(mois, annee);
+        LocalDate firstDayOfMonth = periode.atDay(1);
+        LocalDate lastDayOfMonth = periode.atEndOfMonth();
 
         // 1. Fetch Poissonnerie
         Poissonnerie poissonnerie = poissonnerieRepository.findById(poissonnerieId)
@@ -76,14 +87,15 @@ public class StatistiquesService {
 
         //5. List topProduit, débiteur, produit_rentable
         Pageable top5 = PageRequest.of(0, 5);
-        List<TopProduitResponse> topProduits = ligneAchatRepository.findTopProduitsByPoissonnerie(poissonnerieId, top5);
+        List<TopProduitResponse> topProduits = ligneAchatRepository
+                .findTopProduitsByPoissonnerieAndPeriode(
+                        poissonnerieId, firstDayOfMonth, lastDayOfMonth, top5);
         List<TopDebiteurResponse> topDebiteurs = compteCourantRepository.findTopDebiteursByPoissonnerie(poissonnerieId, top5);
-        List <TopProduitRentableResponse> topProduitRentableResponses = ligneAchatRepository.findTopProduitsRentablesByPoissonnerie(poissonnerieId, top5);
+        List<TopProduitRentableResponse> topProduitRentableResponses = ligneAchatRepository
+                .findTopProduitsRentablesByPoissonnerieAndPeriode(
+                        poissonnerieId, firstDayOfMonth, lastDayOfMonth, top5);
 
-        // 6. Monthly Revenue Chart (Current Month)
-        LocalDate today = LocalDate.now();
-        LocalDate firstDayOfMonth = today.withDayOfMonth(1);
-        LocalDate lastDayOfMonth = today.withDayOfMonth(today.lengthOfMonth());
+        // 6. Monthly Revenue Chart (selected month)
 
         List<ClotureJournaliere> cloturesDuMois = clotureRepository
                 .findByPoissonnerieAndDateBetweenOrderByDateAsc(poissonnerie, firstDayOfMonth, lastDayOfMonth);
@@ -115,7 +127,7 @@ public class StatistiquesService {
         return response;
     }
 
-    public StatistiquesGlobalesResponse getGlobalDashboardStats(){
+    public StatistiquesGlobalesResponse getGlobalDashboardStats(Integer mois, Integer annee){
         List <Poissonnerie> poissonneries = poissonnerieRepository.findByActiveTrue();
         Integer clientsGlobal = 0;
         BigDecimal epargneGlobal = BigDecimal.ZERO;
@@ -124,7 +136,7 @@ public class StatistiquesService {
 
         for(Poissonnerie poissonnerie: poissonneries ){
 
-            StatistiquesPoissonnerieResponse stats = getDashboardStats(poissonnerie.getId());
+            StatistiquesPoissonnerieResponse stats = getDashboardStats(poissonnerie.getId(), mois, annee);
             clientsGlobal += stats.getNombreClients();
             epargneGlobal = epargneGlobal.add(stats.getEpargnes().getTotalEpargne());
             dettesGlobal = dettesGlobal.add(stats.getCourantResponse().getTotalDettes());
@@ -139,6 +151,20 @@ public class StatistiquesService {
 
         );
 
+    }
+
+    private YearMonth periodeOuMoisCourant(Integer mois, Integer annee) {
+        if (mois == null && annee == null) {
+            return YearMonth.now();
+        }
+        if (mois == null || annee == null) {
+            throw new BusinessException("Le mois et l'année doivent être fournis ensemble.");
+        }
+        try {
+            return YearMonth.of(annee, mois);
+        } catch (RuntimeException exception) {
+            throw new BusinessException("Mois ou année invalide.");
+        }
     }
 
 

@@ -89,5 +89,14 @@ public class ClotureJournaliere {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    @Column(length = 500)
+    private String derniereCorrectionMotif;
+
+    @ManyToOne
+    @JoinColumn(name = "modifie_par_id")
+    private User modifiePar;
+
+    private LocalDateTime modifieLe;
+
 
 }
