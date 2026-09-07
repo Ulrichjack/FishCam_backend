@@ -153,8 +153,10 @@ public class ClotureJournaliereService {
 
         BigDecimal totalDepenses = transport.add(ration).add(autresFrais);
 
-        // Vente Réalisée = Argent Caisse - Fond de Caisse + Dépenses
-        BigDecimal venteRealisee = request.getArgentCaisse().subtract(request.getFondDeCaisse()).add(totalDepenses);
+        // Le montant communiqué par le patron inclut déjà l'argent utilisé pour les
+        // dépenses du jour. Ces dépenses sont donc déduites du résultat, mais ne doivent
+        // jamais être ajoutées une seconde fois aux ventes.
+        BigDecimal venteRealisee = request.getArgentCaisse().subtract(request.getFondDeCaisse());
 
         // 🟢 CORRECTION DU BUG : Vente Prévisible Ajustée (Prend en compte les dettes et remboursements)
         BigDecimal ventePrevisibleAjustee = preparer.getTotalVentePrevisible()
@@ -208,9 +210,10 @@ public class ClotureJournaliereService {
         BigDecimal ration = valeurOuZero(request.getRation());
         BigDecimal autresFrais = valeurOuZero(request.getAutresFrais());
         BigDecimal totalDepenses = transport.add(ration).add(autresFrais);
+        // Même règle lors d'une correction : les dépenses figurent déjà dans la recette
+        // brute déclarée et sont soustraites séparément du résultat.
         BigDecimal venteRealisee = request.getArgentCaisse()
-                .subtract(request.getFondDeCaisse())
-                .add(totalDepenses);
+                .subtract(request.getFondDeCaisse());
         BigDecimal ventePrevisibleAjustee = preparation.getTotalVentePrevisible()
                 .subtract(preparation.getMontantDettesJour())
                 .add(preparation.getMontantRembourseJour());
