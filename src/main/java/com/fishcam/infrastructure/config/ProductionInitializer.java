@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +26,8 @@ public class ProductionInitializer implements CommandLineRunner {
     private final PoissonnerieRepository poissonnerieRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    @Value("${fishcam.admin.initial-password:}")
+    private String initialPassword;
 
     @Override
     public void run(String... args) {
@@ -67,56 +70,25 @@ public class ProductionInitializer implements CommandLineRunner {
     }
 
     private void createProductionUsers(Poissonnerie boutiqueCentrale) {
+        if (initialPassword == null || initialPassword.isBlank()) {
+            log.error("Aucun compte SUPER_ADMIN n'a été créé : la variable d'environnement "
+                    + "ADMIN_INITIAL_PASSWORD est absente ou vide. L'application est inutilisable "
+                    + "tant qu'aucun administrateur n'existe. Corriger : définir "
+                    + "ADMIN_INITIAL_PASSWORD dans les variables d'environnement Render, "
+                    + "puis redéployer.");
+            return;
+        }
         if (!userRepository.existsByPhone("692087724")) {
             User superAdmin = new User();
             superAdmin.setFirstName("Super");
             superAdmin.setLastName("Admin");
             superAdmin.setPhone("692087724");
-            superAdmin.setPassword(passwordEncoder.encode("admin123"));
+            superAdmin.setPassword(passwordEncoder.encode(initialPassword));
             superAdmin.setRole(Role.SUPER_ADMIN);
             superAdmin.setScope(UserScope.MULTI_POISSONNERIE);
             superAdmin.setDefaultPoissonnerie(boutiqueCentrale);
             superAdmin.setActive(true);
             userRepository.save(superAdmin);
-        }
-
-        if (!userRepository.existsByPhone("676028800")) {
-            User patron = new User();
-            patron.setFirstName("Theophile");
-            patron.setLastName("FOSSO");
-            patron.setPhone("676028800");
-            patron.setPassword(passwordEncoder.encode("patron123"));
-            patron.setRole(Role.PATRON);
-            patron.setScope(UserScope.MULTI_POISSONNERIE);
-            patron.setDefaultPoissonnerie(boutiqueCentrale);
-            patron.setActive(true);
-            userRepository.save(patron);
-        }
-
-        if (!userRepository.existsByPhone("690950871")) {
-            User caissiere = new User();
-            caissiere.setFirstName("Alerte");
-            caissiere.setLastName("DJOKO");
-            caissiere.setPhone("690950871");
-            caissiere.setPassword(passwordEncoder.encode("caissier123"));
-            caissiere.setRole(Role.CAISSIERE);
-            caissiere.setScope(UserScope.MULTI_POISSONNERIE);
-            caissiere.setDefaultPoissonnerie(boutiqueCentrale);
-            caissiere.setActive(true);
-            userRepository.save(caissiere);
-        }
-
-        if (!userRepository.existsByPhone("655032752")) {
-            User vendeur = new User();
-            vendeur.setFirstName("Christine");
-            vendeur.setLastName("Inconnu");
-            vendeur.setPhone("655032752");
-            vendeur.setPassword(passwordEncoder.encode("vendeur123"));
-            vendeur.setRole(Role.ENREGISTREUR);
-            vendeur.setScope(UserScope.MULTI_POISSONNERIE);
-            vendeur.setDefaultPoissonnerie(boutiqueCentrale);
-            vendeur.setActive(true);
-            userRepository.save(vendeur);
         }
     }
 }
