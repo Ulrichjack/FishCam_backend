@@ -39,7 +39,7 @@ build/
 .bashrc
 fishcam-data-dev/
 src/main/resources/data.sql
-
+notes/
 # env
 .env
 fishcam_backup.sql
